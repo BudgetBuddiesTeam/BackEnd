@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: budgetbuddies
+
+  jpa:
+    show-sql: true # sql ???? ??? ???? ??.
+    properties:
+      format_sql: true
+      dialect: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: create
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/budgetbuddies # mysql ?? ?? (?? ?? DB? ?? ? ??)
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root # db ????
