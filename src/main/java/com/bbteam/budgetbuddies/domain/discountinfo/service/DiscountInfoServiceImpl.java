@@ -91,7 +91,7 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
         if (existingLike.isPresent()) {
             // 이미 좋아요를 누른 상태라면
             discountInfoLikeRepository.delete(existingLike.get());
-            discountInfo.setLikeCount(discountInfo.getLikeCount() - 1);
+            discountInfo.subLikeCount();
         } else {
             // 아직 좋아요를 누르지 않은 상태라면
             DiscountInfoLike newLike = DiscountInfoLike.builder()
@@ -99,7 +99,7 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
                 .discountInfo(discountInfo)
                 .build();
             discountInfoLikeRepository.save(newLike);
-            discountInfo.setLikeCount(discountInfo.getLikeCount() + 1);
+            discountInfo.addLikeCount();
         }
 
         DiscountInfo savedEntity = discountInfoRepository.save(discountInfo);

@@ -11,7 +11,6 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @SuperBuilder
@@ -34,5 +33,13 @@ public class DiscountInfo extends BaseEntity {
 
     @Column(length = 1000)
     private String siteUrl;
+
+    public void addLikeCount() {
+        this.likeCount++;
+    }
+
+    public void subLikeCount() {
+        this.likeCount--;
+    }
 
 }
