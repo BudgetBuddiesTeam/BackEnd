@@ -19,6 +19,7 @@ public class DiscountInfoConverter {
             .title(entity.getTitle())
             .startDate(entity.getStartDate())
             .endDate(entity.getEndDate())
+            .anonymousNumber(entity.getAnonymousNumber())
             .discountRate(entity.getDiscountRate())
             .likeCount(entity.getLikeCount())
             .siteUrl(entity.getSiteUrl())
@@ -36,7 +37,9 @@ public class DiscountInfoConverter {
             .title(requestDto.getTitle())
             .startDate(requestDto.getStartDate())
             .endDate(requestDto.getEndDate())
+            .anonymousNumber(0)
             .discountRate(requestDto.getDiscountRate())
+            .likeCount(0)
             .siteUrl(requestDto.getSiteUrl())
             .build();
     }
