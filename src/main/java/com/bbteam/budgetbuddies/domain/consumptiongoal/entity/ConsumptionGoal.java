@@ -20,6 +20,10 @@ import java.time.LocalDate;
 @SuperBuilder
 public class ConsumptionGoal extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(nullable = false)
     @Min(value = 1, message = "0 또는 음수의 목표금액을 설정할 수 없습니다.")
     private Long goalAmount;
@@ -31,11 +35,11 @@ public class ConsumptionGoal extends BaseEntity {
     @Column(nullable = false)
     private LocalDate goalMonth;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
