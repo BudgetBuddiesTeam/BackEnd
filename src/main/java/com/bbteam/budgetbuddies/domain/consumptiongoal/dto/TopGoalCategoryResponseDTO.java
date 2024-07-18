@@ -15,6 +15,6 @@ public class TopGoalCategoryResponseDTO {
 
 	private Category category;
 
-	private Long consumeAmount;
+	private Long goalAmount;
 
 }
