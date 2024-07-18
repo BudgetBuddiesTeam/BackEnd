@@ -1,13 +1,10 @@
 package com.bbteam.budgetbuddies.domain.discountinfo.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,6 +17,8 @@ public class DiscountResponseDto {
     private LocalDate startDate;
 
     private LocalDate endDate;
+
+    private Integer anonymousNumber;
 
     private Integer discountRate;
 
