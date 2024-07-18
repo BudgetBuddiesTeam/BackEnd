@@ -32,7 +32,7 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
     private final UserRepository userRepository;
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Page<DiscountResponseDto> getDiscountsByYearAndMonth(Integer year, Integer month, Integer page, Integer size) {
         /**
