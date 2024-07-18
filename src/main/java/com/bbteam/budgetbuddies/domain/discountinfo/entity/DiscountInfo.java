@@ -3,10 +3,7 @@ package com.bbteam.budgetbuddies.domain.discountinfo.entity;
 import com.bbteam.budgetbuddies.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -27,11 +24,22 @@ public class DiscountInfo extends BaseEntity {
     private LocalDate endDate;
 
     @ColumnDefault("0")
-    private Integer likeCount;
+    private Integer likeCount = 0;
+
+    @ColumnDefault("0")
+    private Integer anonymousNumber = 0;
 
     private Integer discountRate;
 
     @Column(length = 1000)
     private String siteUrl;
+
+    public void addLikeCount() {
+        this.likeCount++;
+    }
+
+    public void subLikeCount() {
+        this.likeCount--;
+    }
 
 }
