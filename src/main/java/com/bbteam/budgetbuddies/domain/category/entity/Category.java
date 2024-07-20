@@ -1,11 +1,13 @@
 package com.bbteam.budgetbuddies.domain.category.entity;
 
-import com.bbteam.budgetbuddies.common.BaseEntity;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
+@Getter
 public class Category {
 
     @Id
