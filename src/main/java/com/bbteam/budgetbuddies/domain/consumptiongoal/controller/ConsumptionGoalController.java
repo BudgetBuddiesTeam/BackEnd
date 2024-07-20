@@ -19,8 +19,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping
 @RequiredArgsConstructor
+@RequestMapping("/consumption-goal")
 public class ConsumptionGoalController {
 
 	private final ConsumptionGoalService consumptionGoalService;
@@ -32,7 +32,7 @@ public class ConsumptionGoalController {
 	@Parameters({
 		@Parameter(name = "top", description = "가장 큰 목표를 세운 카테고리의 개수를 지정합니다. (기본값은 5입니다"),
 	})
-	@GetMapping("/consumption-goal/top-categories")
+	@GetMapping("/top-categories")
 	public ResponseEntity<?> getTopGoalCategories(@RequestParam(name = "top", defaultValue = "5") int top) {
 		List<TopGoalCategoryResponseDTO> topCategory = consumptionGoalService.getTopGoalCategories(top);
 		return ResponseEntity.ok(topCategory);
