@@ -6,7 +6,6 @@ import lombok.Setter;
 
 
 public class CommentRequestDto {
-    @Setter
     @Getter
     @Builder
     public static class DiscountInfoCommentDto {
@@ -14,7 +13,6 @@ public class CommentRequestDto {
         private Long discountInfoId;
     }
 
-    @Setter
     @Getter
     @Builder
     public static class SupportInfoCommentDto {
