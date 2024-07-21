@@ -1,5 +1,6 @@
 package com.bbteam.budgetbuddies.domain.comment.dto;
 
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -38,4 +39,5 @@ public class CommentResponseDto {
         private Long supportInfoId;
         private String content;
     }
+
 }

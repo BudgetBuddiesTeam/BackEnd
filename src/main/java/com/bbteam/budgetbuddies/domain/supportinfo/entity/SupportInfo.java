@@ -27,9 +27,20 @@ public class SupportInfo extends BaseEntity {
     private LocalDate endDate;
 
     @ColumnDefault("0")
-    private Integer likeCount;
+    private Integer likeCount = 0;
+
+    @ColumnDefault("0")
+    private Integer anonymousNumber = 0;
 
     @Column(length = 1000)
     private String siteUrl;
+
+    public void addLikeCount() {
+        this.likeCount++;
+    }
+
+    public void subLikeCount() {
+        this.likeCount--;
+    }
 
 }
