@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -21,15 +21,14 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryConverter categoryConverter;
 
     @Override
-    @Transactional
     public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
         User user = userRepository.findById(categoryRequestDTO.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("cannot find user"));
 
-        categoryRepository.findByUserIdAndName(categoryRequestDTO.getUserId(), categoryRequestDTO.getName())
-                .ifPresent(existingCategory -> {
-                    throw new IllegalArgumentException("Category with the same name already exists for this user");
-                });
+        if (categoryRepository.existsByUserIdAndName(categoryRequestDTO.getUserId(), categoryRequestDTO.getName())) {
+            throw new IllegalArgumentException("User already has a category with the same name");
+        }
+
 
         Category category = categoryConverter.toCategoryEntity(categoryRequestDTO, user);
         Category savedCategory = categoryRepository.save(category);
