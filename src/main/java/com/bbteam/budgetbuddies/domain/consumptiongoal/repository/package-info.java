@@ -1,1 +1,0 @@
-package com.bbteam.budgetbuddies.domain.consumptiongoal.repository;
