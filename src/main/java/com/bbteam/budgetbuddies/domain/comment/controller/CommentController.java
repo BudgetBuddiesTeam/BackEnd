@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/comments")
 public class CommentController {
 
     private final CommentService commentService;
@@ -31,7 +30,7 @@ public class CommentController {
             @Parameter(name = "discountInfoId", description = "댓글을 다는 할인 정보 게시글 id입니다."),
             @Parameter(name = "content", description = "댓글 내용입니다."),
     })
-    @PostMapping("/discounts/{userId}/add")
+    @PostMapping("/discounts/comments/{userId}/add")
     public ResponseEntity<CommentResponseDto.DiscountInfoSuccessDto> saveDiscountInfoComment(
             @RequestParam("userId") Long userId,
             @RequestBody CommentRequestDto.DiscountInfoCommentDto discountInfoCommentDto){
@@ -46,7 +45,7 @@ public class CommentController {
     @Parameters({
             @Parameter(name = "discountInfoId", description = "댓글을 가져올 할인 정보 게시글 id입니다."),
     })
-    @GetMapping("/discounts/get/{discountInfoId}")
+    @GetMapping("/discounts/comments/get/{discountInfoId}")
     public ResponseEntity<List<CommentResponseDto.DiscountInfoCommentDto>> findAllByDiscountInfo(
             @RequestParam("discountInfoId") Long discountInfoId){
         List<CommentResponseDto.DiscountInfoCommentDto> result = commentService.findByDiscountInfo(discountInfoId);
@@ -62,7 +61,7 @@ public class CommentController {
             @Parameter(name = "supportInfoId", description = "댓글을 다는 지원 정보 게시글 id입니다."),
             @Parameter(name = "content", description = "댓글 내용입니다."),
     })
-    @PostMapping("/supports/{userId}/add")
+    @PostMapping("/supports/comments/{userId}/add")
     public ResponseEntity<CommentResponseDto.SupportInfoSuccessDto> saveSupportInfoComment(
             @RequestParam("userId") Long userId,
             @RequestBody CommentRequestDto.SupportInfoCommentDto supportInfoCommentDto){
@@ -77,7 +76,7 @@ public class CommentController {
     @Parameters({
             @Parameter(name = "supportInfoId", description = "댓글을 가져올 지원 정보 게시글 id입니다."),
     })
-    @GetMapping("/supports/get/{supportInfoId}")
+    @GetMapping("/supports/comments/get/{supportInfoId}")
     public ResponseEntity<List<CommentResponseDto.SupportInfoCommentDto>> findAllBySupportInfo(
             @RequestParam("supportInfoId") Long supportInfoId){
         List<CommentResponseDto.SupportInfoCommentDto> result = commentService.findBySupportInfo(supportInfoId);
