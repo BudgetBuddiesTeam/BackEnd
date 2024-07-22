@@ -29,81 +29,68 @@ class ConsumptionGoalRepositoryTest {
 	CategoryRepository categoryRepository;
 
 	@Test
-	@DisplayName("유저 아이디와 LocalDate를 통해 GoalConsumption 조회 성공")
+	@DisplayName("유저 아이디와 goalMonth를 통해 GoalConsumption 조회 성공")
 	void findConsumptionGoalByUserIdAndGoalMonth_Success() {
+		// given
+		// 목표 달
 		LocalDate goalMonth = LocalDate.of(2024, 07, 01);
 
-		User user = userRepository.save(User.builder()
-			.email("email")
-			.age(24)
-			.name("name")
-			.phoneNumber("010-1234-5678")
+		User mainUser = userRepository.save(
+			User.builder().email("email").age(24).name("name").phoneNumber("010-1234-5678").build());
+
+		Category defaultCategory = categoryRepository.save(
+			Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
+
+		Category userCategory = categoryRepository.save(
+			Category.builder().name("유저 카테고리").user(mainUser).isDefault(false).build());
+
+		ConsumptionGoal defaultCategoryConsumptionGoal = consumptionGoalRepository.save(ConsumptionGoal.builder()
+			.goalAmount(1L)
+			.consumeAmount(1L)
+			.user(mainUser)
+			.goalMonth(goalMonth)
+			.category(defaultCategory)
 			.build());
 
-		User otherUser = userRepository.save(User.builder()
-			.email("email2")
-			.age(24)
-			.name("name2")
-			.phoneNumber("010-1567-5678")
+		ConsumptionGoal userCategoryConsumptionGoal = consumptionGoalRepository.save(ConsumptionGoal.builder()
+			.goalAmount(1L)
+			.consumeAmount(1L)
+			.user(mainUser)
+			.goalMonth(goalMonth)
+			.category(userCategory)
 			.build());
 
-		Category defaultCategory = categoryRepository.save(Category.builder()
-			.name("디폴트 카테고리")
-			.user(null)
-			.isDefault(true)
-			.build());
+		setUnselectedConsumptionGoal(mainUser, goalMonth, defaultCategory);
 
-		Category userCategory = categoryRepository.save(Category.builder()
-			.name("유저 카테고리")
-			.user(user)
-			.isDefault(false)
-			.build());
+		// when
+		List<ConsumptionGoal> result = consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(mainUser.getId(),
+			goalMonth);
 
-		ConsumptionGoal defaultCategoryConsumptionGoal = consumptionGoalRepository.save(
+		// then
+		assertThat(result).usingRecursiveComparison()
+			.isEqualTo(List.of(defaultCategoryConsumptionGoal, userCategoryConsumptionGoal));
+	}
+
+	private void setUnselectedConsumptionGoal(User mainUser, LocalDate goalMonth, Category defaultCategory) {
+		User otherUser = userRepository.save(
+			User.builder().email("email2").age(24).name("name2").phoneNumber("010-1567-5678").build());
+
+		ConsumptionGoal lastMonthDefaultCategoryConsumptionGoal = consumptionGoalRepository.save(
 			ConsumptionGoal.builder()
 				.goalAmount(1L)
 				.consumeAmount(1L)
-				.user(user)
-				.goalMonth(goalMonth)
-				.category(defaultCategory)
-				.build()
-		);
-
-		ConsumptionGoal customCategoryConsumptionGoal = consumptionGoalRepository.save(
-			ConsumptionGoal.builder()
-				.goalAmount(1L)
-				.consumeAmount(1L)
-				.user(user)
-				.goalMonth(goalMonth)
-				.category(userCategory)
-				.build()
-		);
-
-		consumptionGoalRepository.save(
-			ConsumptionGoal.builder()
-				.goalAmount(1L)
-				.consumeAmount(1L)
-				.user(user)
+				.user(mainUser)
 				.goalMonth(goalMonth.minusMonths(1))
 				.category(defaultCategory)
-				.build()
-		);
+				.build());
 
-		consumptionGoalRepository.save(
+		ConsumptionGoal otherUserDefaultCategoryConsumptionGoal = consumptionGoalRepository.save(
 			ConsumptionGoal.builder()
 				.goalAmount(1L)
 				.consumeAmount(1L)
 				.user(otherUser)
 				.goalMonth(goalMonth)
 				.category(defaultCategory)
-				.build()
-		);
-
-		List<ConsumptionGoal> result = consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(),
-			goalMonth);
-
-		assertThat(result).usingRecursiveComparison()
-			.isEqualTo(
-				List.of(defaultCategoryConsumptionGoal, customCategoryConsumptionGoal));
+				.build());
 	}
 }
