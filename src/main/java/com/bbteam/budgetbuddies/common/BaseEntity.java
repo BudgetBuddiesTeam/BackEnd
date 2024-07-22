@@ -1,7 +1,11 @@
 package com.bbteam.budgetbuddies.common;
 
 import jakarta.persistence.*;
-import lombok.*;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SoftDelete;
@@ -18,6 +22,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 @SoftDelete // boolean 타입의 deleted 필드가 추가
+@Getter
 public abstract class BaseEntity {
 
     @Id
