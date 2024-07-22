@@ -5,7 +5,9 @@ import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,104 +24,135 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 
-// TODO 깨끗하게 작성하기;
 @DisplayName("ConsumptionGoal 테스트의 ")
 @ExtendWith(MockitoExtension.class)
 class ConsumptionGoalServiceTest {
+	private final LocalDate GOAL_MONTH = LocalDate.of(2024, 07, 01);
+	private User user;
+	private LocalDate goalMonth;
+
 	@InjectMocks
 	private ConsumptionGoalService consumptionGoalService;
-
 	@Mock
 	private CategoryRepository categoryRepository;
 	@Mock
 	private ConsumptionGoalRepository consumptionGoalRepository;
 
-	@Test
-	@DisplayName("findUserConsumptionGoal 성공")
-	void findUserConsumptionGoal_success() {
-		LocalDate goalMonth = LocalDate.of(2024, 07, 01);
+	@BeforeEach
+	void setUp() {
+		Random random = new Random();
+		int randomDay = random.nextInt(30) + 1;
+		goalMonth = LocalDate.of(GOAL_MONTH.getYear(), GOAL_MONTH.getMonth(), randomDay);
 
-		User user = Mockito.spy(User.builder()
-			.email("email")
-			.age(24)
-			.name("name")
-			.phoneNumber("010-1234-5678")
-			.build());
+		user = Mockito.spy(User.builder().email("email").age(24).name("name").phoneNumber("010-1234-5678").build());
 		given(user.getId()).willReturn(-1L);
+	}
 
-		Category defaultCategory = Mockito.spy(Category.builder()
-			.name("디폴트 카테고리")
-			.user(null)
-			.isDefault(true)
-			.build());
+	@Test
+	@DisplayName("findUserConsumptionGoal : 생성된 ConsumptionGoal이 없고 카테고리만 있는 경우 목표 금액, 소비 금액 0으로 초기화")
+	void findUserConsumptionGoal_onlyCategory() {
+		// given
+		Category defaultCategory = Mockito.spy(Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
 		given(defaultCategory.getId()).willReturn(-1L);
 
-		Category userCategory = Mockito.spy(Category.builder()
-			.name("유저 카테고리")
-			.user(user)
-			.isDefault(false)
-			.build());
+		Category userCategory = Mockito.spy(Category.builder().name("유저 카테고리").user(user).isDefault(false).build());
 		given(userCategory.getId()).willReturn(-2L);
 
-		Category userCategory2 = Mockito.spy(Category.builder()
-			.name("유저 카테고리2")
-			.user(user)
-			.isDefault(false)
-			.build());
-		given(userCategory2.getId()).willReturn(-3L);
+		List<Category> categoryList = List.of(defaultCategory, userCategory);
 
-		Category userCategory3 = Mockito.spy(Category.builder()
-			.name("유저 카테고리3")
-			.user(user)
-			.isDefault(false)
-			.build());
-		given(userCategory3.getId()).willReturn(-4L);
+		given(categoryRepository.findUserCategoryByUserId(user.getId())).willReturn(categoryList);
 
-		given(categoryRepository.findUserCategoryByUserId(user.getId()))
-			.willReturn(List.of(defaultCategory, userCategory, userCategory2, userCategory3));
+		List<ConsumptionGoalResponseDto> expected = categoryList.stream()
+			.map(category -> ConsumptionGoalResponseDto.initializeFromCategoryAndGoalMonth(category, GOAL_MONTH))
+			.toList();
 
-		// default
-		ConsumptionGoal consumptionGoal1 = ConsumptionGoal.builder()
-			.goalAmount(1L)
-			.consumeAmount(1L)
+		// when
+		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoal(user.getId(), goalMonth);
+
+		// then
+		assertThat(result.getConsumptionGoalList()).usingRecursiveComparison().isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("findUserConsumptionGoal : 한달전 ConsumptionGoal만 있을 경우 한달전으로 초기화")
+	void findUserConsumptionGoal_previousMonth() {
+		// given
+		Category defaultCategory = Mockito.spy(Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
+		given(defaultCategory.getId()).willReturn(-1L);
+
+		Category userCategory = Mockito.spy(Category.builder().name("유저 카테고리").user(user).isDefault(false).build());
+		given(userCategory.getId()).willReturn(-2L);
+
+		given(categoryRepository.findUserCategoryByUserId(user.getId())).willReturn(
+			List.of(defaultCategory, userCategory));
+
+		ConsumptionGoal previousMonthDefaultCategoryGoal = ConsumptionGoal.builder()
+			.goalAmount(1_000_000L)
+			.consumeAmount(20_000L)
 			.user(user)
 			.category(defaultCategory)
-			.goalMonth(goalMonth)
+			.goalMonth(goalMonth.minusMonths(1))
 			.build();
 
-		// custom
-		ConsumptionGoal consumptionGoal2 = ConsumptionGoal.builder()
-			.goalAmount(1L)
-			.consumeAmount(1L)
+		ConsumptionGoal previousMonthUserCategoryGoal = ConsumptionGoal.builder()
+			.goalAmount(1_000_000L)
+			.consumeAmount(20_000L)
 			.user(user)
-			.category(userCategory2)
-			.goalMonth(goalMonth)
+			.category(userCategory)
+			.goalMonth(goalMonth.minusMonths(1))
 			.build();
 
-		// 1달 전
-		ConsumptionGoal consumptionGoal3 = ConsumptionGoal.builder()
-			.goalAmount(1L)
-			.consumeAmount(1L)
-			.user(user)
-			.category(userCategory2)
-			.goalMonth(goalMonth.withMonth(1))
-			.build();
+		List<ConsumptionGoal> previousGoalList = List.of(previousMonthDefaultCategoryGoal,
+			previousMonthUserCategoryGoal);
 
-		given(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(), goalMonth)).willReturn(
-			List.of(consumptionGoal1, consumptionGoal2));
+		given(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(),
+			GOAL_MONTH.minusMonths(1))).willReturn(previousGoalList);
 
-		given(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(), goalMonth.minusMonths(1)))
-			.willReturn(List.of(consumptionGoal3));
+		List<ConsumptionGoalResponseDto> expected = previousGoalList.stream()
+			.map(ConsumptionGoalResponseDto::of)
+			.toList();
 
-		List<ConsumptionGoalResponseDto> expected = List.of(
-			ConsumptionGoalResponseDto.of(consumptionGoal1), // default
-			ConsumptionGoalResponseDto.initializeFromCategoryAndGoalMonth(userCategory, goalMonth), // 1
-			ConsumptionGoalResponseDto.of(consumptionGoal2), // 2
-			ConsumptionGoalResponseDto.initializeFromCategoryAndGoalMonth(userCategory3, goalMonth)); // 3
+		// when
+		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoal(user.getId(), goalMonth);
 
-		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoal(user.getId(),
-			goalMonth.plusDays(2));
-
+		// then
 		assertThat(result.getConsumptionGoalList()).usingRecursiveComparison().isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("findUserConsumptionGoal : 한달 전과 목표 달 ConsumptionGoal이 있을 경우 목표 달로 초기화")
+	void findUserConsumptionGoal_previousMonthAndGoalMonth() {
+		// given
+		Category userCategory = Mockito.spy(Category.builder().name("유저 카테고리").user(user).isDefault(false).build());
+		given(userCategory.getId()).willReturn(-2L);
+
+		ConsumptionGoal previousMonthUserCategoryGoal = ConsumptionGoal.builder()
+			.goalAmount(1_000_000L)
+			.consumeAmount(20_000L)
+			.user(user)
+			.category(userCategory)
+			.goalMonth(goalMonth.minusMonths(1))
+			.build();
+
+		ConsumptionGoal goalMonthUserCategoryGoal = ConsumptionGoal.builder()
+			.goalAmount(2_000_000L)
+			.consumeAmount(30_000L)
+			.user(user)
+			.category(userCategory)
+			.goalMonth(goalMonth)
+			.build();
+
+		given(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(),
+			GOAL_MONTH.minusMonths(1))).willReturn(List.of(previousMonthUserCategoryGoal));
+
+		given(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(), GOAL_MONTH)).willReturn(
+			List.of(goalMonthUserCategoryGoal));
+
+		// when
+		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoal(user.getId(), goalMonth);
+
+		// then
+		assertThat(result.getConsumptionGoalList()).usingRecursiveComparison()
+			.isEqualTo(List.of(ConsumptionGoalResponseDto.of(goalMonthUserCategoryGoal)));
 	}
 }
