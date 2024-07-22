@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConsumptionGoalResponseListDto {
-	private List<ConsumptionGoalResponseDto> consumptionGoalResponseDtoList;
+	private List<ConsumptionGoalResponseDto> consumptionGoalList;
 
 	public ConsumptionGoalResponseListDto(List<ConsumptionGoalResponseDto> consumptionGoalResponseDtoList) {
-		this.consumptionGoalResponseDtoList = consumptionGoalResponseDtoList;
+		this.consumptionGoalList = consumptionGoalResponseDtoList;
 	}
 }

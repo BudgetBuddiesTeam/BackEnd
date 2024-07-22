@@ -22,7 +22,7 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 
-// TODO 꺠끗하게 작성하기;
+// TODO 깨끗하게 작성하기;
 @DisplayName("ConsumptionGoal 테스트의 ")
 @ExtendWith(MockitoExtension.class)
 class ConsumptionGoalServiceTest {
@@ -120,6 +120,6 @@ class ConsumptionGoalServiceTest {
 		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoal(user.getId(),
 			goalMonth.plusDays(2));
 
-		assertThat(result.getConsumptionGoalResponseDtoList()).usingRecursiveComparison().isEqualTo(expected);
+		assertThat(result.getConsumptionGoalList()).usingRecursiveComparison().isEqualTo(expected);
 	}
 }
