@@ -19,7 +19,6 @@ import com.bbteam.budgetbuddies.enums.Gender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
@@ -53,10 +52,6 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			peerAgeStartByUser = peerAgeStart;
 			peerAgeEndByUser = peerAgeEnd;
 		}
-
-		log.info("peerAgeStartByUser: {}", peerAgeStartByUser);
-		log.info("peerAgeStartByUser: {}", peerAgeEndByUser);
-		log.info("peerAgeStartByUser: {}", gender);
 
 		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmount(top,
 			peerAgeStartByUser, peerAgeEndByUser, gender);
