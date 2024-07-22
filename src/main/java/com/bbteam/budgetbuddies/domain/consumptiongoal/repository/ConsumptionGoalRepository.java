@@ -17,8 +17,9 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		+ "WHERE cg.category.isDefault = true "
 		+ "AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd "
 		+ "AND cg.user.gender = :peerGender "
-		+ "ORDER BY cg.goalAmount DESC")
+		+ "ORDER BY cg.goalAmount DESC limit :top")
 	List<ConsumptionGoal> findTopCategoriesAndGoalAmount(
+		@Param("top") int top,
 		@Param("peerAgeStart") int peerAgeStart,
 		@Param("peerAgeEnd") int peerAgeEnd,
 		@Param("peerGender") Gender peerGender);

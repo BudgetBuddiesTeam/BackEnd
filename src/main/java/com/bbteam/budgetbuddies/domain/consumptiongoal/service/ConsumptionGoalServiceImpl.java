@@ -33,8 +33,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TopGoalCategoryResponseDTO> getTopGoalCategories(int top, Long userId, int peerAgeStart,
-		int peerAgeEnd,
+	public List<TopGoalCategoryResponseDTO> getTopGoalCategories(int top, Long userId, int peerAgeStart, int peerAgeEnd,
 		String peerGender) {
 
 		Gender gender = convertToGender(peerGender);
@@ -50,11 +49,18 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			gender = user.get().getGender();
 			setAgeGroupByUser(user.get().getAge());
 
+		} else {
+			peerAgeStartByUser = peerAgeStart;
+			peerAgeEndByUser = peerAgeEnd;
 		}
 
-		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmount(peerAgeStartByUser,
-			peerAgeEndByUser, gender);
-		return topGoals.stream().limit(top) // 여기서 top 개수만큼 제한
+		log.info("peerAgeStartByUser: {}", peerAgeStartByUser);
+		log.info("peerAgeStartByUser: {}", peerAgeEndByUser);
+		log.info("peerAgeStartByUser: {}", gender);
+
+		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmount(top,
+			peerAgeStartByUser, peerAgeEndByUser, gender);
+		return topGoals.stream()// 여기서 top 개수만큼 제한
 			.map(topCategoryConverter::fromEntity).collect(Collectors.toList());
 	}
 
