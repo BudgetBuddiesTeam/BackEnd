@@ -3,9 +3,17 @@ package com.bbteam.budgetbuddies.domain.category.entity;
 import com.bbteam.budgetbuddies.common.BaseEntity;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Category {
 
     @Id
