@@ -13,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.PeerInfoConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.TopCategoryConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
@@ -62,6 +64,17 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		return new ConsumptionGoalResponseListDto(new ArrayList<>(goalMap.values()));
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public PeerInfoResponseDTO getPeerInfo(Long userId, int peerAgeS, int peerAgeE, String peerG) {
+
+		User user = findUserById(userId);
+
+		checkPeerInfo(user, peerAgeS, peerAgeE, peerG);
+
+		return PeerInfoConverter.fromEntity(peerAgeStart, peerAgeEnd, peerGender);
+	}
+
 	private User findUserById(Long userId) {
 		Optional<User> user = userRepository.findById(userId);
 
@@ -98,7 +111,10 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			peerAgeEnd = 28;
 		} else if (userAge >= 29) {
 			peerAgeStart = 29;
-			peerAgeEnd = 100;
+			peerAgeEnd = 99;
+		}else{
+			peerAgeStart = 0;
+			peerAgeEnd = 19;
 		}
 	}
 
