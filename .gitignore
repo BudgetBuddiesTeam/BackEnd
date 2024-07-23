@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Setting File ###
+src/main/resources/**

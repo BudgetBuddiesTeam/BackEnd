@@ -1,5 +1,6 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,4 +24,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		@Param("peerAgeStart") int peerAgeStart,
 		@Param("peerAgeEnd") int peerAgeEnd,
 		@Param("peerGender") Gender peerGender);
+
+	@Query(value = "SELECT cg FROM ConsumptionGoal AS cg WHERE cg.user.id = :userId AND cg.goalMonth = :goalMonth")
+	List<ConsumptionGoal> findConsumptionGoalByUserIdAndGoalMonth(Long userId, LocalDate goalMonth);
 }

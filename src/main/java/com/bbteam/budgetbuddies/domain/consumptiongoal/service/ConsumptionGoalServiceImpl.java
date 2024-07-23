@@ -1,6 +1,9 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,7 +11,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.TopCategoryConverter;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
@@ -23,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	private final ConsumptionGoalRepository consumptionGoalRepository;
+	private final CategoryRepository categoryRepository;
 	private final UserRepository userRepository;
 
 	private int peerAgeStart;
@@ -41,6 +48,17 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmount(top, peerAgeStart,
 			peerAgeEnd, peerGender);
 		return topGoals.stream().map(TopCategoryConverter::fromEntity).collect(Collectors.toList());
+	}
+
+	@Override
+	public ConsumptionGoalResponseListDto findUserConsumptionGoal(Long userId, LocalDate date) {
+		LocalDate goalMonth = date.withDayOfMonth(1);
+		Map<Long, ConsumptionGoalResponseDto> goalMap = initializeGoalMap(userId, goalMonth);
+
+		updateGoalMapWithPreviousMonth(userId, goalMonth, goalMap);
+		updateGoalMapWithCurrentMonth(userId, goalMonth, goalMap);
+
+		return new ConsumptionGoalResponseListDto(new ArrayList<>(goalMap.values()));
 	}
 
 	private User findUserById(Long userId) {
@@ -81,5 +99,31 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			peerAgeStart = 29;
 			peerAgeEnd = 100;
 		}
+	}
+
+	private Map<Long, ConsumptionGoalResponseDto> initializeGoalMap(Long userId, LocalDate goalMonth) {
+		return categoryRepository.findUserCategoryByUserId(userId)
+			.stream()
+			.collect(Collectors.toMap(
+				Category::getId,
+				category -> ConsumptionGoalResponseDto.initializeFromCategoryAndGoalMonth(category, goalMonth)
+			));
+	}
+
+	private void updateGoalMapWithPreviousMonth(Long userId, LocalDate goalMonth,
+		Map<Long, ConsumptionGoalResponseDto> goalMap) {
+		updateGoalMap(userId, goalMonth.minusMonths(1), goalMap);
+	}
+
+	private void updateGoalMapWithCurrentMonth(Long userId, LocalDate goalMonth,
+		Map<Long, ConsumptionGoalResponseDto> goalMap) {
+		updateGoalMap(userId, goalMonth, goalMap);
+	}
+
+	private void updateGoalMap(Long userId, LocalDate month, Map<Long, ConsumptionGoalResponseDto> goalMap) {
+		consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(userId, month)
+			.stream()
+			.map(ConsumptionGoalResponseDto::of)
+			.forEach(goal -> goalMap.put(goal.getCategoryId(), goal));
 	}
 }
