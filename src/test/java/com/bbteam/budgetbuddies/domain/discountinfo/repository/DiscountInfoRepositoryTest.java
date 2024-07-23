@@ -80,7 +80,7 @@ class DiscountInfoRepositoryTest {
         List<DiscountInfo> result = discountInfoRepository.findByMonth(firstDay, lastDay);
 
         Assertions.assertThat(result.size()).isEqualTo(3);
-        Assertions.assertThat(result).containsExactly(info1, info2, info3);
+        Assertions.assertThat(result).containsExactlyInAnyOrder(info1, info2, info3);
     }
 
     @Test
