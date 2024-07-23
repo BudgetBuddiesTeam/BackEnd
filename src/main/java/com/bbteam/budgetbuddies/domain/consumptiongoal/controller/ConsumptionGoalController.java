@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
 
@@ -56,4 +57,21 @@ public class ConsumptionGoalController {
 
 		return ResponseEntity.ok(response);
 	}
+
+	@Operation(summary = "또래나이와 성별 조회 API", description = "또래나이와 성별을 조회하는 API 입니다.")
+	@ApiResponses(value = {@ApiResponse(responseCode = "COMMON200", description = "OK, 성공")})
+	@Parameters({
+		@Parameter(name = "userId", description = "로그인 한 유저 아이디"),
+		@Parameter(name = "peerAgeStart", description = "또래나이 시작 범위"),
+		@Parameter(name = "peerAgeEnd", description = "또래나이 끝 범위"),
+		@Parameter(name = "peerGender", description = "또래 성별")})
+	@GetMapping("/peer-info")
+	public ResponseEntity<?> getPeerInfo(@RequestParam(name = "userId") Long userId,
+		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
+		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
+		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
+		PeerInfoResponseDTO response = consumptionGoalService.getPeerInfo(userId, peerAgeStart, peerAgeEnd, peerGender);
+		return ResponseEntity.ok(response);
+	}
+
 }
