@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.calendar.dto;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class CalendarDto {
 
     @Getter
     @Builder
+    @EqualsAndHashCode
     public static class CalendarDiscountInfoDto {
         private Long id;
         private String title;
@@ -35,6 +37,7 @@ public class CalendarDto {
 
     @Getter
     @Builder
+    @EqualsAndHashCode
     public static class CalendarSupportInfoDto {
         private Long id;
         private String title;
