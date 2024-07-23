@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class CalendarServiceImpl {
+public class CalendarServiceImpl implements CalendarService{
 
     private final DiscountInfoRepository discountInfoRepository;
 
