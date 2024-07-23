@@ -8,7 +8,7 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 @Component
 public class TopCategoryConverter {
 
-	public TopGoalCategoryResponseDTO fromEntity(ConsumptionGoal consumptionGoal) {
+	public static TopGoalCategoryResponseDTO fromEntity(ConsumptionGoal consumptionGoal) {
 		if (consumptionGoal == null || consumptionGoal.getCategory() == null) {
 			return null;
 		}
