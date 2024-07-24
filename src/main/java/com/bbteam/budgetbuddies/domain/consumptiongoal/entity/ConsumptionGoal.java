@@ -26,11 +26,11 @@ import lombok.experimental.SuperBuilder;
 public class ConsumptionGoal extends BaseEntity {
 
 	@Column(nullable = false)
-	@Min(value = 1, message = "0 또는 음수의 목표금액을 설정할 수 없습니다.")
+	@Min(value = 0, message = "음수의 목표금액을 설정할 수 없습니다.")
 	private Long goalAmount;
 
 	@Column(nullable = false)
-	@Min(value = 1, message = "0 또는 음수의 소비금액을 설정할 수 없습니다.")
+	@Min(value = 0, message = "음수의 소비금액을 설정할 수 없습니다.")
 	private Long consumeAmount;
 
 	@Column(nullable = false)
