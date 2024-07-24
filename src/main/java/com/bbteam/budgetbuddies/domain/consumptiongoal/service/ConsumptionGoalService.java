@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
@@ -18,4 +19,7 @@ public interface ConsumptionGoalService {
 	ConsumptionGoalResponseListDto findUserConsumptionGoal(Long userId, LocalDate date);
 
 	PeerInfoResponseDTO getPeerInfo(Long userId, int peerAgeStart, int peerAgeEnd, String peerGender);
+
+	ConsumptionGoalResponseListDto updateConsumptionGoals(Long userId,
+		ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
 }
