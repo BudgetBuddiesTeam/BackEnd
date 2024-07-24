@@ -2,13 +2,16 @@ package com.bbteam.budgetbuddies.domain.consumptiongoal.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
+import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.enums.Gender;
 
 @Repository
@@ -27,4 +30,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 
 	@Query(value = "SELECT cg FROM ConsumptionGoal AS cg WHERE cg.user.id = :userId AND cg.goalMonth = :goalMonth")
 	List<ConsumptionGoal> findConsumptionGoalByUserIdAndGoalMonth(Long userId, LocalDate goalMonth);
+
+	Optional<ConsumptionGoal> findConsumptionGoalByUserAndCategoryAndGoalMonth(User user, Category category,
+		LocalDate goalMonth);
 }
