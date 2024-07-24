@@ -5,12 +5,11 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 
 public class ConsumptionAnalysisConverter {
 
-	public static ConsumptionAnalysisResponseDTO fromEntity(ConsumptionGoal consumptionGoal,
-		String topAmount) {
+	public static ConsumptionAnalysisResponseDTO fromEntity(ConsumptionGoal consumptionGoal, Long topAmount) {
 
 		return ConsumptionAnalysisResponseDTO.builder()
 			.goalCategory(consumptionGoal.getCategory().getName())
-			.consumptionCategory(topAmount)
+			.currentWeekConsumptionAmount(topAmount)
 			.build();
 	}
 }
