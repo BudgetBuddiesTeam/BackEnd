@@ -13,5 +13,5 @@ public class ConsumptionAnalysisResponseDTO {
 
 	private String goalCategory;
 
-	private String consumptionCategory;
+	private Long currentWeekConsumptionAmount;
 }
