@@ -14,17 +14,20 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoalConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
+import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 
-@DisplayName("ConsumptionGoal 테스트의 ")
+@DisplayName("ConsumptionGoalImpl 서비스 테스트의 ")
 @ExtendWith(MockitoExtension.class)
 class ConsumptionGoalServiceTest {
 	private final LocalDate GOAL_MONTH = LocalDate.of(2024, 07, 01);
@@ -32,11 +35,15 @@ class ConsumptionGoalServiceTest {
 	private LocalDate goalMonth;
 
 	@InjectMocks
-	private ConsumptionGoalService consumptionGoalService;
+	private ConsumptionGoalServiceImpl consumptionGoalService;
+	@Mock
+	private ConsumptionGoalRepository consumptionGoalRepository;
 	@Mock
 	private CategoryRepository categoryRepository;
 	@Mock
-	private ConsumptionGoalRepository consumptionGoalRepository;
+	private UserRepository userRepository;
+	@Spy
+	private ConsumptionGoalConverter consumptionGoalConverter;
 
 	@BeforeEach
 	void setUp() {
@@ -63,7 +70,7 @@ class ConsumptionGoalServiceTest {
 		given(categoryRepository.findUserCategoryByUserId(user.getId())).willReturn(categoryList);
 
 		List<ConsumptionGoalResponseDto> expected = categoryList.stream()
-			.map(category -> ConsumptionGoalResponseDto.initializeFromCategoryAndGoalMonth(category, GOAL_MONTH))
+			.map(category -> consumptionGoalConverter.toConsumptionGoalResponseDto(category))
 			.toList();
 
 		// when
@@ -109,7 +116,7 @@ class ConsumptionGoalServiceTest {
 			GOAL_MONTH.minusMonths(1))).willReturn(previousGoalList);
 
 		List<ConsumptionGoalResponseDto> expected = previousGoalList.stream()
-			.map(ConsumptionGoalResponseDto::of)
+			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
 			.toList();
 
 		// when
@@ -153,6 +160,6 @@ class ConsumptionGoalServiceTest {
 
 		// then
 		assertThat(result.getConsumptionGoalList()).usingRecursiveComparison()
-			.isEqualTo(List.of(ConsumptionGoalResponseDto.of(goalMonthUserCategoryGoal)));
+			.isEqualTo(List.of(consumptionGoalConverter.toConsumptionGoalResponseDto(goalMonthUserCategoryGoal)));
 	}
 }
