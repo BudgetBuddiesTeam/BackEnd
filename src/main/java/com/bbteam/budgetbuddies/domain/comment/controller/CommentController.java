@@ -8,6 +8,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,11 +29,11 @@ public class CommentController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @Parameters({
-            @Parameter(name = "userId", description = "현재 댓글을 다는 유저 id입니다."),
-            @Parameter(name = "discountInfoId", description = "댓글을 다는 할인 정보 게시글 id입니다."),
-            @Parameter(name = "content", description = "댓글 내용입니다."),
+            @Parameter(name = "userId", description = "현재 댓글을 다는 유저 id입니다. parameter"),
+            @Parameter(name = "discountInfoId", description = "댓글을 다는 할인 정보 게시글 id입니다. requestBody"),
+            @Parameter(name = "content", description = "댓글 내용입니다. requestBody"),
     })
-    @PostMapping("/discounts/comments/{userId}/add")
+    @PostMapping("/discounts/comments/add")
     public ResponseEntity<CommentResponseDto.DiscountInfoSuccessDto> saveDiscountInfoComment(
             @RequestParam("userId") Long userId,
             @RequestBody CommentRequestDto.DiscountInfoCommentDto discountInfoCommentDto){
@@ -43,12 +46,15 @@ public class CommentController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @Parameters({
-            @Parameter(name = "discountInfoId", description = "댓글을 가져올 할인 정보 게시글 id입니다."),
+            @Parameter(name = "discountInfoId", description = "댓글을 가져올 할인 정보 게시글 id입니다. parameter"),
+            @Parameter(name = "page", description = "페이징을 위한 페이지 번호입니다. 0부터 시작합니다. parameter"),
+            @Parameter(name = "size", description = "페이징을 위한 페이지 사이즈입니다. default는 20입니다. parameter")
     })
-    @GetMapping("/discounts/comments/get/{discountInfoId}")
-    public ResponseEntity<List<CommentResponseDto.DiscountInfoCommentDto>> findAllByDiscountInfo(
-            @RequestParam("discountInfoId") Long discountInfoId){
-        List<CommentResponseDto.DiscountInfoCommentDto> result = commentService.findByDiscountInfo(discountInfoId);
+    @GetMapping("/discounts/comments/get")
+    public ResponseEntity<Page<CommentResponseDto.DiscountInfoCommentDto>> findAllByDiscountInfo(
+            @RequestParam("discountInfoId") Long discountInfoId,
+            @PageableDefault(size = 20, page = 0) Pageable pageable){
+        Page<CommentResponseDto.DiscountInfoCommentDto> result = commentService.findByDiscountInfoWithPaging(discountInfoId, pageable);
         return ResponseEntity.ok(result);
     }
 
@@ -57,11 +63,11 @@ public class CommentController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @Parameters({
-            @Parameter(name = "userId", description = "현재 댓글을 다는 유저 id입니다."),
-            @Parameter(name = "supportInfoId", description = "댓글을 다는 지원 정보 게시글 id입니다."),
-            @Parameter(name = "content", description = "댓글 내용입니다."),
+            @Parameter(name = "userId", description = "현재 댓글을 다는 유저 id입니다. parameter"),
+            @Parameter(name = "supportInfoId", description = "댓글을 다는 지원 정보 게시글 id입니다. requestBody"),
+            @Parameter(name = "content", description = "댓글 내용입니다. requestBody"),
     })
-    @PostMapping("/supports/comments/{userId}/add")
+    @PostMapping("/supports/comments/add")
     public ResponseEntity<CommentResponseDto.SupportInfoSuccessDto> saveSupportInfoComment(
             @RequestParam("userId") Long userId,
             @RequestBody CommentRequestDto.SupportInfoCommentDto supportInfoCommentDto){
@@ -74,12 +80,17 @@ public class CommentController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @Parameters({
-            @Parameter(name = "supportInfoId", description = "댓글을 가져올 지원 정보 게시글 id입니다."),
+            @Parameter(name = "supportInfoId", description = "댓글을 가져올 지원 정보 게시글 id입니다. parameter"),
+            @Parameter(name = "page", description = "페이징을 위한 페이지 번호입니다. 0부터 시작합니다. parameter"),
+            @Parameter(name = "size", description = "페이징을 위한 페이지 사이즈입니다. default는 20입니다. parameter")
+
+
     })
-    @GetMapping("/supports/comments/get/{supportInfoId}")
-    public ResponseEntity<List<CommentResponseDto.SupportInfoCommentDto>> findAllBySupportInfo(
-            @RequestParam("supportInfoId") Long supportInfoId){
-        List<CommentResponseDto.SupportInfoCommentDto> result = commentService.findBySupportInfo(supportInfoId);
+    @GetMapping("/supports/comments/get")
+    public ResponseEntity<Page<CommentResponseDto.SupportInfoCommentDto>> findAllBySupportInfo(
+            @RequestParam("supportInfoId") Long supportInfoId,
+            @PageableDefault(size = 20, page = 0)Pageable pageable){
+        Page<CommentResponseDto.SupportInfoCommentDto> result = commentService.findBySupportInfoWithPaging(supportInfoId, pageable);
         return ResponseEntity.ok(result);
     }
 
