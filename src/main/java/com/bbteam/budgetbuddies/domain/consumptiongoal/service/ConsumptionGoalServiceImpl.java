@@ -1,6 +1,8 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionAnalysisConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.PeerInfoConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.TopCategoryConverter;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
@@ -75,6 +79,35 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		return PeerInfoConverter.fromEntity(peerAgeStart, peerAgeEnd, peerGender);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public ConsumptionAnalysisResponseDTO getTopCategoryAndConsumptionAmount(Long userId) {
+
+		User user = findUserById(userId);
+
+		checkPeerInfo(user, 0, 0, "none");
+
+		ConsumptionGoal topConsumptionGoal = consumptionGoalRepository.findTopCategoriesAndGoalAmount(1, peerAgeStart,
+			peerAgeEnd, peerGender).get(0);
+
+		LocalDate today = LocalDate.now();
+		LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+		Optional<ConsumptionGoal> currentWeekConsumptionAmount = consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
+			topConsumptionGoal.getCategory().getId(), startOfWeek, endOfWeek);
+
+		if (currentWeekConsumptionAmount.isEmpty()) {
+			throw new NoSuchElementException("이번 주 소비 내역을 찾을 수 없습니다.");
+		}
+
+		Long totalConsumptionAmountForCurrentWeek = currentWeekConsumptionAmount.stream()
+			.mapToLong(ConsumptionGoal::getConsumeAmount)
+			.sum();
+
+		return ConsumptionAnalysisConverter.fromEntity(topConsumptionGoal, totalConsumptionAmountForCurrentWeek);
+	}
+
 	private User findUserById(Long userId) {
 		Optional<User> user = userRepository.findById(userId);
 
@@ -112,7 +145,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		} else if (userAge >= 29) {
 			peerAgeStart = 29;
 			peerAgeEnd = 99;
-		}else{
+		} else {
 			peerAgeStart = 0;
 			peerAgeEnd = 19;
 		}
@@ -121,10 +154,8 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	private Map<Long, ConsumptionGoalResponseDto> initializeGoalMap(Long userId, LocalDate goalMonth) {
 		return categoryRepository.findUserCategoryByUserId(userId)
 			.stream()
-			.collect(Collectors.toMap(
-				Category::getId,
-				category -> ConsumptionGoalResponseDto.initializeFromCategoryAndGoalMonth(category, goalMonth)
-			));
+			.collect(Collectors.toMap(Category::getId,
+				category -> ConsumptionGoalResponseDto.initializeFromCategoryAndGoalMonth(category, goalMonth)));
 	}
 
 	private void updateGoalMapWithPreviousMonth(Long userId, LocalDate goalMonth,
