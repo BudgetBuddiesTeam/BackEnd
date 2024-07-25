@@ -23,10 +23,10 @@ public class DiscountInfo extends BaseEntity {
 
     private LocalDate endDate;
 
-    @ColumnDefault("0")
+    @Builder.Default
     private Integer likeCount = 0;
 
-    @ColumnDefault("0")
+    @Builder.Default
     private Integer anonymousNumber = 0;
 
     private Integer discountRate;
