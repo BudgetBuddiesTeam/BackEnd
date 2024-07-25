@@ -13,12 +13,15 @@ import com.bbteam.budgetbuddies.domain.supportinfo.repository.SupportInfoReposit
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 // 임시로 유저는 service에서 찾아서 처리하는 로직으로 작성함
@@ -37,13 +40,23 @@ public class CommentServiceImpl implements CommentService{
     public CommentResponseDto.SupportInfoSuccessDto saveSupportComment(Long userId, CommentRequestDto.SupportInfoCommentDto dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저 존재 x"));
         SupportInfo supportInfo = supportInfoRepository.findById(dto.getSupportInfoId()).orElseThrow(() -> new NoSuchElementException());
-
-        Comment comment = CommentConverter.toSupportComment(dto, user, supportInfo);
+        int anonymousNumber = getSupportAnonymousNumber(user, supportInfo);
+        Comment comment = CommentConverter.toSupportComment(dto, user, supportInfo, anonymousNumber);
         Comment savedComment = commentRepository.save(comment);
 
         return CommentConverter.toSupportInfoSuccessDto(savedComment);
     }
 
+    private int getSupportAnonymousNumber(User user, SupportInfo supportInfo) {
+        int anonymousNumber;
+        Optional<Comment> foundComment = commentRepository.findTopByUserAndSupportInfo(user, supportInfo);
+        if(foundComment.isEmpty()){
+            anonymousNumber = supportInfo.addAndGetAnonymousNumber();
+        } else {
+            anonymousNumber = foundComment.get().getAnonymousNumber();
+        }
+        return anonymousNumber;
+    }
 
 
     @Override
@@ -51,11 +64,22 @@ public class CommentServiceImpl implements CommentService{
     public CommentResponseDto.DiscountInfoSuccessDto saveDiscountComment(Long userId, CommentRequestDto.DiscountInfoCommentDto dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저 존재 x"));
         DiscountInfo discountInfo = discountInfoRepository.findById(dto.getDiscountInfoId()).orElseThrow(() -> new NoSuchElementException());
-
-        Comment comment = CommentConverter.toDiscountComment(dto, user, discountInfo);
+        int anonymousNumber = getDiscountAnonymousNumber(user, discountInfo);
+        Comment comment = CommentConverter.toDiscountComment(dto, user, discountInfo, anonymousNumber);
         Comment savedComment = commentRepository.save(comment);
 
         return CommentConverter.toDiscountInfoSuccessDto(savedComment);
+    }
+
+    private int getDiscountAnonymousNumber(User user, DiscountInfo discountInfo) {
+        int anonymousNumber;
+        Optional<Comment> foundComment = commentRepository.findTopByUserAndDiscountInfo(user, discountInfo);
+        if(foundComment.isEmpty()){
+            anonymousNumber = discountInfo.addAndGetAnonymousNumber();
+        } else {
+            anonymousNumber = foundComment.get().getAnonymousNumber();
+        }
+        return anonymousNumber;
     }
 
     @Override
@@ -64,7 +88,7 @@ public class CommentServiceImpl implements CommentService{
 
         HashMap<Long, Long> anonymousMapping = countAnonymousNumber(commentList);
         List<CommentResponseDto.DiscountInfoCommentDto> collect = commentList.stream()
-                .map(comment -> CommentConverter.toDiscountInfoCommentDto(comment, anonymousMapping))
+                .map(CommentConverter::toDiscountInfoCommentDto)
                 .collect(Collectors.toList());
         return collect;
 
@@ -75,7 +99,7 @@ public class CommentServiceImpl implements CommentService{
         List<Comment> commentList = commentRepository.findBySupportInfo(supportInfoId);
         HashMap<Long, Long> anonymousMapping = countAnonymousNumber(commentList);
         List<CommentResponseDto.SupportInfoCommentDto> collect = commentList.stream()
-                .map(comment -> CommentConverter.toSupportInfoCommentDto(comment, anonymousMapping))
+                .map(CommentConverter::toSupportInfoCommentDto)
                 .collect(Collectors.toList());
         return collect;
     }
@@ -93,19 +117,24 @@ public class CommentServiceImpl implements CommentService{
         return anonymousMapping;
     }
 
-    @Transactional
-    public void removeDiscountInfoComment(Long discountInfoId){
-        DiscountInfo discountInfo = discountInfoRepository.findById(discountInfoId).orElseThrow(() -> new NoSuchElementException("No such Entity"));
-        discountInfoRepository.delete(discountInfo);
-        return;
+    @Override
+    public Page<CommentResponseDto.DiscountInfoCommentDto> findByDiscountInfoWithPaging(Long discountInfoId, Pageable pageable) {
+        Page<Comment> commentPage = commentRepository.findByDiscountInfoWithPaging(discountInfoId, pageable);
+        Page<CommentResponseDto.DiscountInfoCommentDto> result = commentPage.map(CommentConverter::toDiscountInfoCommentDto);
+        return result;
     }
 
-    @Transactional
-    public void removeSupportInfoComment(Long supportInfoId){
-        SupportInfo supportInfo = supportInfoRepository.findById(supportInfoId).orElseThrow(() -> new NoSuchElementException("No such Entity"));
-        supportInfoRepository.delete(supportInfo);
-        return;
+    @Override
+    public Page<CommentResponseDto.SupportInfoCommentDto> findBySupportInfoWithPaging(Long supportInfoId, Pageable pageable) {
+        Page<Comment> commentPage = commentRepository.findBySupportInfoWithPaging(supportInfoId, pageable);
+        Page<CommentResponseDto.SupportInfoCommentDto> result = commentPage.map(CommentConverter::toSupportInfoCommentDto);
+        return result;
     }
 
-
+    @Override
+    @Transactional
+    public void deleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("No such id"));
+        commentRepository.delete(comment);
+    }
 }

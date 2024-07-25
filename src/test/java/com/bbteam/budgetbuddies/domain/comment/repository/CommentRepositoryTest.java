@@ -7,15 +7,12 @@ import com.bbteam.budgetbuddies.domain.supportinfo.entity.SupportInfo;
 import com.bbteam.budgetbuddies.domain.supportinfo.repository.SupportInfoRepository;
 import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest

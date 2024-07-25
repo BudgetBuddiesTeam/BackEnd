@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Getter
@@ -33,5 +34,8 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "support_info_id")
     private SupportInfo supportInfo;
+
+    @Column(nullable = false)
+    private Integer anonymousNumber;
 
 }

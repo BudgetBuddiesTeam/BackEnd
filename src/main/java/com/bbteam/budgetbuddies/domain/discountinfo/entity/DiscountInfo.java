@@ -42,4 +42,9 @@ public class DiscountInfo extends BaseEntity {
         this.likeCount--;
     }
 
+    public Integer addAndGetAnonymousNumber() {
+        this.anonymousNumber++;
+        return anonymousNumber;
+    }
+
 }
