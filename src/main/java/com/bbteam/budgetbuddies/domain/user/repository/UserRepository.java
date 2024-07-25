@@ -1,8 +1,13 @@
 package com.bbteam.budgetbuddies.domain.user.repository;
 
-import com.bbteam.budgetbuddies.domain.user.entity.User;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.bbteam.budgetbuddies.domain.user.entity.User;
+
 public interface UserRepository extends JpaRepository<User, Long> {
+
+	Optional<User> findById(Long userId);
 
 }

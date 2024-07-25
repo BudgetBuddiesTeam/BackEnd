@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Where;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Getter
@@ -21,16 +23,19 @@ public class Comment extends BaseEntity {
     @Column(nullable = false, length = 1000)
     private String content;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_info_id")
     private DiscountInfo discountInfo;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "support_info_id")
     private SupportInfo supportInfo;
+
+    @Column(nullable = false)
+    private Integer anonymousNumber;
 
 }
