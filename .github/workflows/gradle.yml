@@ -14,13 +14,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkoutc
+      - uses: actions/checkout@v2
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
+
+      - name: Ensure resource directory exists
+        run: mkdir -p ./src/main/resources
 
       - name : injection-yml
         run : echo -E "${{ secrets.YML }}" > ./src/main/resources/application.yml
