@@ -17,7 +17,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @SuperBuilder
-public class Comment extends BaseEntity {
+public abstract class Comment extends BaseEntity {
 
     @Column(nullable = false, length = 1000)
     private String content;
@@ -33,5 +33,7 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "support_info_id")
     private SupportInfo supportInfo;
+
+    private Integer anonymousNumber;
 
 }
