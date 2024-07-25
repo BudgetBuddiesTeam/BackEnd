@@ -94,16 +94,11 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-		Optional<ConsumptionGoal> currentWeekConsumptionAmount = consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
-			topConsumptionGoal.getCategory().getId(), startOfWeek, endOfWeek);
+		ConsumptionGoal currentWeekConsumptionAmount = consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
+				topConsumptionGoal.getCategory().getId(), startOfWeek, endOfWeek)
+			.orElseThrow(IllegalArgumentException::new);
 
-		if (currentWeekConsumptionAmount.isEmpty()) {
-			throw new NoSuchElementException("이번 주 소비 내역을 찾을 수 없습니다.");
-		}
-
-		Long totalConsumptionAmountForCurrentWeek = currentWeekConsumptionAmount.stream()
-			.mapToLong(ConsumptionGoal::getConsumeAmount)
-			.sum();
+		Long totalConsumptionAmountForCurrentWeek = currentWeekConsumptionAmount.getConsumeAmount();
 
 		return ConsumptionAnalysisConverter.fromEntity(topConsumptionGoal, totalConsumptionAmountForCurrentWeek);
 	}
