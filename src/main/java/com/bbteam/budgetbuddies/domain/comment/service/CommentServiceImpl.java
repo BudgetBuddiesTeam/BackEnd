@@ -13,6 +13,8 @@ import com.bbteam.budgetbuddies.domain.supportinfo.repository.SupportInfoReposit
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,7 +66,7 @@ public class CommentServiceImpl implements CommentService{
 
         HashMap<Long, Long> anonymousMapping = countAnonymousNumber(commentList);
         List<CommentResponseDto.DiscountInfoCommentDto> collect = commentList.stream()
-                .map(comment -> CommentConverter.toDiscountInfoCommentDto(comment, anonymousMapping))
+                .map(CommentConverter::toDiscountInfoCommentDto)
                 .collect(Collectors.toList());
         return collect;
 
@@ -75,7 +77,7 @@ public class CommentServiceImpl implements CommentService{
         List<Comment> commentList = commentRepository.findBySupportInfo(supportInfoId);
         HashMap<Long, Long> anonymousMapping = countAnonymousNumber(commentList);
         List<CommentResponseDto.SupportInfoCommentDto> collect = commentList.stream()
-                .map(comment -> CommentConverter.toSupportInfoCommentDto(comment, anonymousMapping))
+                .map(CommentConverter::toSupportInfoCommentDto)
                 .collect(Collectors.toList());
         return collect;
     }
@@ -93,19 +95,17 @@ public class CommentServiceImpl implements CommentService{
         return anonymousMapping;
     }
 
-    @Transactional
-    public void removeDiscountInfoComment(Long discountInfoId){
-        DiscountInfo discountInfo = discountInfoRepository.findById(discountInfoId).orElseThrow(() -> new NoSuchElementException("No such Entity"));
-        discountInfoRepository.delete(discountInfo);
-        return;
+    @Override
+    public Page<CommentResponseDto.DiscountInfoCommentDto> findByDiscountInfoWithPaging(Long discountInfoId, Pageable pageable) {
+        Page<Comment> commentPage = commentRepository.findByDiscountInfoWithPaging(discountInfoId, pageable);
+        Page<CommentResponseDto.DiscountInfoCommentDto> result = commentPage.map(CommentConverter::toDiscountInfoCommentDto);
+        return result;
     }
 
-    @Transactional
-    public void removeSupportInfoComment(Long supportInfoId){
-        SupportInfo supportInfo = supportInfoRepository.findById(supportInfoId).orElseThrow(() -> new NoSuchElementException("No such Entity"));
-        supportInfoRepository.delete(supportInfo);
-        return;
+    @Override
+    public Page<CommentResponseDto.SupportInfoCommentDto> findBySupportInfoWithPaging(Long supportInfoId, Pageable pageable) {
+        Page<Comment> commentPage = commentRepository.findBySupportInfoWithPaging(supportInfoId, pageable);
+        Page<CommentResponseDto.SupportInfoCommentDto> result = commentPage.map(CommentConverter::toSupportInfoCommentDto);
+        return result;
     }
-
-
 }
