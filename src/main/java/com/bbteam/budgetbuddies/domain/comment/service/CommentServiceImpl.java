@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 // 임시로 유저는 service에서 찾아서 처리하는 로직으로 작성함
@@ -39,13 +40,23 @@ public class CommentServiceImpl implements CommentService{
     public CommentResponseDto.SupportInfoSuccessDto saveSupportComment(Long userId, CommentRequestDto.SupportInfoCommentDto dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저 존재 x"));
         SupportInfo supportInfo = supportInfoRepository.findById(dto.getSupportInfoId()).orElseThrow(() -> new NoSuchElementException());
-
-        Comment comment = CommentConverter.toSupportComment(dto, user, supportInfo);
+        int anonymousNumber = getSupportAnonymousNumber(user, supportInfo);
+        Comment comment = CommentConverter.toSupportComment(dto, user, supportInfo, anonymousNumber);
         Comment savedComment = commentRepository.save(comment);
 
         return CommentConverter.toSupportInfoSuccessDto(savedComment);
     }
 
+    private int getSupportAnonymousNumber(User user, SupportInfo supportInfo) {
+        int anonymousNumber;
+        Optional<Comment> foundComment = commentRepository.findTopByUserAndSupportInfo(user, supportInfo);
+        if(foundComment.isEmpty()){
+            anonymousNumber = supportInfo.addAndGetAnonymousNumber();
+        } else {
+            anonymousNumber = foundComment.get().getAnonymousNumber();
+        }
+        return anonymousNumber;
+    }
 
 
     @Override
@@ -53,11 +64,22 @@ public class CommentServiceImpl implements CommentService{
     public CommentResponseDto.DiscountInfoSuccessDto saveDiscountComment(Long userId, CommentRequestDto.DiscountInfoCommentDto dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저 존재 x"));
         DiscountInfo discountInfo = discountInfoRepository.findById(dto.getDiscountInfoId()).orElseThrow(() -> new NoSuchElementException());
-
-        Comment comment = CommentConverter.toDiscountComment(dto, user, discountInfo);
+        int anonymousNumber = getDiscountAnonymousNumber(user, discountInfo);
+        Comment comment = CommentConverter.toDiscountComment(dto, user, discountInfo, anonymousNumber);
         Comment savedComment = commentRepository.save(comment);
 
         return CommentConverter.toDiscountInfoSuccessDto(savedComment);
+    }
+
+    private int getDiscountAnonymousNumber(User user, DiscountInfo discountInfo) {
+        int anonymousNumber;
+        Optional<Comment> foundComment = commentRepository.findTopByUserAndDiscountInfo(user, discountInfo);
+        if(foundComment.isEmpty()){
+            anonymousNumber = discountInfo.addAndGetAnonymousNumber();
+        } else {
+            anonymousNumber = foundComment.get().getAnonymousNumber();
+        }
+        return anonymousNumber;
     }
 
     @Override
