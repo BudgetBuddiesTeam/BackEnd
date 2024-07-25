@@ -31,6 +31,7 @@ public class CommentConverter {
 
     public static CommentResponseDto.DiscountInfoCommentDto toDiscountInfoCommentDto(Comment comment){
         return CommentResponseDto.DiscountInfoCommentDto.builder()
+                .commentId(comment.getId())
                 .discountInfoId(comment.getDiscountInfo().getId())
                 .userId(comment.getUser().getId())
                 .content(comment.getContent())
@@ -41,6 +42,7 @@ public class CommentConverter {
 
     public static CommentResponseDto.SupportInfoCommentDto toSupportInfoCommentDto(Comment comment){
         return CommentResponseDto.SupportInfoCommentDto.builder()
+                .commentId(comment.getId())
                 .supportInfoId(comment.getSupportInfo().getId())
                 .userId(comment.getUser().getId())
                 .content(comment.getContent())
@@ -51,6 +53,7 @@ public class CommentConverter {
 
     public static CommentResponseDto.DiscountInfoSuccessDto toDiscountInfoSuccessDto(Comment comment){
         return CommentResponseDto.DiscountInfoSuccessDto.builder()
+                .commentId(comment.getId())
                 .discountInfoId(comment.getDiscountInfo().getId())
                 .userId(comment.getUser().getId())
                 .content(comment.getContent())
@@ -59,6 +62,7 @@ public class CommentConverter {
 
     public static CommentResponseDto.SupportInfoSuccessDto toSupportInfoSuccessDto(Comment comment){
         return CommentResponseDto.SupportInfoSuccessDto.builder()
+                .commentId(comment.getId())
                 .supportInfoId(comment.getSupportInfo().getId())
                 .userId(comment.getUser().getId())
                 .content(comment.getContent())
