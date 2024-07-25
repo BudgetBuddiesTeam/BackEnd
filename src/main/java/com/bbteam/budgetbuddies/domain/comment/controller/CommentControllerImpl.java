@@ -20,7 +20,7 @@ public class CommentControllerImpl implements CommentController{
 
     private final CommentService commentService;
 
-    @PostMapping("/discounts/comments/add")
+    @PostMapping("/discounts/comments")
     public ResponseEntity<CommentResponseDto.DiscountInfoSuccessDto> saveDiscountInfoComment(
             @RequestParam("userId") Long userId,
             @RequestBody CommentRequestDto.DiscountInfoCommentDto discountInfoCommentDto){
@@ -29,7 +29,7 @@ public class CommentControllerImpl implements CommentController{
     }
 
 
-    @GetMapping("/discounts/comments/get")
+    @GetMapping("/discounts/comments")
     public ResponseEntity<Page<CommentResponseDto.DiscountInfoCommentDto>> findAllByDiscountInfo(
             @RequestParam("discountInfoId") Long discountInfoId,
             @PageableDefault(size = 20, page = 0) Pageable pageable){
@@ -38,7 +38,7 @@ public class CommentControllerImpl implements CommentController{
     }
 
 
-    @PostMapping("/supports/comments/add")
+    @PostMapping("/supports/comments")
     public ResponseEntity<CommentResponseDto.SupportInfoSuccessDto> saveSupportInfoComment(
             @RequestParam("userId") Long userId,
             @RequestBody CommentRequestDto.SupportInfoCommentDto supportInfoCommentDto){
@@ -47,7 +47,7 @@ public class CommentControllerImpl implements CommentController{
     }
 
 
-    @GetMapping("/supports/comments/get")
+    @GetMapping("/supports/comments")
     public ResponseEntity<Page<CommentResponseDto.SupportInfoCommentDto>> findAllBySupportInfo(
             @RequestParam("supportInfoId") Long supportInfoId,
             @PageableDefault(size = 20, page = 0)Pageable pageable){
