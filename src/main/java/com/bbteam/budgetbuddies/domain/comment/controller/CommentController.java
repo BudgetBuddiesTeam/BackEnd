@@ -94,6 +94,21 @@ public class CommentController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(summary = "[User] 특정 댓글 삭제하기", description = "특정 댓글을 삭제하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @Parameters({
+            @Parameter(name = "commentId", description = "삭제할 댓글 id 입니다. parameter")
+
+
+    })
+    @GetMapping("/comments/delete")
+    public ResponseEntity<String> deleteComment(@RequestParam("commentId") Long commentId) {
+        commentService.deleteComment(commentId);
+        return ResponseEntity.ok("ok");
+    }
+
 
 
 
