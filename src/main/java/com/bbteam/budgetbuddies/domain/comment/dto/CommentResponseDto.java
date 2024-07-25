@@ -12,7 +12,7 @@ public class CommentResponseDto {
         private Long userId;
         private Long discountInfoId;
         private String content;
-        private Long anonymousNumber;
+        private Integer anonymousNumber;
     }
 
     @Getter
@@ -21,7 +21,7 @@ public class CommentResponseDto {
         private Long userId;
         private Long supportInfoId;
         private String content;
-        private Long anonymousNumber;
+        private Integer anonymousNumber;
     }
 
     @Getter
