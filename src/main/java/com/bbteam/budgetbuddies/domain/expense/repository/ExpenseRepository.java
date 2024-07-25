@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
+
+    // 추후 적용 예정
     @Query("SELECT e FROM Expense e WHERE e.user.id = :userId AND e.category.id = :categoryId")
     List<Expense> findByUserIdAndCategoryId(@Param("userId") Long userId, @Param("categoryId") Long categoryId);
 
