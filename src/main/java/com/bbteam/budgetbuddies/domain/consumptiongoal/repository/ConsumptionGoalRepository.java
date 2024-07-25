@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
+import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.enums.Gender;
 
 @Repository
@@ -23,6 +25,9 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 
 	@Query(value = "SELECT cg FROM ConsumptionGoal AS cg WHERE cg.user.id = :userId AND cg.goalMonth = :goalMonth")
 	List<ConsumptionGoal> findConsumptionGoalByUserIdAndGoalMonth(Long userId, LocalDate goalMonth);
+
+	Optional<ConsumptionGoal> findConsumptionGoalByUserAndCategoryAndGoalMonth(User user, Category category,
+		LocalDate goalMonth);
 
 	@Query("SELECT cg FROM ConsumptionGoal cg JOIN cg.category c WHERE c.id = :categoryId AND cg.goalMonth "
 		+ "BETWEEN :startOfWeek AND :endOfWeek ORDER BY cg.consumeAmount DESC")

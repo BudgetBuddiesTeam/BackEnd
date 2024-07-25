@@ -43,4 +43,9 @@ public class SupportInfo extends BaseEntity {
         this.likeCount--;
     }
 
+    public Integer addAndGetAnonymousNumber() {
+        this.anonymousNumber++;
+        return anonymousNumber;
+    }
+
 }
