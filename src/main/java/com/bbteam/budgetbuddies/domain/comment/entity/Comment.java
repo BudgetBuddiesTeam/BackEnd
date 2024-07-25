@@ -17,7 +17,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @SuperBuilder
-public abstract class Comment extends BaseEntity {
+public class Comment extends BaseEntity {
 
     @Column(nullable = false, length = 1000)
     private String content;
