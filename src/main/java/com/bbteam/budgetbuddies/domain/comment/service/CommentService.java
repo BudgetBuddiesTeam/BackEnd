@@ -31,6 +31,8 @@ public interface CommentService {
     Page<CommentResponseDto.DiscountInfoCommentDto> findByDiscountInfoWithPaging(Long discountInfoId, Pageable pageable);
     Page<CommentResponseDto.SupportInfoCommentDto> findBySupportInfoWithPaging(Long supportInfoId, Pageable pageable);
 
+    void deleteComment(Long commentId);
+
 
 
 

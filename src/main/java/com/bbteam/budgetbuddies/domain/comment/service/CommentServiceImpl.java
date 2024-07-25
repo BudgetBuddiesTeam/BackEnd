@@ -108,4 +108,10 @@ public class CommentServiceImpl implements CommentService{
         Page<CommentResponseDto.SupportInfoCommentDto> result = commentPage.map(CommentConverter::toSupportInfoCommentDto);
         return result;
     }
+
+    @Override
+    public void deleteComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("No such id"));
+        commentRepository.delete(comment);
+    }
 }
