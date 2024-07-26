@@ -33,6 +33,7 @@ public class CalendarDto {
         private LocalDate endDate;
         private Integer likeCount;
         private Integer discountRate;
+        private String siteUrl;
     }
 
     @Getter
@@ -44,5 +45,6 @@ public class CalendarDto {
         private LocalDate startDate;
         private LocalDate endDate;
         private Integer likeCount;
+        private String siteUrl;
     }
 }
