@@ -38,6 +38,7 @@ public class CalendarConverter {
                 .startDate(discountInfo.getStartDate())
                 .endDate(discountInfo.getEndDate())
                 .discountRate(discountInfo.getDiscountRate())
+                .siteUrl(discountInfo.getSiteUrl())
                 .build();
     }
 
@@ -48,6 +49,7 @@ public class CalendarConverter {
                 .likeCount(supportInfo.getLikeCount())
                 .startDate(supportInfo.getStartDate())
                 .endDate(supportInfo.getEndDate())
+                .siteUrl(supportInfo.getSiteUrl())
                 .build();
     }
 

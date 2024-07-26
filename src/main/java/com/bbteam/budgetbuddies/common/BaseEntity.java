@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Getter
 @SuperBuilder
 @SoftDelete // boolean 타입의 deleted 필드가 추가
 @Getter
