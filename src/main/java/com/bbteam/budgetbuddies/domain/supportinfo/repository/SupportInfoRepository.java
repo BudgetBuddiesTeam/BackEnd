@@ -13,7 +13,8 @@ import java.util.List;
 
 public interface SupportInfoRepository extends JpaRepository<SupportInfo, Long> {
 
-    @Query("SELECT i FROM SupportInfo i WHERE (i.startDate <= :endDate AND i.endDate >= :startDate)")
+    @Query("SELECT i FROM SupportInfo i WHERE (i.startDate <= :endDate AND i.endDate >= :startDate)" +
+    " ORDER BY i.likeCount DESC")
     Page<SupportInfo> findByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     @Query("SELECT i FROM SupportInfo i WHERE ((i.startDate BETWEEN :startDate AND :endDate) OR i.endDate BETWEEN :startDate AND :endDate)")
