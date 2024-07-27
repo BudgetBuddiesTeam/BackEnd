@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
@@ -39,12 +40,9 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ResponseEntity.ok(topCategory);
 	}
 
-	@GetMapping("/{userId}")
-	public ResponseEntity<ConsumptionGoalResponseListDto> findUserConsumptionGoal(
-		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @PathVariable Long userId) {
-
-		ConsumptionGoalResponseListDto response = consumptionGoalService.findUserConsumptionGoal(userId, date);
-
+	@GetMapping("/top-category")
+	public ResponseEntity<?> getTopGoalCategory(@RequestParam(name = "userId") Long userId) {
+		ConsumptionAnalysisResponseDTO response = consumptionGoalService.getTopCategoryAndConsumptionAmount(userId);
 		return ResponseEntity.ok(response);
 	}
 
@@ -54,6 +52,15 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
 		PeerInfoResponseDTO response = consumptionGoalService.getPeerInfo(userId, peerAgeStart, peerAgeEnd, peerGender);
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/{userId}")
+	public ResponseEntity<ConsumptionGoalResponseListDto> findUserConsumptionGoal(
+		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @PathVariable Long userId) {
+
+		ConsumptionGoalResponseListDto response = consumptionGoalService.findUserConsumptionGoal(userId, date);
+
 		return ResponseEntity.ok(response);
 	}
 

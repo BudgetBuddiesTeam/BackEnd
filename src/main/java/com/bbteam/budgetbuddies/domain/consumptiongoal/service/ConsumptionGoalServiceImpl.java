@@ -1,6 +1,8 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,9 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionAnalysisConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoalConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.PeerInfoConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.TopCategoryConverter;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
@@ -69,6 +73,69 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		return PeerInfoConverter.fromEntity(peerAgeStart, peerAgeEnd, peerGender);
 	}
 
+	@Override
+	@Transactional(readOnly = true)
+	public ConsumptionAnalysisResponseDTO getTopCategoryAndConsumptionAmount(Long userId) {
+
+		User user = findUserById(userId);
+
+		checkPeerInfo(user, 0, 0, "none");
+
+		ConsumptionGoal topConsumptionGoal = consumptionGoalRepository.findTopCategoriesAndGoalAmount(1, peerAgeStart,
+			peerAgeEnd, peerGender).get(0);
+
+		LocalDate today = LocalDate.now();
+		LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+		ConsumptionGoal currentWeekConsumptionAmount = consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
+				topConsumptionGoal.getCategory().getId(), startOfWeek, endOfWeek)
+			.orElseThrow(IllegalArgumentException::new);
+
+		Long totalConsumptionAmountForCurrentWeek = currentWeekConsumptionAmount.getConsumeAmount();
+
+		return ConsumptionAnalysisConverter.fromEntity(topConsumptionGoal, totalConsumptionAmountForCurrentWeek);
+	}
+
+	@Override
+	@Transactional
+	public ConsumptionGoalResponseListDto updateConsumptionGoals(Long userId,
+		ConsumptionGoalListRequestDto consumptionGoalListRequestDto) {
+		LocalDate thisMonth = LocalDate.now().withDayOfMonth(1);
+		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Not found user"));
+
+		List<ConsumptionGoal> updatedConsumptionGoal = consumptionGoalListRequestDto.getConsumptionGoalList()
+			.stream()
+			.map(c -> updateConsumptionGoalWithRequestDto(user, c, thisMonth))
+			.toList();
+
+		List<ConsumptionGoalResponseDto> response = consumptionGoalRepository.saveAll(updatedConsumptionGoal)
+			.stream()
+			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
+			.toList();
+
+		return new ConsumptionGoalResponseListDto(thisMonth, response);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public ConsumptionGoalResponseListDto findUserConsumptionGoal(Long userId, LocalDate date) {
+		LocalDate goalMonth = date.withDayOfMonth(1);
+		Map<Long, ConsumptionGoalResponseDto> goalMap = initializeGoalMap(userId, goalMonth);
+
+		updateGoalMapWithPreviousMonth(userId, goalMonth, goalMap);
+		updateGoalMapWithCurrentMonth(userId, goalMonth, goalMap);
+
+		return new ConsumptionGoalResponseListDto(goalMonth, new ArrayList<>(goalMap.values()));
+	}
+
+	private Map<Long, ConsumptionGoalResponseDto> initializeGoalMap(Long userId, LocalDate goalMonth) {
+		return categoryRepository.findUserCategoryByUserId(userId)
+			.stream()
+			.collect(Collectors.toMap(Category::getId,
+				category -> consumptionGoalConverter.toConsumptionGoalResponseDto(category)));
+	}
+
 	private User findUserById(Long userId) {
 		Optional<User> user = userRepository.findById(userId);
 
@@ -112,25 +179,6 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		}
 	}
 
-	@Override
-	@Transactional(readOnly = true)
-	public ConsumptionGoalResponseListDto findUserConsumptionGoal(Long userId, LocalDate date) {
-		LocalDate goalMonth = date.withDayOfMonth(1);
-		Map<Long, ConsumptionGoalResponseDto> goalMap = initializeGoalMap(userId, goalMonth);
-
-		updateGoalMapWithPreviousMonth(userId, goalMonth, goalMap);
-		updateGoalMapWithCurrentMonth(userId, goalMonth, goalMap);
-
-		return new ConsumptionGoalResponseListDto(goalMonth, new ArrayList<>(goalMap.values()));
-	}
-
-	private Map<Long, ConsumptionGoalResponseDto> initializeGoalMap(Long userId, LocalDate goalMonth) {
-		return categoryRepository.findUserCategoryByUserId(userId)
-			.stream()
-			.collect(Collectors.toMap(Category::getId,
-				category -> consumptionGoalConverter.toConsumptionGoalResponseDto(category)));
-	}
-
 	private void updateGoalMapWithPreviousMonth(Long userId, LocalDate goalMonth,
 		Map<Long, ConsumptionGoalResponseDto> goalMap) {
 		updateGoalMap(userId, goalMonth.minusMonths(1), goalMap);
@@ -146,26 +194,6 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			.stream()
 			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
 			.forEach(goal -> goalMap.put(goal.getCategoryId(), goal));
-	}
-
-	@Override
-	@Transactional
-	public ConsumptionGoalResponseListDto updateConsumptionGoals(Long userId,
-		ConsumptionGoalListRequestDto consumptionGoalListRequestDto) {
-		LocalDate thisMonth = LocalDate.now().withDayOfMonth(1);
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Not found user"));
-
-		List<ConsumptionGoal> updatedConsumptionGoal = consumptionGoalListRequestDto.getConsumptionGoalList()
-			.stream()
-			.map(c -> updateConsumptionGoalWithRequestDto(user, c, thisMonth))
-			.toList();
-
-		List<ConsumptionGoalResponseDto> response = consumptionGoalRepository.saveAll(updatedConsumptionGoal)
-			.stream()
-			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
-			.toList();
-
-		return new ConsumptionGoalResponseListDto(thisMonth, response);
 	}
 
 	private ConsumptionGoal updateConsumptionGoalWithRequestDto(User user,

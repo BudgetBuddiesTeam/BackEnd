@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
@@ -22,4 +23,6 @@ public interface ConsumptionGoalService {
 
 	ConsumptionGoalResponseListDto updateConsumptionGoals(Long userId,
 		ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
+
+	ConsumptionAnalysisResponseDTO getTopCategoryAndConsumptionAmount(Long userId);
 }
