@@ -47,11 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         List<Category> categories = categoryRepository.findUserCategoryByUserId(userId);
         return categories.stream()
-                .map(category -> CategoryResponseDTO.builder()
-                        .id(category.getId())
-                        .name(category.getName())
-                        .isDefault(category.getIsDefault())
-                        .build())
+                .map(categoryConverter::toCategoryResponseDTO)
                 .collect(Collectors.toList());
     }
 }
