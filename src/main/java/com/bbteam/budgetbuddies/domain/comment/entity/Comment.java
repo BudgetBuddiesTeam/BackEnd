@@ -4,13 +4,17 @@ import com.bbteam.budgetbuddies.common.BaseEntity;
 import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
 import com.bbteam.budgetbuddies.domain.supportinfo.entity.SupportInfo;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
@@ -19,19 +23,22 @@ import org.hibernate.annotations.Where;
 @SuperBuilder
 public class Comment extends BaseEntity {
 
-    @Column(nullable = false, length = 1000)
-    private String content;
+	@Column(nullable = false, length = 1000)
+	private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "discount_info_id")
-    private DiscountInfo discountInfo;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "discount_info_id")
+	private DiscountInfo discountInfo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "support_info_id")
-    private SupportInfo supportInfo;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "support_info_id")
+	private SupportInfo supportInfo;
+
+	@Column(nullable = false)
+	private Integer anonymousNumber;
 
 }

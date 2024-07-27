@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -34,5 +37,17 @@ public class CategoryServiceImpl implements CategoryService {
         Category savedCategory = categoryRepository.save(category);
 
         return categoryConverter.toCategoryResponseDTO(savedCategory);
+    }
+
+    @Override
+    public List<CategoryResponseDTO> getUserCategories(Long userId) {
+
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        List<Category> categories = categoryRepository.findUserCategoryByUserId(userId);
+        return categories.stream()
+                .map(categoryConverter::toCategoryResponseDTO)
+                .collect(Collectors.toList());
     }
 }
