@@ -4,7 +4,9 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoalConverter;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
@@ -58,13 +61,7 @@ class ConsumptionGoalServiceTest {
 		int randomDay = random.nextInt(30) + 1;
 		goalMonthRandomDay = LocalDate.of(GOAL_MONTH.getYear(), GOAL_MONTH.getMonth(), randomDay);
 
-		user = Mockito.spy(User.builder()
-			.email("email")
-			.age(24)
-			.name("name")
-			.gender(Gender.MALE)
-			.phoneNumber("010-1234-5678")
-			.build());
+		user = Mockito.spy(User.builder().email("email").age(24).name("name").gender(Gender.MALE).phoneNumber("010-1234-5678").build());
 		given(user.getId()).willReturn(-1L);
 		given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
 	}
@@ -272,5 +269,46 @@ class ConsumptionGoalServiceTest {
 		assertThrows(NoSuchElementException.class, () -> {
 			consumptionGoalService.getPeerInfo(user.getId(), peerAgeStart, peerAgeEnd, peerGender);
 		});
+	}
+
+	@Test
+	@DisplayName("getTopCategoryAndConsumptionAmount : 가장 큰 계획 카테고리와 이번 주 소비 금액 조회 성공")
+	void getTopCategoryAndConsumptionAmount_Success() {
+		// given
+		Category defaultCategory = Mockito.spy(Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
+		given(defaultCategory.getId()).willReturn(-1L);
+
+		ConsumptionGoal topConsumptionGoal = ConsumptionGoal.builder()
+			.goalAmount(5000L)
+			.consumeAmount(3000L)
+			.user(user)
+			.category(defaultCategory)
+			.goalMonth(goalMonthRandomDay)
+			.build();
+
+		ConsumptionGoal currentWeekConsumptionGoal = ConsumptionGoal.builder()
+			.goalAmount(5000L)
+			.consumeAmount(2000L)
+			.user(user)
+			.category(defaultCategory)
+			.goalMonth(goalMonthRandomDay)
+			.build();
+
+		LocalDate startOfWeek = goalMonthRandomDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		LocalDate endOfWeek = goalMonthRandomDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+		given(consumptionGoalRepository.findTopCategoriesAndGoalAmount(1, 23, 25, Gender.MALE))
+			.willReturn(List.of(topConsumptionGoal));
+		given(consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
+			defaultCategory.getId(), startOfWeek, endOfWeek))
+			.willReturn(Optional.of(currentWeekConsumptionGoal));
+
+		// when
+		ConsumptionAnalysisResponseDTO result = consumptionGoalService.getTopCategoryAndConsumptionAmount(user.getId());
+
+		// then
+		assertThat(result.getGoalCategory()).isEqualTo(defaultCategory.getName());
+		assertThat(result.getCurrentWeekConsumptionAmount()).isEqualTo(currentWeekConsumptionGoal.getConsumeAmount());
 	}
 }
