@@ -53,9 +53,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	public List<TopGoalCategoryResponseDTO> getTopGoalCategories(int top, Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
-		User user = findUserById(userId);
-
-		checkPeerInfo(user, peerAgeS, peerAgeE, peerG);
+		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
 		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmount(top, peerAgeStart,
 			peerAgeEnd, peerGender);
@@ -66,9 +64,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	@Transactional(readOnly = true)
 	public PeerInfoResponseDTO getPeerInfo(Long userId, int peerAgeS, int peerAgeE, String peerG) {
 
-		User user = findUserById(userId);
-
-		checkPeerInfo(user, peerAgeS, peerAgeE, peerG);
+		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
 		return PeerInfoConverter.fromEntity(peerAgeStart, peerAgeEnd, peerGender);
 	}
@@ -77,9 +73,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	@Transactional(readOnly = true)
 	public ConsumptionAnalysisResponseDTO getTopCategoryAndConsumptionAmount(Long userId) {
 
-		User user = findUserById(userId);
-
-		checkPeerInfo(user, 0, 0, "none");
+		checkPeerInfo(userId, 0, 0, "none");
 
 		ConsumptionGoal topConsumptionGoal = consumptionGoalRepository.findTopCategoriesAndGoalAmount(1, peerAgeStart,
 			peerAgeEnd, peerGender).get(0);
@@ -146,7 +140,9 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		return user.get();
 	}
 
-	private void checkPeerInfo(User user, int peerAgeS, int peerAgeE, String peerG) {
+	private void checkPeerInfo(Long userId, int peerAgeS, int peerAgeE, String peerG) {
+
+		User user = findUserById(userId);
 
 		Gender gender = Gender.valueOf(peerG.toUpperCase());
 
