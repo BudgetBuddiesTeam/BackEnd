@@ -44,7 +44,7 @@ public class ExpenseServiceImpl implements ExpenseService {
          - DB 관리 이슈로 category에 default 카테고리의 중복이 발생할 경우, 이를 대비하기 위해 1<= id <= 10 조건도 추가
          */
 		if (expenseRequestDto.getCategoryId() >= 1 && expenseRequestDto.getCategoryId() <= 10 && category.getIsDefault()) {
-			// category.setUser(user);
+			//  category.setUser(user);
 			// default category
 		}
         /*
@@ -61,6 +61,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		Expense expense = expenseConverter.toExpenseEntity(expenseRequestDto, user, category);
 		expenseRepository.save(expense);
 
+		// 소비 목표 업데이트
 		consumptionGoalService.updateConsumeAmount(expenseRequestDto.getUserId(), expenseRequestDto.getCategoryId(), expenseRequestDto.getAmount());
 
 		return expenseConverter.toExpenseResponseDto(expense);
@@ -85,3 +86,4 @@ public class ExpenseServiceImpl implements ExpenseService {
 		return expenseConverter.toMonthlyExpenseCompactResponseDto(expenseSlice, startOfMonth);
 	}
 }
+
