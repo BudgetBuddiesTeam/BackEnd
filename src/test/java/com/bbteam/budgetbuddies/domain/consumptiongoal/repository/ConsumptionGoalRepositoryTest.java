@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -115,6 +116,54 @@ class ConsumptionGoalRepositoryTest {
 		assertThat(resultGoal.getUser().getAge()).isEqualTo(24);
 		assertThat(resultGoal.getCategory().getName()).isEqualTo("디폴트 카테고리");
 		assertThat(resultGoal.getUser().getGender()).isEqualTo(Gender.MALE);
+	}
+
+	@Test
+	@DisplayName("또래들이 가장 큰 목표로 세운 카테고리와 그 카테고리에서 이번 주의 소비 목표 조회 성공")
+	void findTopConsumptionByCategoryIdAndCurrentWeek_Success() {
+		// given
+		LocalDate startOfWeek = LocalDate.of(2024, 7, 1); // 월요일
+		LocalDate endOfWeek = LocalDate.of(2024, 7, 7); // 일요일
+
+		User mainUser = userRepository.save(User.builder()
+			.email("email")
+			.age(24)
+			.name("name")
+			.gender(Gender.MALE)
+			.phoneNumber("010-1234-5678")
+			.build());
+
+		Category category = categoryRepository.save(Category.builder()
+			.name("Test Category")
+			.user(mainUser)
+			.isDefault(false)
+			.build());
+
+		ConsumptionGoal goal1 = consumptionGoalRepository.save(ConsumptionGoal.builder()
+			.goalAmount(5000L)
+			.consumeAmount(2000L)
+			.user(mainUser)
+			.category(category)
+			.goalMonth(startOfWeek)
+			.build());
+
+		ConsumptionGoal goal2 = consumptionGoalRepository.save(ConsumptionGoal.builder()
+			.goalAmount(3000L)
+			.consumeAmount(1500L)
+			.user(mainUser)
+			.category(category)
+			.goalMonth(startOfWeek)
+			.build());
+
+		// when
+		Optional<ConsumptionGoal> result = consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
+			category.getId(), startOfWeek, endOfWeek);
+
+		// then
+		ConsumptionGoal topGoal = result.get();
+		assertThat(topGoal.getConsumeAmount()).isEqualTo(2000L);
+		assertThat(topGoal.getGoalAmount()).isEqualTo(5000L);
+		assertThat(topGoal.getCategory().getId()).isEqualTo(category.getId());
 	}
 
 	private void setUnselectedConsumptionGoal(User mainUser, LocalDate goalMonth, Category defaultCategory) {
