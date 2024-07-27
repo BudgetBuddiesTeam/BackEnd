@@ -89,14 +89,22 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
         Optional<DiscountInfoLike> existingLike = discountInfoLikeRepository.findByUserAndDiscountInfo(user, discountInfo);
 
         if (existingLike.isPresent()) {
-            // 이미 좋아요를 누른 상태라면
-            discountInfoLikeRepository.delete(existingLike.get());
-            discountInfo.subLikeCount();
+            // 이미 객체가 존재한다면
+            if (existingLike.get().getIsLike()) {
+                // 좋아요를 누른 상태라면
+                existingLike.get().toggleLike();
+                discountInfo.subLikeCount();
+            } else {
+                // 좋아요를 누르지 않은 상태라면
+                existingLike.get().toggleLike();
+                discountInfo.addLikeCount();
+            }
         } else {
-            // 아직 좋아요를 누르지 않은 상태라면
+            // 처음 객체를 생성한다면
             DiscountInfoLike newLike = DiscountInfoLike.builder()
                 .user(user)
                 .discountInfo(discountInfo)
+                .isLike(true)
                 .build();
             discountInfoLikeRepository.save(newLike);
             discountInfo.addLikeCount();

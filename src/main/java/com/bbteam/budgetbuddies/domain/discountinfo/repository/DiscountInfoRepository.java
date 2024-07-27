@@ -12,7 +12,8 @@ import java.util.List;
 
 public interface DiscountInfoRepository extends JpaRepository<DiscountInfo, Long> {
 
-    @Query("SELECT i FROM DiscountInfo i WHERE (i.startDate <= :endDate AND i.endDate >= :startDate)")
+    @Query("SELECT i FROM DiscountInfo i WHERE (i.startDate <= :endDate AND i.endDate >= :startDate)" +
+    " ORDER BY i.likeCount DESC")
     Page<DiscountInfo> findByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     @Query("SELECT i FROM DiscountInfo i WHERE ((i.startDate BETWEEN :startDate AND :endDate) OR i.endDate BETWEEN :startDate AND :endDate)")
