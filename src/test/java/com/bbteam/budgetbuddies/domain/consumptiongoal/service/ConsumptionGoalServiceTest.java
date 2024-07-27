@@ -1,10 +1,13 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Random;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +23,12 @@ import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
+import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
+import com.bbteam.budgetbuddies.enums.Gender;
 
 @DisplayName("ConsumptionGoal 테스트의 ")
 @ExtendWith(MockitoExtension.class)
@@ -32,11 +38,13 @@ class ConsumptionGoalServiceTest {
 	private LocalDate goalMonth;
 
 	@InjectMocks
-	private ConsumptionGoalService consumptionGoalService;
+	private ConsumptionGoalServiceImpl consumptionGoalService;
 	@Mock
 	private CategoryRepository categoryRepository;
 	@Mock
 	private ConsumptionGoalRepository consumptionGoalRepository;
+	@Mock
+	private UserRepository userRepository;
 
 	@BeforeEach
 	void setUp() {
@@ -44,7 +52,13 @@ class ConsumptionGoalServiceTest {
 		int randomDay = random.nextInt(30) + 1;
 		goalMonth = LocalDate.of(GOAL_MONTH.getYear(), GOAL_MONTH.getMonth(), randomDay);
 
-		user = Mockito.spy(User.builder().email("email").age(24).name("name").phoneNumber("010-1234-5678").build());
+		user = Mockito.spy(User.builder()
+			.email("email")
+			.age(24)
+			.name("name")
+			.gender(Gender.MALE)
+			.phoneNumber("010-1234-5678")
+			.build());
 		given(user.getId()).willReturn(-1L);
 	}
 
@@ -154,5 +168,43 @@ class ConsumptionGoalServiceTest {
 		// then
 		assertThat(result.getConsumptionGoalList()).usingRecursiveComparison()
 			.isEqualTo(List.of(ConsumptionGoalResponseDto.of(goalMonthUserCategoryGoal)));
+	}
+
+	@Test
+	@DisplayName("getPeerInfo : 또래 나이와 성별 정보를 통해 PeerInfo 조회 성공")
+	void getPeerInfo_Success() {
+		// given
+		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+
+		// when
+		int peerAgeStart = 23;
+		int peerAgeEnd = 25;
+		String peerGender = "MALE";
+
+		PeerInfoResponseDTO result = consumptionGoalService.getPeerInfo(user.getId(), peerAgeStart, peerAgeEnd,
+			peerGender);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.getPeerAgeStart()).isEqualTo(peerAgeStart);
+		assertThat(result.getPeerAgeEnd()).isEqualTo(peerAgeEnd);
+		assertThat(result.getPeerGender()).isEqualTo("MALE");
+	}
+
+	@Test
+	@DisplayName("getPeerInfo : 유저를 찾을 수 없음")
+	void getPeerInfo_UserNotFound() {
+		// given
+		when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+
+		// when
+		int peerAgeStart = 23;
+		int peerAgeEnd = 25;
+		String peerGender = "MALE";
+
+		// then
+		assertThrows(NoSuchElementException.class, () -> {
+			consumptionGoalService.getPeerInfo(user.getId(), peerAgeStart, peerAgeEnd, peerGender);
+		});
 	}
 }
