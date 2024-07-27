@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/categories")
@@ -33,6 +35,20 @@ public class CategoryController {
             @RequestBody CategoryRequestDTO categoryRequestDTO
     ) {
         CategoryResponseDTO response = categoryService.createCategory(categoryRequestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @Operation(summary = "유저 개인의 카테고리 조회", description = "유저의 카테고리(default + 개인 custom)를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Not Found")
+    })
+    @GetMapping("/get/{userId}")
+    public ResponseEntity<List<CategoryResponseDTO>> getUserCategories(@PathVariable Long userId) {
+        List<CategoryResponseDTO> response = categoryService.getUserCategories(userId);
         return ResponseEntity.ok(response);
     }
 }
