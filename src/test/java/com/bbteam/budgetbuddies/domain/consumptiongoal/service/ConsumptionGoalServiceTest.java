@@ -64,7 +64,6 @@ class ConsumptionGoalServiceTest {
 
 		user = Mockito.spy(User.builder().email("email").age(24).name("name").gender(Gender.MALE).phoneNumber("010-1234-5678").build());
 		given(user.getId()).willReturn(-1L);
-		given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
 	}
 
 	@Test
@@ -184,6 +183,8 @@ class ConsumptionGoalServiceTest {
 		// given
 		Long defaultGoalAmount = 100L;
 		Long userGoalAmount = 200L;
+
+		given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
 
 		ConsumptionGoalListRequestDto request = new ConsumptionGoalListRequestDto(
 			List.of(new ConsumptionGoalRequestDto(-1L, defaultGoalAmount),
