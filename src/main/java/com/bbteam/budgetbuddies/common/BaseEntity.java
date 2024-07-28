@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @SuperBuilder
-@SoftDelete // boolean 타입의 deleted 필드가 추가
+@SoftDelete(columnName = "deleted") // boolean 타입의 deleted 필드가 추가
 @Getter
 public abstract class BaseEntity {
 
@@ -35,5 +35,8 @@ public abstract class BaseEntity {
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted", insertable = false, updatable = false)
+    private boolean deleted;
 
 }

@@ -25,7 +25,29 @@ import static org.junit.jupiter.api.Assertions.*;
 class SupportInfoRepositoryTest {
 
     @Autowired
-    SupportInfoRepository supportInfoRepository;
+    private SupportInfoRepository supportInfoRepository;
+
+    @Test
+    @DisplayName("@SoftDelete 테스트")
+    void deletedTest() {
+        // given
+        SupportInfo discount2 = SupportInfo.builder()
+            .title("지원정보2")
+            .startDate(LocalDate.of(2024, 7, 1))
+            .endDate(LocalDate.of(2024, 7, 21))
+            .siteUrl("http://example1.com")
+            .build();
+
+        supportInfoRepository.save(discount1);
+        supportInfoRepository.save(discount2);
+
+        // when
+        supportInfoRepository.deleteById(1L);
+
+        // then
+        assertThat(supportInfoRepository.findAll()).hasSize(1);
+        assertThat(supportInfoRepository.findAll().get(0).getTitle()).isEqualTo("지원정보2");
+    }
 
     @Test
     @DisplayName("특정 년월에 속하는 지원 정보 데이터 조회 성공")
@@ -37,6 +59,7 @@ class SupportInfoRepositoryTest {
             .endDate(LocalDate.of(2024, 7, 21))
             .siteUrl("http://example1.com")
             .build();
+        
         supportInfoRepository.save(discount1);
 
         // when
