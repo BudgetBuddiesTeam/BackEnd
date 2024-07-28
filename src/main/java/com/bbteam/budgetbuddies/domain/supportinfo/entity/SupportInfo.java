@@ -3,10 +3,7 @@ package com.bbteam.budgetbuddies.domain.supportinfo.entity;
 import com.bbteam.budgetbuddies.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -26,10 +23,10 @@ public class SupportInfo extends BaseEntity {
 
     private LocalDate endDate;
 
-    @ColumnDefault("0")
+    @Builder.Default
     private Integer likeCount = 0;
 
-    @ColumnDefault("0")
+    @Builder.Default
     private Integer anonymousNumber = 0;
 
     @Column(length = 1000)
