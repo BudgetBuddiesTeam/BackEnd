@@ -26,6 +26,37 @@ class DiscountInfoRepositoryTest {
     private DiscountInfoRepository discountInfoRepository;
 
     @Test
+    @DisplayName("@SoftDelete 테스트")
+    void deletedTest() {
+        // given
+        DiscountInfo discount1 = DiscountInfo.builder()
+            .title("할인정보1")
+            .startDate(LocalDate.of(2024, 7, 1))
+            .endDate(LocalDate.of(2024, 7, 21))
+            .discountRate(40)
+            .siteUrl("http://example1.com")
+            .build();
+
+        DiscountInfo discount2 = DiscountInfo.builder()
+            .title("할인정보2")
+            .startDate(LocalDate.of(2024, 7, 1))
+            .endDate(LocalDate.of(2024, 7, 21))
+            .discountRate(40)
+            .siteUrl("http://example1.com")
+            .build();
+
+        discountInfoRepository.save(discount1);
+        discountInfoRepository.save(discount2);
+
+        // when
+        discountInfoRepository.deleteById(1L);
+
+        // then
+        assertThat(discountInfoRepository.findAll()).hasSize(1);
+        assertThat(discountInfoRepository.findAll().get(0).getTitle()).isEqualTo("할인정보2");
+    }
+
+    @Test
     @DisplayName("특정 년월에 속하는 할인 정보 데이터 조회 성공")
     void findByDateRangeSuccess() {
         // given

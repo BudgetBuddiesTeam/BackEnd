@@ -1,7 +1,9 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.repository;
 
+import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
 import com.bbteam.budgetbuddies.domain.supportinfo.entity.SupportInfo;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -17,8 +20,36 @@ import static org.junit.jupiter.api.Assertions.*;
 class SupportInfoRepositoryTest {
 
     @Autowired
-    SupportInfoRepository supportInfoRepository;
+    private SupportInfoRepository supportInfoRepository;
 
+    @Test
+    @DisplayName("@SoftDelete 테스트")
+    void deletedTest() {
+        // given
+        SupportInfo discount1 = SupportInfo.builder()
+            .title("지원정보1")
+            .startDate(LocalDate.of(2024, 7, 1))
+            .endDate(LocalDate.of(2024, 7, 21))
+            .siteUrl("http://example1.com")
+            .build();
+
+        SupportInfo discount2 = SupportInfo.builder()
+            .title("지원정보2")
+            .startDate(LocalDate.of(2024, 7, 1))
+            .endDate(LocalDate.of(2024, 7, 21))
+            .siteUrl("http://example1.com")
+            .build();
+
+        supportInfoRepository.save(discount1);
+        supportInfoRepository.save(discount2);
+
+        // when
+        supportInfoRepository.deleteById(1L);
+
+        // then
+        assertThat(supportInfoRepository.findAll()).hasSize(1);
+        assertThat(supportInfoRepository.findAll().get(0).getTitle()).isEqualTo("지원정보2");
+    }
 
     @Test
     void findByMonthTest(){
