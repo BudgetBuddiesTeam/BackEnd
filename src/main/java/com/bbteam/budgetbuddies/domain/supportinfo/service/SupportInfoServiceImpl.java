@@ -96,14 +96,22 @@ public class SupportInfoServiceImpl implements SupportInfoService {
         Optional<SupportInfoLike> existingLike = supportInfoLikeRepository.findByUserAndSupportInfo(user, supportInfo);
 
         if (existingLike.isPresent()) {
-            // 이미 좋아요를 누른 상태라면
-            supportInfoLikeRepository.delete(existingLike.get());
-            supportInfo.subLikeCount();
+            // 이미 객체가 존재한다면
+            if (existingLike.get().getIsLike()) {
+                // 좋아요를 누른 상태라면
+                existingLike.get().toggleLike();
+                supportInfo.subLikeCount();
+            } else {
+                // 좋아요를 누르지 않은 상태라면
+                existingLike.get().toggleLike();
+                supportInfo.addLikeCount();
+            }
         } else {
             // 아직 좋아요를 누르지 않은 상태라면
             SupportInfoLike newLike = SupportInfoLike.builder()
                 .user(user)
                 .supportInfo(supportInfo)
+                .isLike(true)
                 .build();
             supportInfoLikeRepository.save(newLike);
             supportInfo.addLikeCount();
