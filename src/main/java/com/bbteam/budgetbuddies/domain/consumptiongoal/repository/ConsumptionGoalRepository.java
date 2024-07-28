@@ -30,7 +30,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		LocalDate goalMonth);
 
 	@Query("SELECT cg FROM ConsumptionGoal cg JOIN cg.category c WHERE c.id = :categoryId AND cg.goalMonth "
-		+ "BETWEEN :startOfWeek AND :endOfWeek ORDER BY cg.consumeAmount DESC")
+		+ "BETWEEN :startOfWeek AND :endOfWeek ORDER BY cg.consumeAmount DESC limit 1")
 	Optional<ConsumptionGoal> findTopConsumptionByCategoryIdAndCurrentWeek(@Param("categoryId") Long categoryId,
 		@Param("startOfWeek") LocalDate startOfWeek, @Param("endOfWeek") LocalDate endOfWeek);
 }

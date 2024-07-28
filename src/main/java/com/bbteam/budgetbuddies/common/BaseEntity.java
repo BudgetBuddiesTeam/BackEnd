@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 @SoftDelete // boolean 타입의 deleted 필드가 추가
+@Getter
 public abstract class BaseEntity {
 
     @Id

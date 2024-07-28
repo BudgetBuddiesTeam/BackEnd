@@ -2,6 +2,8 @@ package com.bbteam.budgetbuddies.domain.discountinfo.repository;
 
 import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
 import jakarta.transaction.Transactional;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
