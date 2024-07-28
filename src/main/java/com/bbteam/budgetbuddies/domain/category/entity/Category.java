@@ -26,7 +26,7 @@ public class Category {
     @ColumnDefault("1")
     private Boolean isDefault;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
