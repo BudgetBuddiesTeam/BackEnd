@@ -62,7 +62,13 @@ class ConsumptionGoalServiceTest {
 		int randomDay = random.nextInt(30) + 1;
 		goalMonthRandomDay = LocalDate.of(GOAL_MONTH.getYear(), GOAL_MONTH.getMonth(), randomDay);
 
-		user = Mockito.spy(User.builder().email("email").age(24).name("name").gender(Gender.MALE).phoneNumber("010-1234-5678").build());
+		user = Mockito.spy(User.builder()
+			.email("email")
+			.age(24)
+			.name("name")
+			.gender(Gender.MALE)
+			.phoneNumber("010-1234-5678")
+			.build());
 		given(user.getId()).willReturn(-1L);
 	}
 
@@ -300,11 +306,11 @@ class ConsumptionGoalServiceTest {
 		LocalDate endOfWeek = goalMonthRandomDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-		given(consumptionGoalRepository.findTopCategoriesAndGoalAmount(1, 23, 25, Gender.MALE))
-			.willReturn(List.of(topConsumptionGoal));
-		given(consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
-			defaultCategory.getId(), startOfWeek, endOfWeek))
-			.willReturn(Optional.of(currentWeekConsumptionGoal));
+		given(consumptionGoalRepository.findTopCategoriesAndGoalAmount(1, 23, 25, Gender.MALE)).willReturn(
+			List.of(topConsumptionGoal));
+		given(
+			consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(defaultCategory.getId(), startOfWeek,
+				endOfWeek)).willReturn(Optional.of(currentWeekConsumptionGoal));
 
 		// when
 		ConsumptionAnalysisResponseDTO result = consumptionGoalService.getTopCategoryAndConsumptionAmount(user.getId());
@@ -319,9 +325,12 @@ class ConsumptionGoalServiceTest {
 	void getTopGoalCategories_Success() {
 		// given
 		Category defaultCategory = Mockito.spy(Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
-		Category defaultCategory2 = Mockito.spy(Category.builder().name("디폴트 카테고리2").user(null).isDefault(true).build());
-		Category defaultCategory3 = Mockito.spy(Category.builder().name("디폴트 카테고리3").user(null).isDefault(true).build());
-		Category defaultCategory4 = Mockito.spy(Category.builder().name("디폴트 카테고리4").user(null).isDefault(true).build());
+		Category defaultCategory2 = Mockito.spy(
+			Category.builder().name("디폴트 카테고리2").user(null).isDefault(true).build());
+		Category defaultCategory3 = Mockito.spy(
+			Category.builder().name("디폴트 카테고리3").user(null).isDefault(true).build());
+		Category defaultCategory4 = Mockito.spy(
+			Category.builder().name("디폴트 카테고리4").user(null).isDefault(true).build());
 
 		ConsumptionGoal topConsumptionGoal1 = ConsumptionGoal.builder()
 			.goalAmount(5000L)
@@ -356,11 +365,12 @@ class ConsumptionGoalServiceTest {
 			.build();
 
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-		given(consumptionGoalRepository.findTopCategoriesAndGoalAmount(4, 23, 25, Gender.MALE))
-			.willReturn(List.of(topConsumptionGoal1, topConsumptionGoal2, topConsumptionGoal3, topConsumptionGoal4));
+		given(consumptionGoalRepository.findTopCategoriesAndGoalAmount(4, 23, 25, Gender.MALE)).willReturn(
+			List.of(topConsumptionGoal1, topConsumptionGoal2, topConsumptionGoal3, topConsumptionGoal4));
 
 		// when
-		List<TopGoalCategoryResponseDTO> result = consumptionGoalService.getTopGoalCategories(4, user.getId(), 0, 0, "none");
+		List<TopGoalCategoryResponseDTO> result = consumptionGoalService.getTopGoalCategories(4, user.getId(), 0, 0,
+			"none");
 
 		// then
 		assertThat(result).hasSize(4);
