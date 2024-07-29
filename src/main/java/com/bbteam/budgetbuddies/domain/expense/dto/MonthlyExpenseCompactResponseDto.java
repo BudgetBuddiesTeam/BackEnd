@@ -1,4 +1,4 @@
-package com.bbteam.budgetbuddies.domain.consumptiongoal.dto;
+package com.bbteam.budgetbuddies.domain.expense.dto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @Builder
-public class ConsumptionGoalResponseListDto {
-	private LocalDate goalMonth;
-	private Long totalGoalAmount;
-	private Long totalConsumptionAmount;
-	private List<ConsumptionGoalResponseDto> consumptionGoalList;
+public class MonthlyExpenseCompactResponseDto {
+	private LocalDate expenseMonth;
+	private int currentPage;
+	private boolean hasNext;
+	private List<CompactExpenseResponseDto> expenseList;
 }

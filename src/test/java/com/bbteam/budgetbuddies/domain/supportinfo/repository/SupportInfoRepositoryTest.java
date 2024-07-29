@@ -1,24 +1,101 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.repository;
 
+import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
 import com.bbteam.budgetbuddies.domain.supportinfo.entity.SupportInfo;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@DataJpaTest
 @Transactional
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class SupportInfoRepositoryTest {
 
     @Autowired
-    SupportInfoRepository supportInfoRepository;
+    private SupportInfoRepository supportInfoRepository;
 
+    @Test
+    @DisplayName("@SoftDelete 테스트")
+    void deletedTest() {
+        // given
+        SupportInfo discount2 = SupportInfo.builder()
+            .title("지원정보2")
+            .startDate(LocalDate.of(2024, 7, 1))
+            .endDate(LocalDate.of(2024, 7, 21))
+            .siteUrl("http://example1.com")
+            .build();
+
+        supportInfoRepository.save(discount1);
+        supportInfoRepository.save(discount2);
+
+        // when
+        supportInfoRepository.deleteById(1L);
+
+        // then
+        assertThat(supportInfoRepository.findAll()).hasSize(1);
+        assertThat(supportInfoRepository.findAll().get(0).getTitle()).isEqualTo("지원정보2");
+    }
+
+    @Test
+    @DisplayName("특정 년월에 속하는 지원 정보 데이터 조회 성공")
+    void findByDateRangeSuccess() {
+        // given
+        SupportInfo discount1 = SupportInfo.builder()
+            .title("지원정보1")
+            .startDate(LocalDate.of(2024, 7, 1))
+            .endDate(LocalDate.of(2024, 7, 21))
+            .siteUrl("http://example1.com")
+            .build();
+        
+        supportInfoRepository.save(discount1);
+
+        // when
+        Page<SupportInfo> results = supportInfoRepository.findByDateRange(
+            LocalDate.of(2024, 7, 1),
+            LocalDate.of(2024, 7, 31),
+            PageRequest.of(0, 10)
+        );
+
+        // then
+        assertThat(results).hasSize(1);
+        assertThat(results.getContent().get(0).getTitle()).isEqualTo("지원정보1");
+    }
+
+    @Test
+    @DisplayName("특정 년월에 속하는 지원 정보 데이터 조회 실패")
+    void findByDateRangeFailure() {
+        // given
+        SupportInfo discount1 = SupportInfo.builder()
+            .title("지원정보1")
+            .startDate(LocalDate.of(2024, 6, 1))
+            .endDate(LocalDate.of(2024, 6, 21))
+            .siteUrl("http://example1.com")
+            .build();
+        supportInfoRepository.save(discount1);
+
+        // when
+        Page<SupportInfo> results = supportInfoRepository.findByDateRange(
+            LocalDate.of(2024, 7, 1),
+            LocalDate.of(2024, 7, 31),
+            PageRequest.of(0, 10)
+        );
+
+        // then
+        assertThat(results).hasSize(0);
+    }
 
     @Test
     void findByMonthTest(){
