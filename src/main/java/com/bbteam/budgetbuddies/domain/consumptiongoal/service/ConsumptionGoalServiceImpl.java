@@ -212,4 +212,21 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
 			.forEach(goal -> goalMap.put(goal.getCategoryId(), goal));
 	}
+
+	@Override
+	public void updateConsumeAmount(Long userId, Long categoryId, Long amount) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new IllegalArgumentException("Not found user"));
+
+		Category category = categoryRepository.findById(categoryId)
+				.orElseThrow(() -> new IllegalArgumentException("Not found Category"));
+
+		LocalDate thisMonth = LocalDate.now().withDayOfMonth(1);
+		ConsumptionGoal consumptionGoal = consumptionGoalRepository
+				.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, category, thisMonth)
+				.orElseGet(() -> generateConsumptionGoal(user, category, thisMonth));
+
+		consumptionGoal.updateConsumeAmount(amount);
+		consumptionGoalRepository.save(consumptionGoal);
+	}
 }

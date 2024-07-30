@@ -25,4 +25,5 @@ public interface ConsumptionGoalService {
 		ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
 
 	ConsumptionAnalysisResponseDTO getTopCategoryAndConsumptionAmount(Long userId);
+	void updateConsumeAmount(Long userId, Long categoryId, Long amount);
 }
