@@ -2,7 +2,6 @@ package com.bbteam.budgetbuddies.domain.comment.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 
 public class CommentRequestDto {
@@ -18,5 +17,12 @@ public class CommentRequestDto {
     public static class SupportInfoCommentDto {
         private String content;
         private Long supportInfoId;
+    }
+
+    @Getter
+    @Builder
+    public static class CommentModifyDto {
+        private String content;
+        private Long commentId;
     }
 }
