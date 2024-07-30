@@ -286,12 +286,14 @@ class ConsumptionGoalServiceTest {
 		Category defaultCategory = Mockito.spy(Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
 		given(defaultCategory.getId()).willReturn(-1L);
 
+		LocalDate goalMonthRandomDay = LocalDate.now();
+
 		ConsumptionGoal topConsumptionGoal = ConsumptionGoal.builder()
 			.goalAmount(5000L)
 			.consumeAmount(3000L)
 			.user(user)
 			.category(defaultCategory)
-			.goalMonth(goalMonthRandomDay)
+			.goalMonth(goalMonthRandomDay.minusWeeks(1))
 			.build();
 
 		ConsumptionGoal currentWeekConsumptionGoal = ConsumptionGoal.builder()
