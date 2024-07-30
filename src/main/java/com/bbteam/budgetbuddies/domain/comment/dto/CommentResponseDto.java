@@ -31,22 +31,6 @@ public class CommentResponseDto {
         private LocalDateTime createdAt;
     }
 
-    @Getter
-    @Builder
-    public static class DiscountInfoSuccessDto{
-        private Long commentId;
-        private Long userId;
-        private Long discountInfoId;
-        private String content;
-    }
 
-    @Getter
-    @Builder
-    public static class SupportInfoSuccessDto{
-        private Long commentId;
-        private Long userId;
-        private Long supportInfoId;
-        private String content;
-    }
 
 }

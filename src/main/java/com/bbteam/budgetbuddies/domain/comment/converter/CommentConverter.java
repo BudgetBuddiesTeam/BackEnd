@@ -53,22 +53,5 @@ public class CommentConverter {
 
     }
 
-    public static CommentResponseDto.DiscountInfoSuccessDto toDiscountInfoSuccessDto(Comment comment){
-        return CommentResponseDto.DiscountInfoSuccessDto.builder()
-                .commentId(comment.getId())
-                .discountInfoId(comment.getDiscountInfo().getId())
-                .userId(comment.getUser().getId())
-                .content(comment.getContent())
-                .build();
-    }
-
-    public static CommentResponseDto.SupportInfoSuccessDto toSupportInfoSuccessDto(Comment comment){
-        return CommentResponseDto.SupportInfoSuccessDto.builder()
-                .commentId(comment.getId())
-                .supportInfoId(comment.getSupportInfo().getId())
-                .userId(comment.getUser().getId())
-                .content(comment.getContent())
-                .build();
-    }
 
 }
