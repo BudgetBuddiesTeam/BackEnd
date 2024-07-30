@@ -4,6 +4,9 @@ package com.bbteam.budgetbuddies.domain.comment.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class CommentResponseDto {
 
     @Getter
@@ -14,6 +17,7 @@ public class CommentResponseDto {
         private Long discountInfoId;
         private String content;
         private Integer anonymousNumber;
+        private LocalDateTime createdAt;
     }
 
     @Getter
@@ -24,6 +28,7 @@ public class CommentResponseDto {
         private Long supportInfoId;
         private String content;
         private Integer anonymousNumber;
+        private LocalDateTime createdAt;
     }
 
     @Getter
