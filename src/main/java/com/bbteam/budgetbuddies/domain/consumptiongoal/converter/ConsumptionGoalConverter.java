@@ -3,6 +3,7 @@ package com.bbteam.budgetbuddies.domain.consumptiongoal.converter;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.UserConsumptionGoalResponse;
 import org.springframework.stereotype.Component;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
@@ -47,5 +48,14 @@ public class ConsumptionGoalConverter {
 
 	private Long sumTotalGoalAmount(List<ConsumptionGoalResponseDto> consumptionGoalList) {
 		return consumptionGoalList.stream().reduce(0L, (sum, c2) -> sum + c2.getGoalAmount(), Long::sum);
+	}
+
+	public UserConsumptionGoalResponse toUserConsumptionGoalResponse(ConsumptionGoal consumptionGoal) {
+		return UserConsumptionGoalResponse.builder()
+				.categoryId(consumptionGoal.getCategory().getId())
+				.goalMonth(consumptionGoal.getGoalMonth())
+				.consumeAmount(consumptionGoal.getConsumeAmount())
+				.goalAmount(consumptionGoal.getGoalAmount())
+				.build();
 	}
 }
