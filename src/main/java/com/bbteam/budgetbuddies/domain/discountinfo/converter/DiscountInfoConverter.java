@@ -23,6 +23,7 @@ public class DiscountInfoConverter {
             .discountRate(entity.getDiscountRate())
             .likeCount(entity.getLikeCount())
             .siteUrl(entity.getSiteUrl())
+            .thumbnailUrl(entity.getThumbnailUrl())
             .build();
     }
 
@@ -41,6 +42,7 @@ public class DiscountInfoConverter {
             .discountRate(requestDto.getDiscountRate())
             .likeCount(0)
             .siteUrl(requestDto.getSiteUrl())
+            .thumbnailUrl(requestDto.getThumbnailUrl())
             .build();
     }
 

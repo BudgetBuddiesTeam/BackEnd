@@ -34,6 +34,9 @@ public class DiscountInfo extends BaseEntity {
     @Column(length = 1000)
     private String siteUrl;
 
+    @Column(length = 1000)
+    private String thumbnailUrl; // 카드 썸네일 이미지
+
     public void addLikeCount() {
         this.likeCount++;
     }

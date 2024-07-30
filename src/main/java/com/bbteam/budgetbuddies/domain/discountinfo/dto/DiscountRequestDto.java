@@ -20,4 +20,6 @@ public class DiscountRequestDto {
 
     private String siteUrl;
 
+    private String thumbnailUrl;
+
 }
