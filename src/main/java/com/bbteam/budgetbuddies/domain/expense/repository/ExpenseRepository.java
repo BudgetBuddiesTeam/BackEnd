@@ -13,15 +13,7 @@ import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-
-	// 추후 적용 예정
-	@Query("SELECT e FROM Expense e WHERE e.user.id = :userId AND e.category.id = :categoryId")
-	List<Expense> findByUserIdAndCategoryId(@Param("userId") Long userId, @Param("categoryId") Long categoryId);
-
-	@Query("SELECT e FROM Expense e WHERE e.user.id = :userId")
-	List<Expense> findByUserId(@Param("userId") Long userId);
-
 	@Query("SELECT e FROM Expense e WHERE e.user = :user AND e.expenseDate BETWEEN :startDate AND :endDate ORDER BY e.expenseDate DESC")
 	Slice<Expense> findAllByUserIdForPeriod(Pageable pageable, @Param("user") User user,
-		@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+											@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }
