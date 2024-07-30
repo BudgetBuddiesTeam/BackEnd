@@ -24,6 +24,7 @@ public class SupportInfoConverter {
             .anonymousNumber(entity.getAnonymousNumber())
             .likeCount(entity.getLikeCount())
             .siteUrl(entity.getSiteUrl())
+            .thumbnailUrl(entity.getThumbnailUrl())
             .build();
     }
 
@@ -41,6 +42,7 @@ public class SupportInfoConverter {
             .anonymousNumber(0)
             .likeCount(0)
             .siteUrl(requestDto.getSiteUrl())
+            .thumbnailUrl(requestDto.getThumbnailUrl())
             .build();
     }
 }
