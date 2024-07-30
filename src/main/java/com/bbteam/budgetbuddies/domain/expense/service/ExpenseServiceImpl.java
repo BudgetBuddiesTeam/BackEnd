@@ -48,12 +48,26 @@ public class ExpenseServiceImpl implements ExpenseService {
 		LocalDate startOfMonth = localDate.withDayOfMonth(1);
 		LocalDate endOfMonth = localDate.withDayOfMonth(startOfMonth.lengthOfMonth());
 
-		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
 		Slice<Expense> expenseSlice = expenseRepository.findAllByUserIdForPeriod(pageable, user,
 			startOfMonth.atStartOfDay(), endOfMonth.atStartOfDay());
 
 		return expenseConverter.toMonthlyExpenseCompactResponseDto(expenseSlice, startOfMonth);
+	}
+
+	@Override
+	public ExpenseResponseDto findExpenseResponseFromUserIdAndExpenseId(Long userId, Long expenseId) {
+		Expense expense = expenseRepository.findById(expenseId)
+			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
+
+		if (isAllowedUser(userId, expense))
+			throw new IllegalArgumentException("Unauthorized user");
+
+		return expenseConverter.toExpenseResponseDto(expense);
+	}
+
+	private boolean isAllowedUser(Long userId, Expense expense) {
+		return expense.getUser().getId() != userId;
 	}
 }

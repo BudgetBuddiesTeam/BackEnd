@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.expense.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +28,7 @@ import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
 import com.bbteam.budgetbuddies.domain.expense.dto.CompactExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
@@ -46,14 +49,20 @@ class ExpenseServiceImplTest {
 	@Spy
 	private ExpenseConverter expenseConverter;
 
+	private User user;
+
+	@BeforeEach
+	void setUp() {
+		user = Mockito.spy(User.builder().build());
+		given(user.getId()).willReturn(-1L);
+	}
+
 	@Test
 	@DisplayName("getMonthlyExpense : 성공")
 	void getMonthlyExpense_Success() {
 		// given
 		final int pageSize = 5;
 
-		User user = Mockito.spy(User.builder().build());
-		given(user.getId()).willReturn(-1L);
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
 		Category userCategory = Mockito.spy(Category.builder().build());
@@ -114,5 +123,50 @@ class ExpenseServiceImplTest {
 				.build());
 		}
 		return compactExpenses;
+	}
+
+	@Test
+	@DisplayName("findExpenseFromUserIdAndExpenseId : 성공")
+	void findExpenseResponseFromUserIdAndExpenseId_Success() {
+		// given
+		final Long expenseId = -1L;
+
+		Category userCategory = Mockito.spy(Category.builder().name("유저 카테고리").build());
+		given(userCategory.getId()).willReturn(-1L);
+
+		Expense expense = Mockito.spy(Expense.builder().user(user).category(userCategory).description("유저 소비").build());
+		given(expense.getId()).willReturn(expenseId);
+		given(expenseRepository.findById(expense.getId())).willReturn(Optional.of(expense));
+
+		ExpenseResponseDto expected = ExpenseResponseDto.builder()
+			.userId(user.getId())
+			.expenseId(-1L)
+			.description("유저 소비")
+			.categoryName("유저 카테고리")
+			.categoryId(-1L)
+			.build();
+
+		// when
+		ExpenseResponseDto result = expenseService.findExpenseResponseFromUserIdAndExpenseId(user.getId(), expenseId);
+
+		// then
+		assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("findExpenseFromUserIdAndExpenseId : 소비 유저와 다른 유저로 인한 예외 반환")
+	void findExpenseResponseFromUserIdAndExpenseId_Fail() {
+		// given
+		final Long expenseId = -1L;
+
+		Category userCategory = Mockito.spy(Category.builder().name("유저 카테고리").build());
+
+		Expense expense = Mockito.spy(Expense.builder().user(user).category(userCategory).description("유저 소비").build());
+		given(expense.getId()).willReturn(expenseId);
+		given(expenseRepository.findById(expense.getId())).willReturn(Optional.of(expense));
+
+		// then
+		assertThrows(IllegalArgumentException.class,
+			() -> expenseService.findExpenseResponseFromUserIdAndExpenseId(-2L, expenseId));
 	}
 }

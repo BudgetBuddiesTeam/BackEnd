@@ -12,4 +12,6 @@ public interface ExpenseService {
 	ExpenseResponseDto createExpense(ExpenseRequestDto expenseRequestDto);
 
 	MonthlyExpenseCompactResponseDto getMonthlyExpense(Pageable pageable, Long userId, LocalDate localDate);
+
+	ExpenseResponseDto findExpenseResponseFromUserIdAndExpenseId(Long userId, Long expenseId);
 }
