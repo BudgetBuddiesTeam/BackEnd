@@ -44,4 +44,11 @@ public class ExpenseController implements ExpenseApi {
 
 		return ResponseEntity.ok(expenseService.getMonthlyExpense(pageable, userId, date));
 	}
+
+	@Override
+	@GetMapping("/{userId}/{expenseId}")
+	public ResponseEntity<ExpenseResponseDto> findExpense(@PathVariable Long userId, @PathVariable Long expenseId) {
+
+		return ResponseEntity.ok(expenseService.findExpenseResponseFromUserIdAndExpenseId(userId, expenseId));
+	}
 }
