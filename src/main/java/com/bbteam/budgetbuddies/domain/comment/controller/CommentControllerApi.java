@@ -22,7 +22,7 @@ public interface CommentControllerApi {
             @Parameter(name = "discountInfoId", description = "댓글을 다는 할인 정보 게시글 id입니다. requestBody"),
             @Parameter(name = "content", description = "댓글 내용입니다. requestBody"),
     })
-    ResponseEntity<CommentResponseDto.DiscountInfoSuccessDto> saveDiscountInfoComment(
+    ResponseEntity<CommentResponseDto.DiscountInfoCommentDto> saveDiscountInfoComment(
             Long userId,
             CommentRequestDto.DiscountInfoCommentDto discountInfoCommentDto);
 
@@ -49,7 +49,7 @@ public interface CommentControllerApi {
             @Parameter(name = "supportInfoId", description = "댓글을 다는 지원 정보 게시글 id입니다. requestBody"),
             @Parameter(name = "content", description = "댓글 내용입니다. requestBody"),
     })
-    ResponseEntity<CommentResponseDto.SupportInfoSuccessDto> saveSupportInfoComment(
+    ResponseEntity<CommentResponseDto.SupportInfoCommentDto> saveSupportInfoComment(
             Long userId,
             CommentRequestDto.SupportInfoCommentDto supportInfoCommentDto);
 
