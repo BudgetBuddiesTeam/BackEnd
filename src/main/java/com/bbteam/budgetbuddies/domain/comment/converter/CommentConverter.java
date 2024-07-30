@@ -36,6 +36,7 @@ public class CommentConverter {
                 .userId(comment.getUser().getId())
                 .content(comment.getContent())
                 .anonymousNumber(comment.getAnonymousNumber())
+                .createdAt(comment.getCreatedAt())
                 .build();
 
     }
@@ -47,6 +48,7 @@ public class CommentConverter {
                 .userId(comment.getUser().getId())
                 .content(comment.getContent())
                 .anonymousNumber(comment.getAnonymousNumber())
+                .createdAt(comment.getCreatedAt())
                 .build();
 
     }
