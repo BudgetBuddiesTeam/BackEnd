@@ -12,5 +12,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 	@Query(value = "SELECT c FROM Category AS c WHERE c.isDefault=TRUE OR c.user.id=:id")
 	List<Category> findUserCategoryByUserId(@Param("id") Long id);
 
+	@Query("SELECT c FROM Category c WHERE c.isDefault = true")
+	List<Category> findAllByIsDefaultTrue();
 	boolean existsByUserIdAndName(Long userId, String name);
 }
