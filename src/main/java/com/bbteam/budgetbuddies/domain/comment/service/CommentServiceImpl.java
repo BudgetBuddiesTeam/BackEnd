@@ -18,10 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // 임시로 유저는 service에서 찾아서 처리하는 로직으로 작성함
@@ -136,5 +133,48 @@ public class CommentServiceImpl implements CommentService{
     public void deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("No such id"));
         commentRepository.delete(comment);
+    }
+
+    @Override
+    public CommentResponseDto.DiscountInfoCommentDto findDiscountCommentOne(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("No such comment"));
+        if(comment.getDiscountInfo() == null){
+            throw new RuntimeException("discountInfo comment에 대한 요청이 아닙니다.");
+        }
+        return CommentConverter.toDiscountInfoCommentDto(comment);
+
+    }
+
+    @Override
+    public CommentResponseDto.SupportInfoCommentDto findSupportCommentOne(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("No such comment"));
+        if(comment.getSupportInfo() == null){
+            throw new RuntimeException("supportInfo comment에 대한 요청이 아닙니다.");
+        }
+        return CommentConverter.toSupportInfoCommentDto(comment);
+    }
+
+    @Override
+    @Transactional
+    public CommentResponseDto.DiscountInfoCommentDto modifyDiscountComment(CommentRequestDto.DiscountInfoCommentDto dto) {
+        Comment comment = commentRepository.findById(dto.getDiscountInfoId()).orElseThrow(() -> new NoSuchElementException("xxx"));
+        if(comment.getDiscountInfo() == null) {
+            throw new RuntimeException("discountInfo comment에 대한 요청이 아닙니다.");
+        }
+        comment.modifyComment(dto.getContent());
+
+        return CommentConverter.toDiscountInfoCommentDto(comment);
+    }
+
+    @Override
+    @Transactional
+    public CommentResponseDto.SupportInfoCommentDto modifySupportComment(CommentRequestDto.SupportInfoCommentDto dto) {
+        Comment comment = commentRepository.findById(dto.getSupportInfoId()).orElseThrow(() -> new NoSuchElementException("xxx"));
+        if (comment.getSupportInfo() == null) {
+            throw new RuntimeException("supportInfo comment에 대한 요청이 아닙니다.");
+        }
+        comment.modifyComment(dto.getContent());
+
+        return CommentConverter.toSupportInfoCommentDto(comment);
     }
 }

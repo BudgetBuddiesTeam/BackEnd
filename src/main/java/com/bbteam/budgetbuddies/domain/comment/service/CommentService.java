@@ -33,8 +33,12 @@ public interface CommentService {
 
     void deleteComment(Long commentId);
 
+    CommentResponseDto.DiscountInfoCommentDto findDiscountCommentOne(Long commentId);
+    CommentResponseDto.SupportInfoCommentDto findSupportCommentOne(Long commentId);
 
-
+    //dirty checking 사용해서 변경
+    CommentResponseDto.DiscountInfoCommentDto modifyDiscountComment(CommentRequestDto.DiscountInfoCommentDto dto);
+    CommentResponseDto.SupportInfoCommentDto modifySupportComment(CommentRequestDto.SupportInfoCommentDto dto);
 
 
 }
