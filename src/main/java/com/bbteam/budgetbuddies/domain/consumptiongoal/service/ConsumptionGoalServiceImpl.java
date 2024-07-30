@@ -219,20 +219,17 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	public void updateConsumeAmount(Long userId, Long categoryId, Long amount) {
-		// User와 Category를 찾습니다.
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new IllegalArgumentException("Not found user"));
 
 		Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new IllegalArgumentException("Not found Category"));
 
-		// ConsumptionGoal을 찾거나 생성합니다.
 		LocalDate thisMonth = LocalDate.now().withDayOfMonth(1);
 		ConsumptionGoal consumptionGoal = consumptionGoalRepository
 				.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, category, thisMonth)
 				.orElseGet(() -> generateConsumptionGoal(user, category, thisMonth));
 
-		// 소비 금액을 업데이트합니다.
 		consumptionGoal.updateConsumeAmount(amount);
 		consumptionGoalRepository.save(consumptionGoal);
 	}
