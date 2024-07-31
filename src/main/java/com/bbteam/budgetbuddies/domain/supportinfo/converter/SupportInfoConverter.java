@@ -1,8 +1,5 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.converter;
 
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequestDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequestDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.entity.SupportInfo;
