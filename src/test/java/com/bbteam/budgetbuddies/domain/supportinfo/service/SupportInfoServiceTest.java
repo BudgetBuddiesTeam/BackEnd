@@ -1,13 +1,5 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.service;
 
-import com.bbteam.budgetbuddies.domain.discountinfo.converter.DiscountInfoConverter;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequestDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
-import com.bbteam.budgetbuddies.domain.discountinfo.repository.DiscountInfoRepository;
-import com.bbteam.budgetbuddies.domain.discountinfo.service.DiscountInfoServiceImpl;
-import com.bbteam.budgetbuddies.domain.discountinfolike.entity.DiscountInfoLike;
-import com.bbteam.budgetbuddies.domain.discountinfolike.repository.DiscountInfoLikeRepository;
 import com.bbteam.budgetbuddies.domain.supportinfo.converter.SupportInfoConverter;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequestDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
@@ -36,11 +28,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 @Transactional
 @ExtendWith(MockitoExtension.class)
