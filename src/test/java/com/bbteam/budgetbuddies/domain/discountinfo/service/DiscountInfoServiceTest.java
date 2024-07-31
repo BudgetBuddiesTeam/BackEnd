@@ -1,7 +1,7 @@
 package com.bbteam.budgetbuddies.domain.discountinfo.service;
 
 import com.bbteam.budgetbuddies.domain.discountinfo.converter.DiscountInfoConverter;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequestDto;
+import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequest;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
 import com.bbteam.budgetbuddies.domain.discountinfo.repository.DiscountInfoRepository;
@@ -103,12 +103,13 @@ class DiscountInfoServiceTest {
     @DisplayName("할인 정보 등록이 정상적으로 되는지 검증")
     void registerDiscountInfoTest() {
         // given
-        DiscountRequestDto requestDto = DiscountRequestDto.builder()
+        DiscountRequest.RegisterDto requestDto = DiscountRequest.RegisterDto.builder()
             .title("할인 정보 제목")
             .startDate(LocalDate.of(2024, 7, 1))
             .endDate(LocalDate.of(2024, 7, 21))
             .discountRate(30)
             .siteUrl("http://example.com")
+            .thumbnailUrl("http://example.com2")
             .build();
 
         DiscountInfo entity = DiscountInfo.builder()
@@ -117,6 +118,7 @@ class DiscountInfoServiceTest {
             .endDate(LocalDate.of(2024, 7, 21))
             .discountRate(30)
             .siteUrl("http://example.com")
+            .thumbnailUrl("http://example.com2")
             .build();
 
         DiscountResponseDto responseDto = DiscountResponseDto.builder()
@@ -126,6 +128,7 @@ class DiscountInfoServiceTest {
             .endDate(LocalDate.of(2024, 7, 21))
             .discountRate(30)
             .siteUrl("http://example.com")
+            .thumbnailUrl("http://example.com2")
             .likeCount(0)
             .anonymousNumber(0)
             .build();
