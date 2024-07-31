@@ -1,7 +1,7 @@
 package com.bbteam.budgetbuddies.domain.discountinfo.service;
 
 import com.bbteam.budgetbuddies.domain.discountinfo.converter.DiscountInfoConverter;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequestDto;
+import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequest;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
 import com.bbteam.budgetbuddies.domain.discountinfo.repository.DiscountInfoRepository;
@@ -53,7 +53,7 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
 
     @Transactional
     @Override
-    public DiscountResponseDto registerDiscountInfo(DiscountRequestDto discountRequestDto) {
+    public DiscountResponseDto registerDiscountInfo(DiscountRequest.RegisterDto discountRequestDto) {
         /**
          * 1. RequestDto -> Entity로 변환
          * 2. Entity 저장
@@ -115,5 +115,49 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
         return discountInfoConverter.toDto(savedEntity);
     }
 
+    @Transactional
+    @Override
+    public DiscountResponseDto updateDiscountInfo(Long userId, DiscountRequest.UpdateDto discountRequestDto) {
+        /**
+         * 1. 사용자 조회 -> 없으면 에러
+         * 2. 할인정보 조회 -> 없으면 에러
+         * 3. 변경사항 업데이트
+         * 4. 변경사항 저장
+         * 5. Entity -> ResponseDto로 변환 후 리턴
+         */
 
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        DiscountInfo discountInfo = discountInfoRepository.findById(discountRequestDto.getId())
+            .orElseThrow(() -> new IllegalArgumentException("DiscountInfo not found"));
+
+        discountInfo.update(discountRequestDto); // 변경사항 업데이트
+
+        discountInfoRepository.save(discountInfo); // 변경사항 저장
+
+        return discountInfoConverter.toDto(discountInfo);
+    }
+
+    @Transactional
+    @Override
+    public String deleteDiscountInfo(Long userId, Long discountInfoId) {
+        /**
+         * 1. 사용자 조회 -> 없으면 에러
+         * 2. 할인정보 조회 -> 없으면 에러
+         * 3. Entity 삭제
+         * 4. 성공여부 반환
+         */
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        DiscountInfo discountInfo = discountInfoRepository.findById(discountInfoId)
+            .orElseThrow(() -> new IllegalArgumentException("DiscountInfo not found"));
+
+        discountInfoRepository.deleteById(discountInfoId);
+
+        return "Success";
+
+    }
 }
