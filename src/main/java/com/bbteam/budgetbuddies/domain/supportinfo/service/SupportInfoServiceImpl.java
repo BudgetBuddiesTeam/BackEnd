@@ -130,7 +130,7 @@ public class SupportInfoServiceImpl implements SupportInfoService {
             .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         SupportInfo supportInfo = supportInfoRepository.findById(supportRequestDto.getId())
-            .orElseThrow(() -> new IllegalArgumentException("DiscountInfo not found"));
+            .orElseThrow(() -> new IllegalArgumentException("SupportInfo not found"));
 
         supportInfo.update(supportRequestDto); // 변경사항 업데이트
 
