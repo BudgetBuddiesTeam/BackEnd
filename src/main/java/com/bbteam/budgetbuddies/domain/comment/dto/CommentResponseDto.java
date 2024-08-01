@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.comment.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,6 +18,7 @@ public class CommentResponseDto {
         private Long discountInfoId;
         private String content;
         private Integer anonymousNumber;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
         private LocalDateTime createdAt;
     }
 
@@ -28,6 +30,7 @@ public class CommentResponseDto {
         private Long supportInfoId;
         private String content;
         private Integer anonymousNumber;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
         private LocalDateTime createdAt;
     }
 
