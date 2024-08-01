@@ -46,23 +46,4 @@ public class DiscountInfoConverter {
             .build();
     }
 
-    /**
-     *
-     * @param requestDto
-     * @return entity
-     */
-    public DiscountInfo toEntity(DiscountRequest.UpdateDto requestDto) {
-
-        return DiscountInfo.builder()
-            .title(requestDto.getTitle())
-            .startDate(requestDto.getStartDate())
-            .endDate(requestDto.getEndDate())
-            .anonymousNumber(0)
-            .discountRate(requestDto.getDiscountRate())
-            .likeCount(0)
-            .siteUrl(requestDto.getSiteUrl())
-            .thumbnailUrl(requestDto.getThumbnailUrl())
-            .build();
-    }
-
 }
