@@ -1,7 +1,5 @@
 package com.bbteam.budgetbuddies.domain.comment.service;
 
-import com.bbteam.budgetbuddies.domain.comment.converter.CommentConverter;
-import com.bbteam.budgetbuddies.domain.comment.dto.CommentRequestDto;
 import com.bbteam.budgetbuddies.domain.comment.entity.Comment;
 import com.bbteam.budgetbuddies.domain.comment.repository.CommentRepository;
 
