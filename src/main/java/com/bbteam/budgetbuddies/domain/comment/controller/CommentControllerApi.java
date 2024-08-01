@@ -11,6 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface CommentControllerApi {
     @Operation(summary = "[User] 특정 할인 정보 게시글에 댓글달기", description = "특정 할인 정보 게시글에 댓글을 다는 API입니다.")
@@ -75,6 +78,49 @@ public interface CommentControllerApi {
     @Parameters({
             @Parameter(name = "commentId", description = "삭제할 댓글 id 입니다. parameter")
     })
-    @GetMapping("/comments/delete")
     ResponseEntity<String> deleteComment(Long commentId);
+
+    @Operation(summary = "[User] SupportInfo의 댓글 요청 API ", description = "특정 댓글을 요청하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @Parameters({
+            @Parameter(name = "commentId", description = "조회할 댓글 id 입니다. parameter")
+    })
+    ResponseEntity<CommentResponseDto.SupportInfoCommentDto> findSupportOne(@RequestParam("commentId")Long commentId);
+
+    @Operation(summary = "[User] SupprotInfo의 댓글 변경 API", description = "특정 댓글을 변경하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @Parameters({
+            @Parameter(name = "commentId", description = "변경할 댓글 id 입니다. requestbody"),
+            @Parameter(name = "comment", description = "변경할 댓글 내용입니다.. requestbody")
+
+    })
+    ResponseEntity<CommentResponseDto.SupportInfoCommentDto> modifySupportOne(
+            @RequestBody CommentRequestDto.CommentModifyDto dto);
+
+
+    @Operation(summary = "[User] DiscountInfo의 댓글 요청 API ", description = "특정 댓글을 요청하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @Parameters({
+            @Parameter(name = "commentId", description = "조회할 댓글 id 입니다. parameter")
+    })
+    ResponseEntity<CommentResponseDto.DiscountInfoCommentDto> findDiscountOne(@RequestParam("commentId")Long commentId);
+
+    @Operation(summary = "[User] DiscountInfo의 댓글 변경 API", description = "특정 댓글을 변경하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+    })
+    @Parameters({
+            @Parameter(name = "commentId", description = "변경할 댓글 id 입니다. requestbody"),
+            @Parameter(name = "comment", description = "변경할 댓글 내용입니다.. requestbody")
+
+    })
+    ResponseEntity<CommentResponseDto.DiscountInfoCommentDto> modifyDiscountOne(
+            @RequestBody CommentRequestDto.CommentModifyDto dto);
+
 }

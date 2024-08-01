@@ -3,7 +3,6 @@ package com.bbteam.budgetbuddies.domain.comment.controller;
 import com.bbteam.budgetbuddies.domain.comment.dto.CommentRequestDto;
 import com.bbteam.budgetbuddies.domain.comment.dto.CommentResponseDto;
 import com.bbteam.budgetbuddies.domain.comment.service.CommentService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class CommentControllerV2 implements CommentControllerApi {
+public class CommentController implements CommentControllerApi {
 
     @Qualifier("discountCommentService")
     private final CommentService<CommentRequestDto.DiscountInfoCommentDto,
@@ -22,9 +21,9 @@ public class CommentControllerV2 implements CommentControllerApi {
     private final CommentService<CommentRequestDto.SupportInfoCommentDto,
             CommentResponseDto.SupportInfoCommentDto> supportCommentService;
 
-    public CommentControllerV2(CommentService<CommentRequestDto.DiscountInfoCommentDto,
+    public CommentController(CommentService<CommentRequestDto.DiscountInfoCommentDto,
             CommentResponseDto.DiscountInfoCommentDto> discountCommentService,
-                               CommentService<CommentRequestDto.SupportInfoCommentDto,
+                             CommentService<CommentRequestDto.SupportInfoCommentDto,
                                        CommentResponseDto.SupportInfoCommentDto> supportCommentService) {
         this.discountCommentService = discountCommentService;
         this.supportCommentService = supportCommentService;
