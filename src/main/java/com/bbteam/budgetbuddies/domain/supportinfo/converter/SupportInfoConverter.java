@@ -1,8 +1,5 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.converter;
 
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequestDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequestDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.entity.SupportInfo;
@@ -24,6 +21,7 @@ public class SupportInfoConverter {
             .anonymousNumber(entity.getAnonymousNumber())
             .likeCount(entity.getLikeCount())
             .siteUrl(entity.getSiteUrl())
+            .thumbnailUrl(entity.getThumbnailUrl())
             .build();
     }
 
@@ -41,6 +39,7 @@ public class SupportInfoConverter {
             .anonymousNumber(0)
             .likeCount(0)
             .siteUrl(requestDto.getSiteUrl())
+            .thumbnailUrl(requestDto.getThumbnailUrl())
             .build();
     }
 }

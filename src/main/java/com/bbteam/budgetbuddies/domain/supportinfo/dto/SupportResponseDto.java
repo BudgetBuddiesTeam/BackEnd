@@ -27,4 +27,6 @@ public class SupportResponseDto {
 
     private String siteUrl;
 
+    private String thumbnailUrl;
+
 }

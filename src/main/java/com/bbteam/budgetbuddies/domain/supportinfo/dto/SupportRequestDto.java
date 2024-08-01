@@ -21,4 +21,6 @@ public class SupportRequestDto {
 
     private String siteUrl;
 
+    private String thumbnailUrl;
+
 }
