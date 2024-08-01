@@ -96,4 +96,20 @@ public interface DiscountInfoApi {
         @PathVariable Long discountInfoId
     );
 
+    @Operation(summary = "[ADMIN] 특정 할인정보 가져오기 API", description = "ID를 통해 특정 할인정보를 가져오는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
+    @Parameters({
+        @Parameter(name = "userId", description = "조회할 사용자의 id입니다."),
+        @Parameter(name = "discountInfoId", description = "조회할 할인 정보의 id입니다."),
+    })
+    public ResponseEntity<DiscountResponseDto> getDiscountInfo(
+        @RequestParam Long userId,
+        @PathVariable Long discountInfoId
+    );
+
 }

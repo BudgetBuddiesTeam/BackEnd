@@ -61,7 +61,7 @@ public class DiscountInfoController implements DiscountInfoApi {
     }
 
     @Override
-    @DeleteMapping("{discountInfoId}")
+    @DeleteMapping("/{discountInfoId}")
     public ResponseEntity<String> deleteDiscountInfo(
         @RequestParam Long userId,
         @PathVariable Long discountInfoId
@@ -69,6 +69,18 @@ public class DiscountInfoController implements DiscountInfoApi {
         String message = discountInfoService.deleteDiscountInfo(userId, discountInfoId);
 
         return ResponseEntity.ok(message);
+    }
+
+
+    @Override
+    @GetMapping("/{discountInfoId}")
+    public ResponseEntity<DiscountResponseDto> getDiscountInfo(
+        @RequestParam Long userId,
+        @PathVariable Long discountInfoId
+    ) {
+        DiscountResponseDto discountResponseDto = discountInfoService.getDiscountInfoById(userId, discountInfoId);
+
+        return ResponseEntity.ok(discountResponseDto);
     }
 
 }
