@@ -1,6 +1,8 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.entity;
 
 import com.bbteam.budgetbuddies.common.BaseEntity;
+import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequest;
+import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.*;
@@ -46,6 +48,14 @@ public class SupportInfo extends BaseEntity {
     public Integer addAndGetAnonymousNumber() {
         this.anonymousNumber++;
         return anonymousNumber;
+    }
+
+    public void update(SupportRequest.UpdateDto supportRequestDto) {
+        this.title = supportRequestDto.getTitle();
+        this.startDate = supportRequestDto.getStartDate();
+        this.endDate = supportRequestDto.getEndDate();
+        this.siteUrl = supportRequestDto.getSiteUrl();
+        this.thumbnailUrl = supportRequestDto.getThumbnailUrl();
     }
 
 }
