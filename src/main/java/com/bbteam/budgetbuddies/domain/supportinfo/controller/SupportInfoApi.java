@@ -1,6 +1,6 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.controller;
 
-import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequestDto;
+import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,7 +27,7 @@ public interface SupportInfoApi {
         @Parameter(name = "page", description = "페이지 번호, 0번이 1 페이지 입니다. (기본값은 0입니다.)"),
         @Parameter(name = "size", description = "한 페이지에 불러올 데이터 개수입니다. (기본값은 10개입니다.)")
     })
-    public ResponseEntity<Page<SupportResponseDto>> getSupportsByYearAndMonth(
+    ResponseEntity<Page<SupportResponseDto>> getSupportsByYearAndMonth(
         @RequestParam Integer year,
         @RequestParam Integer month,
         @RequestParam(defaultValue = "0") Integer page,
@@ -41,8 +41,8 @@ public interface SupportInfoApi {
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    public ResponseEntity<SupportResponseDto> registerDiscountInfo(
-        @RequestBody SupportRequestDto requestDto
+    ResponseEntity<SupportResponseDto> registerSupportInfo(
+        @RequestBody SupportRequest.RegisterDto requestDto
     );
 
     @Operation(summary = "[User] 특정 지원정보에 좋아요 클릭 API", description = "특정 지원정보에 좋아요 버튼을 클릭하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
@@ -56,7 +56,54 @@ public interface SupportInfoApi {
         @Parameter(name = "userId", description = "좋아요를 누른 사용자의 id입니다."),
         @Parameter(name = "supportInfoId", description = "좋아요를 누를 지원정보의 id입니다."),
     })
-    public ResponseEntity<SupportResponseDto> likeDiscountInfo(
+    ResponseEntity<SupportResponseDto> likeSupportInfo(
+        @RequestParam Long userId,
+        @PathVariable Long supportInfoId
+    );
+
+    @Operation(summary = "[ADMIN] 특정 지원정보 수정하기 API", description = "특정 지원정보를 수정하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
+    @Parameters({
+        @Parameter(name = "userId", description = "수정할 사용자의 id입니다."),
+    })
+    ResponseEntity<SupportResponseDto> updateSupportInfo(
+        @RequestParam Long userId,
+        @RequestBody SupportRequest.UpdateDto supportRequestDto
+    );
+
+    @Operation(summary = "[ADMIN] 특정 지원정보 삭제하기 API", description = "특정 지원정보를 삭제하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
+    @Parameters({
+        @Parameter(name = "userId", description = "삭제할 사용자의 id입니다."),
+        @Parameter(name = "supportInfoId", description = "삭제할 지원 정보의 id입니다."),
+    })
+    ResponseEntity<String> deleteSupportInfo(
+        @RequestParam Long userId,
+        @PathVariable Long supportInfoId
+    );
+
+    @Operation(summary = "[ADMIN] 특정 지원정보 가져오기 API", description = "ID를 통해 특정 지원정보를 가져오는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
+    @Parameters({
+        @Parameter(name = "userId", description = "조회할 사용자의 id입니다."),
+        @Parameter(name = "supportInfoId", description = "조회할 지원 정보의 id입니다."),
+    })
+    ResponseEntity<SupportResponseDto> getSupportInfo(
         @RequestParam Long userId,
         @PathVariable Long supportInfoId
     );

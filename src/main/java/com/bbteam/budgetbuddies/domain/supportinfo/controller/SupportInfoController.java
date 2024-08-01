@@ -1,14 +1,10 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.controller;
 
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequestDto;
+import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequest;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
-import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequestDto;
+import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.service.SupportInfoService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +32,8 @@ public class SupportInfoController implements SupportInfoApi {
 
     @Override
     @PostMapping("")
-    public ResponseEntity<SupportResponseDto> registerDiscountInfo(
-        @RequestBody SupportRequestDto requestDto
+    public ResponseEntity<SupportResponseDto> registerSupportInfo(
+        @RequestBody SupportRequest.RegisterDto requestDto
     ) {
         SupportResponseDto supportResponseDto = supportInfoService.registerSupportInfo(requestDto);
 
@@ -45,12 +41,45 @@ public class SupportInfoController implements SupportInfoApi {
     }
 
     @Override
-    @PostMapping("/{supportInfoId}/likes")
-    public ResponseEntity<SupportResponseDto> likeDiscountInfo(
+    @PostMapping("/likes/{supportInfoId}")
+    public ResponseEntity<SupportResponseDto> likeSupportInfo(
         @RequestParam Long userId,
         @PathVariable Long supportInfoId
     ) {
         SupportResponseDto supportResponseDto = supportInfoService.toggleLike(userId, supportInfoId);
+
+        return ResponseEntity.ok(supportResponseDto);
+    }
+
+    @Override
+    @PutMapping("")
+    public ResponseEntity<SupportResponseDto> updateSupportInfo(
+        @RequestParam Long userId,
+        @RequestBody SupportRequest.UpdateDto supportRequestDto
+    ) {
+        SupportResponseDto supportResponseDto = supportInfoService.updateSupportInfo(userId, supportRequestDto);
+
+        return ResponseEntity.ok(supportResponseDto);
+    }
+
+    @Override
+    @DeleteMapping("/{supportInfoId}")
+    public ResponseEntity<String> deleteSupportInfo(
+        @RequestParam Long userId,
+        @PathVariable Long supportInfoId
+    ) {
+        String message = supportInfoService.deleteSupportInfo(userId, supportInfoId);
+
+        return ResponseEntity.ok(message);
+    }
+
+    @Override
+    @GetMapping("/{supportInfoId}")
+    public ResponseEntity<SupportResponseDto> getSupportInfo(
+        @RequestParam Long userId,
+        @PathVariable Long supportInfoId
+    ) {
+        SupportResponseDto supportResponseDto = supportInfoService.getSupportInfoById(userId, supportInfoId);
 
         return ResponseEntity.ok(supportResponseDto);
     }
