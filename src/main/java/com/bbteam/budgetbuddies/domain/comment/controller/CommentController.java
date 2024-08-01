@@ -38,9 +38,9 @@ public class CommentController implements CommentControllerApi {
     }
 
 
-    @GetMapping("/discounts/comments")
+    @GetMapping("/discounts/{discountInfoId}/comments")
     public ResponseEntity<Page<CommentResponseDto.DiscountInfoCommentDto>> findAllByDiscountInfo(
-            @RequestParam("discountInfoId") Long discountInfoId,
+            @PathVariable("discountInfoId") Long discountInfoId,
             @PageableDefault(size = 20, page = 0) Pageable pageable){
         Page<CommentResponseDto.DiscountInfoCommentDto> result = discountCommentService.findByInfoWithPaging(discountInfoId, pageable);
         return ResponseEntity.ok(result);
@@ -56,22 +56,22 @@ public class CommentController implements CommentControllerApi {
     }
 
 
-    @GetMapping("/supports/comments")
+    @GetMapping("/supports/{supportInfoId}/comments")
     public ResponseEntity<Page<CommentResponseDto.SupportInfoCommentDto>> findAllBySupportInfo(
-            @RequestParam("supportInfoId") Long supportInfoId,
+            @PathVariable("supportInfoId") Long supportInfoId,
             @PageableDefault(size = 20, page = 0)Pageable pageable){
         Page<CommentResponseDto.SupportInfoCommentDto> result = supportCommentService.findByInfoWithPaging(supportInfoId, pageable);
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/comments/delete")
-    public ResponseEntity<String> deleteComment(@RequestParam("commentId") Long commentId) {
+    @PostMapping("/comments/{commentId}/delete")
+    public ResponseEntity<String> deleteComment(@PathVariable("commentId") Long commentId) {
         discountCommentService.deleteComment(commentId);
         return ResponseEntity.ok("ok");
     }
 
-    @GetMapping("/supports/comments/modify")
-    public ResponseEntity<CommentResponseDto.SupportInfoCommentDto> findSupportOne(@RequestParam("commentId")Long commentId) {
+    @GetMapping("/supports/comments/{commentId}/getOne")
+    public ResponseEntity<CommentResponseDto.SupportInfoCommentDto> findSupportOne(@PathVariable("commentId")Long commentId) {
         CommentResponseDto.SupportInfoCommentDto result = supportCommentService.findCommentOne(commentId);
         return ResponseEntity.ok(result);
     }
@@ -83,8 +83,8 @@ public class CommentController implements CommentControllerApi {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/discounts/comments/modify")
-    public ResponseEntity<CommentResponseDto.DiscountInfoCommentDto> findDiscountOne(@RequestParam("commentId")Long commentId) {
+    @GetMapping("/discounts/comments/{commentId}/getOne")
+    public ResponseEntity<CommentResponseDto.DiscountInfoCommentDto> findDiscountOne(@PathVariable("commentId")Long commentId) {
         CommentResponseDto.DiscountInfoCommentDto result = discountCommentService.findCommentOne(commentId);
         return ResponseEntity.ok(result);
     }
