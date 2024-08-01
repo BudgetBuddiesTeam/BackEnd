@@ -1,40 +1,39 @@
 package com.bbteam.budgetbuddies.domain.comment.service;
 
+import com.bbteam.budgetbuddies.domain.comment.converter.CommentConverter;
 import com.bbteam.budgetbuddies.domain.comment.dto.CommentRequestDto;
 import com.bbteam.budgetbuddies.domain.comment.dto.CommentResponseDto;
+import com.bbteam.budgetbuddies.domain.comment.entity.Comment;
+import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
+import com.bbteam.budgetbuddies.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-public interface CommentService {
-    CommentResponseDto.SupportInfoSuccessDto saveSupportComment(Long userId, CommentRequestDto.SupportInfoCommentDto dto);
-    CommentResponseDto.DiscountInfoSuccessDto saveDiscountComment(Long userId, CommentRequestDto.DiscountInfoCommentDto dto);
+public interface CommentService<R, T> {
 
 
-    /**
-     *
-     * @param discountInfoId
-     * @return List<CommentResponseDto.DiscountInfoCommentDto>
-     * 해당 로직은 익명 구분을 위한 익명 구분 숫자도 같이 return 합니다.
-     */
-    List<CommentResponseDto.DiscountInfoCommentDto> findByDiscountInfo(Long discountInfoId);
+    T saveComment(Long userId, R dto);
 
-    /**
-     *
-     * @param supportInfoId
-     * @return List<CommentResponseDto.SupportInfoCommentDto>
-     * 해당 로직은 익명 구분을 위한 익명 구분 숫자도 같이 return 합니다.
-     */
-    List<CommentResponseDto.SupportInfoCommentDto> findBySupportInfo(Long supportInfoId);
 
-    Page<CommentResponseDto.DiscountInfoCommentDto> findByDiscountInfoWithPaging(Long discountInfoId, Pageable pageable);
-    Page<CommentResponseDto.SupportInfoCommentDto> findBySupportInfoWithPaging(Long supportInfoId, Pageable pageable);
+    List<T> findByInfo(Long infoId);
+
+
+    Page<T> findByInfoWithPaging(Long infoId, Pageable pageable);
+
 
     void deleteComment(Long commentId);
 
+    T findCommentOne(Long commentId);
 
 
 
+    T modifyComment(CommentRequestDto.CommentModifyDto dto);
 
+    Optional<Comment> findById(Long commentId);
 }

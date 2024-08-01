@@ -12,10 +12,10 @@ import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -39,9 +39,15 @@ import java.util.List;
  */
 @SpringBootTest
 @Transactional
-class CommentServiceTest {
+class CommentServiceTestV2 {
+
+    @Qualifier("discountCommentService")
     @Autowired
-    CommentService commentService;
+    CommentService discountCommentService;
+    
+    @Qualifier("supportCommentService")
+    @Autowired
+    com.bbteam.budgetbuddies.domain.comment.service.CommentService supportCommentService;
 
     @Autowired
     UserRepository userRepository;
@@ -72,10 +78,10 @@ class CommentServiceTest {
                 .content("굿")
                 .build();
 
-        commentService.saveDiscountComment(user1.getId(), dto1);
+        discountCommentService.saveComment(user1.getId(), dto1);
         em.flush();
 
-        List<CommentResponseDto.DiscountInfoCommentDto> returnDto = commentService.findByDiscountInfo(sale1.getId());
+        List<CommentResponseDto.DiscountInfoCommentDto> returnDto = discountCommentService.findByInfo(sale1.getId());
 
         Assertions.assertThat(returnDto.size()).isEqualTo(1);
         Assertions.assertThat(returnDto.get(0).getDiscountInfoId()).isEqualTo(sale1.getId());
@@ -126,14 +132,14 @@ class CommentServiceTest {
                 .content("유용해요!")
                 .build();
 
-        commentService.saveDiscountComment(user1.getId(), dto1);
-        commentService.saveDiscountComment(user2.getId(), dto2);
-        commentService.saveDiscountComment(user1.getId(), dto3);
+        discountCommentService.saveComment(user1.getId(), dto1);
+        discountCommentService.saveComment(user2.getId(), dto2);
+        discountCommentService.saveComment(user1.getId(), dto3);
 
         em.flush();
 
-        List<CommentResponseDto.DiscountInfoCommentDto> returnDto = commentService.findByDiscountInfo(sale1.getId());
-        List<CommentResponseDto.DiscountInfoCommentDto> returnDto2 = commentService.findByDiscountInfo(sale2.getId());
+        List<CommentResponseDto.DiscountInfoCommentDto> returnDto = discountCommentService.findByInfo(sale1.getId());
+        List<CommentResponseDto.DiscountInfoCommentDto> returnDto2 = discountCommentService.findByInfo(sale2.getId());
         Assertions.assertThat(returnDto.size()).isEqualTo(2);
         Assertions.assertThat(returnDto.get(0).getDiscountInfoId()).isEqualTo(sale1.getId());
         Assertions.assertThat(returnDto.get(0).getUserId()).isEqualTo(user1.getId());
@@ -199,16 +205,16 @@ class CommentServiceTest {
                 .content("구웃!")
                 .build();
 
-        commentService.saveDiscountComment(user1.getId(), dto1);
-        commentService.saveDiscountComment(user2.getId(), dto2);
-        commentService.saveDiscountComment(user1.getId(), dto3);
+        discountCommentService.saveComment(user1.getId(), dto1);
+        discountCommentService.saveComment(user2.getId(), dto2);
+        discountCommentService.saveComment(user1.getId(), dto3);
 
-        commentService.saveDiscountComment(user1.getId(), dto4);
-        commentService.saveDiscountComment(user3.getId(), dto4);
+        discountCommentService.saveComment(user1.getId(), dto4);
+        discountCommentService.saveComment(user3.getId(), dto4);
 
         em.flush();
 
-        List<CommentResponseDto.DiscountInfoCommentDto> result = commentService.findByDiscountInfo(sale1.getId());
+        List<CommentResponseDto.DiscountInfoCommentDto> result = discountCommentService.findByInfo(sale1.getId());
         Integer test1 = result.get(0).getAnonymousNumber();
         Integer test2 = result.get(1).getAnonymousNumber();
         Integer test3 = result.get(2).getAnonymousNumber();
@@ -260,14 +266,14 @@ class CommentServiceTest {
                 .content("유용해요!")
                 .build();
 
-        commentService.saveSupportComment(user1.getId(), dto1);
-        commentService.saveSupportComment(user2.getId(), dto2);
-         commentService.saveSupportComment(user1.getId(), dto3);
+        supportCommentService.saveComment(user1.getId(), dto1);
+        supportCommentService.saveComment(user2.getId(), dto2);
+         supportCommentService.saveComment(user1.getId(), dto3);
 
         em.flush();
 
-        List<CommentResponseDto.SupportInfoCommentDto> returnDto = commentService.findBySupportInfo(info1.getId());
-        List<CommentResponseDto.SupportInfoCommentDto> returnDto2 = commentService.findBySupportInfo(info2.getId());
+        List<CommentResponseDto.SupportInfoCommentDto> returnDto = supportCommentService.findByInfo(info1.getId());
+        List<CommentResponseDto.SupportInfoCommentDto> returnDto2 = supportCommentService.findByInfo(info2.getId());
         Assertions.assertThat(returnDto.size()).isEqualTo(2);
         Assertions.assertThat(returnDto.get(0).getSupportInfoId()).isEqualTo(info1.getId());
         Assertions.assertThat(returnDto.get(0).getUserId()).isEqualTo(user1.getId());
@@ -347,17 +353,17 @@ class CommentServiceTest {
                 .content("굿")
                 .build();
 
-        commentService.saveSupportComment(user1.getId(), dto1);
-         commentService.saveSupportComment(user2.getId(), dto2);
-         commentService.saveSupportComment(user1.getId(), dto3);
-         commentService.saveSupportComment(user3.getId(), dto4);
-         commentService.saveSupportComment(user4.getId(), dto5);
-         commentService.saveSupportComment(user1.getId(), dto6);
+        supportCommentService.saveComment(user1.getId(), dto1);
+         supportCommentService.saveComment(user2.getId(), dto2);
+         supportCommentService.saveComment(user1.getId(), dto3);
+         supportCommentService.saveComment(user3.getId(), dto4);
+         supportCommentService.saveComment(user4.getId(), dto5);
+         supportCommentService.saveComment(user1.getId(), dto6);
 
         em.flush();
 
-        List<CommentResponseDto.SupportInfoCommentDto> returnDto = commentService.findBySupportInfo(info1.getId());
-        List<CommentResponseDto.SupportInfoCommentDto> returnDto2 = commentService.findBySupportInfo(info2.getId());
+        List<CommentResponseDto.SupportInfoCommentDto> returnDto = supportCommentService.findByInfo(info1.getId());
+        List<CommentResponseDto.SupportInfoCommentDto> returnDto2 = supportCommentService.findByInfo(info2.getId());
 
         Integer test1 = returnDto.get(0).getAnonymousNumber();
         Integer test2 = returnDto.get(1).getAnonymousNumber();
@@ -422,19 +428,19 @@ class CommentServiceTest {
                 .content("구웃!")
                 .build();
 
-        commentService.saveDiscountComment(user1.getId(), dto1);
-        commentService.saveDiscountComment(user2.getId(), dto2);
-        commentService.saveDiscountComment(user1.getId(), dto3);
+        discountCommentService.saveComment(user1.getId(), dto1);
+        discountCommentService.saveComment(user2.getId(), dto2);
+        discountCommentService.saveComment(user1.getId(), dto3);
 
-        commentService.saveDiscountComment(user1.getId(), dto4);
-        commentService.saveDiscountComment(user3.getId(), dto4);
-        commentService.saveDiscountComment(user2.getId(), dto4);
+        discountCommentService.saveComment(user1.getId(), dto4);
+        discountCommentService.saveComment(user3.getId(), dto4);
+        discountCommentService.saveComment(user2.getId(), dto4);
         //sale1 = 5
         em.flush();
 
         PageRequest pageRequest1 = PageRequest.of(0, 2);
 
-        Page<CommentResponseDto.DiscountInfoCommentDto> result1 = commentService.findByDiscountInfoWithPaging(sale1.getId(), pageRequest1);
+        Page<CommentResponseDto.DiscountInfoCommentDto> result1 = discountCommentService.findByInfoWithPaging(sale1.getId(), pageRequest1);
         Assertions.assertThat(result1.getTotalElements()).isEqualTo(5);
         Assertions.assertThat(result1.getTotalPages()).isEqualTo(3);
         Assertions.assertThat(result1.hasNext()).isTrue();
@@ -446,7 +452,7 @@ class CommentServiceTest {
 
         PageRequest pageRequest2 = PageRequest.of(1, 3);
 
-        Page<CommentResponseDto.DiscountInfoCommentDto> result2 = commentService.findByDiscountInfoWithPaging(sale1.getId(), pageRequest2);
+        Page<CommentResponseDto.DiscountInfoCommentDto> result2 = discountCommentService.findByInfoWithPaging(sale1.getId(), pageRequest2);
         Assertions.assertThat(result2.getTotalElements()).isEqualTo(5);
         Assertions.assertThat(result2.getTotalPages()).isEqualTo(2);
         Assertions.assertThat(result2.hasNext()).isFalse();
@@ -523,18 +529,18 @@ class CommentServiceTest {
                 .content("굿")
                 .build();
 
-        commentService.saveSupportComment(user1.getId(), dto1);
-        commentService.saveSupportComment(user2.getId(), dto2);
-        commentService.saveSupportComment(user1.getId(), dto3); // 얘만 info2
-        commentService.saveSupportComment(user3.getId(), dto4);
-        commentService.saveSupportComment(user4.getId(), dto5);
-        commentService.saveSupportComment(user1.getId(), dto6);
-        commentService.saveSupportComment(user2.getId(), dto5);
-        commentService.saveSupportComment(user3.getId(), dto5);
+        supportCommentService.saveComment(user1.getId(), dto1);
+        supportCommentService.saveComment(user2.getId(), dto2);
+        supportCommentService.saveComment(user1.getId(), dto3); // 얘만 info2
+        supportCommentService.saveComment(user3.getId(), dto4);
+        supportCommentService.saveComment(user4.getId(), dto5);
+        supportCommentService.saveComment(user1.getId(), dto6);
+        supportCommentService.saveComment(user2.getId(), dto5);
+        supportCommentService.saveComment(user3.getId(), dto5);
         em.flush();
 
         PageRequest pageRequest1 = PageRequest.of(0, 2);
-        Page<CommentResponseDto.SupportInfoCommentDto> result1 = commentService.findBySupportInfoWithPaging(info1.getId(), pageRequest1);
+        Page<CommentResponseDto.SupportInfoCommentDto> result1 = supportCommentService.findByInfoWithPaging(info1.getId(), pageRequest1);
 
         Assertions.assertThat(result1.getTotalElements()).isEqualTo(7);
         Assertions.assertThat(result1.getTotalPages()).isEqualTo(4);
@@ -546,7 +552,7 @@ class CommentServiceTest {
         Assertions.assertThat(list1.get(0).getAnonymousNumber()).isEqualTo(1);
 
         PageRequest pageRequest2 = PageRequest.of(1, 5);
-        Page<CommentResponseDto.SupportInfoCommentDto> result2 = commentService.findBySupportInfoWithPaging(info1.getId(), pageRequest2);
+        Page<CommentResponseDto.SupportInfoCommentDto> result2 = supportCommentService.findByInfoWithPaging(info1.getId(), pageRequest2);
 
         Assertions.assertThat(result2.getTotalElements()).isEqualTo(7);
         Assertions.assertThat(result2.getTotalPages()).isEqualTo(2);

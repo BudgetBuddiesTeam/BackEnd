@@ -41,4 +41,9 @@ public class Comment extends BaseEntity {
 	@Column(nullable = false)
 	private Integer anonymousNumber;
 
+	public void modifyComment(String newComment) {
+		this.content = newComment;
+		return;
+	}
+
 }
