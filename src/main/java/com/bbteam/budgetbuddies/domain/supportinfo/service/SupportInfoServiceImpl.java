@@ -1,14 +1,7 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.service;
 
-import com.bbteam.budgetbuddies.domain.discountinfo.converter.DiscountInfoConverter;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequestDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
-import com.bbteam.budgetbuddies.domain.discountinfo.repository.DiscountInfoRepository;
-import com.bbteam.budgetbuddies.domain.discountinfolike.entity.DiscountInfoLike;
-import com.bbteam.budgetbuddies.domain.discountinfolike.repository.DiscountInfoLikeRepository;
 import com.bbteam.budgetbuddies.domain.supportinfo.converter.SupportInfoConverter;
-import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequestDto;
+import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.entity.SupportInfo;
 import com.bbteam.budgetbuddies.domain.supportinfo.repository.SupportInfoRepository;
@@ -60,13 +53,13 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
     @Transactional
     @Override
-    public SupportResponseDto registerSupportInfo(SupportRequestDto supportRequestDto) {
+    public SupportResponseDto registerSupportInfo(SupportRequest.RegisterDto supportRequest) {
         /**
          * 1. RequestDto -> Entity로 변환
          * 2. Entity 저장
          * 3. Entity -> ResponseDto로 변환 후 리턴
          */
-        SupportInfo entity = supportInfoConverter.toEntity(supportRequestDto);
+        SupportInfo entity = supportInfoConverter.toEntity(supportRequest);
 
         supportInfoRepository.save(entity);
 
@@ -120,5 +113,70 @@ public class SupportInfoServiceImpl implements SupportInfoService {
         SupportInfo savedEntity = supportInfoRepository.save(supportInfo);
 
         return supportInfoConverter.toDto(savedEntity);
+    }
+
+    @Transactional
+    @Override
+    public SupportResponseDto updateSupportInfo(Long userId, SupportRequest.UpdateDto supportRequestDto) {
+        /**
+         * 1. 사용자 조회 -> 없으면 에러
+         * 2. 지원정보 조회 -> 없으면 에러
+         * 3. 변경사항 업데이트
+         * 4. 변경사항 저장
+         * 5. Entity -> ResponseDto로 변환 후 리턴
+         */
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        SupportInfo supportInfo = supportInfoRepository.findById(supportRequestDto.getId())
+            .orElseThrow(() -> new IllegalArgumentException("SupportInfo not found"));
+
+        supportInfo.update(supportRequestDto); // 변경사항 업데이트
+
+        supportInfoRepository.save(supportInfo); // 변경사항 저장
+
+        return supportInfoConverter.toDto(supportInfo);
+    }
+
+    @Transactional
+    @Override
+    public String deleteSupportInfo(Long userId, Long supportInfoId) {
+        /**
+         * 1. 사용자 조회 -> 없으면 에러
+         * 2. 지원정보 조회 -> 없으면 에러
+         * 3. Entity 삭제
+         * 4. 성공여부 반환
+         */
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        SupportInfo supportInfo = supportInfoRepository.findById(supportInfoId)
+            .orElseThrow(() -> new IllegalArgumentException("SupportInfo not found"));
+
+        supportInfoRepository.deleteById(supportInfoId);
+
+        return "Success";
+
+    }
+
+    @Transactional
+    @Override
+    public SupportResponseDto getSupportInfoById(Long userId, Long supportInfoId) {
+        /**
+         * 1. 사용자 조회 -> 없으면 에러
+         * 2. 지원정보 조회 -> 없으면 에러
+         * 3. Entity 조회
+         * 4. Entity -> ResponseDto로 변환 후 리턴
+         */
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        SupportInfo supportInfo = supportInfoRepository.findById(supportInfoId)
+            .orElseThrow(() -> new IllegalArgumentException("SupportInfo not found"));
+
+        return supportInfoConverter.toDto(supportInfo);
     }
 }

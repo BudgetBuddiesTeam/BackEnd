@@ -1,8 +1,6 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.service;
 
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequestDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
-import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequestDto;
+import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import org.springframework.data.domain.Page;
 
@@ -14,7 +12,14 @@ public interface SupportInfoService {
         Integer size
     );
 
-    SupportResponseDto registerSupportInfo(SupportRequestDto supportRequestDto);
+    SupportResponseDto registerSupportInfo(SupportRequest.RegisterDto supportRequest);
 
     SupportResponseDto toggleLike(Long userId, Long supportInfoId);
+
+    SupportResponseDto updateSupportInfo(Long userId, SupportRequest.UpdateDto supportRequestDto);
+
+    String deleteSupportInfo(Long userId, Long supportInfoId);
+
+    SupportResponseDto getSupportInfoById(Long userId, Long supportInfoId);
+
 }
