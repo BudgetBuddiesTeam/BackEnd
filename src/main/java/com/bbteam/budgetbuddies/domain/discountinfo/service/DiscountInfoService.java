@@ -18,6 +18,8 @@ public interface DiscountInfoService {
 
     DiscountResponseDto updateDiscountInfo(Long userId, DiscountRequest.UpdateDto discountRequestDto);
 
-    public String deleteDiscountInfo(Long userId, Long discountInfoId);
+    String deleteDiscountInfo(Long userId, Long discountInfoId);
+
+    DiscountResponseDto getDiscountInfoById(Long userId, Long discountInfoId);
 
 }

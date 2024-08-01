@@ -160,4 +160,23 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
         return "Success";
 
     }
+
+    @Transactional
+    @Override
+    public DiscountResponseDto getDiscountInfoById(Long userId, Long discountInfoId) {
+        /**
+         * 1. 사용자 조회 -> 없으면 에러
+         * 2. 할인정보 조회 -> 없으면 에러
+         * 3. Entity 조회
+         * 4. Entity -> ResponseDto로 변환 후 리턴
+         */
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        DiscountInfo discountInfo = discountInfoRepository.findById(discountInfoId)
+            .orElseThrow(() -> new IllegalArgumentException("DiscountInfo not found"));
+
+        return discountInfoConverter.toDto(discountInfo);
+    }
 }
