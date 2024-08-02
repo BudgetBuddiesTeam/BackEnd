@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TopConsumptionResponseDTO {
 
-	private String category;
+	private String categoryName;
 
 	private Long consumeAmount;
 }

@@ -10,7 +10,7 @@ public class TopConsumptionConverter {
 	public static TopConsumptionResponseDTO fromEntity(ConsumptionGoal consumptionGoal) {
 
 		return TopConsumptionResponseDTO.builder()
-			.category(consumptionGoal.getCategory().getName())
+			.categoryName(consumptionGoal.getCategory().getName())
 			.consumeAmount(consumptionGoal.getConsumeAmount())
 			.build();
 	}
