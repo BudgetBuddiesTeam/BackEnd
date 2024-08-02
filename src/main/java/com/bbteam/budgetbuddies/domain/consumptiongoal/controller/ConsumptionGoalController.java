@@ -17,6 +17,7 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisRe
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
 
@@ -70,5 +71,16 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 
 		return ResponseEntity.ok()
 			.body(consumptionGoalService.updateConsumptionGoals(userId, consumptionGoalListRequestDto));
+	}
+
+	@GetMapping("/top-consumption")
+	public ResponseEntity<?> getConsumptionGoal(@RequestParam(name = "top", defaultValue = "3") int top,
+		@RequestParam(name = "userId") Long userId,
+		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
+		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
+		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
+		List<TopConsumptionResponseDTO> response = consumptionGoalService.getTopConsumption(top, userId,
+			peerAgeStart, peerAgeEnd, peerGender);
+		return ResponseEntity.ok(response);
 	}
 }
