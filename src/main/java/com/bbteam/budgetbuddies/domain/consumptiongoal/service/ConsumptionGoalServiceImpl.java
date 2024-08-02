@@ -19,12 +19,14 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionAnal
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoalConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.PeerInfoConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.TopCategoryConverter;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.TopConsumptionConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
@@ -84,7 +86,8 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		ConsumptionGoal currentWeekConsumptionAmount = consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
 				topConsumptionGoal.getCategory().getId(), startOfWeek, endOfWeek)
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(() -> new IllegalArgumentException("카테고리 ID "
+				+ topConsumptionGoal.getCategory().getId() + "에 대한 현재 주 소비 데이터가 없습니다."));
 
 		Long totalConsumptionAmountForCurrentWeek = currentWeekConsumptionAmount.getConsumeAmount();
 
@@ -216,17 +219,29 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	@Override
 	public void updateConsumeAmount(Long userId, Long categoryId, Long amount) {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new IllegalArgumentException("Not found user"));
+			.orElseThrow(() -> new IllegalArgumentException("Not found user"));
 
 		Category category = categoryRepository.findById(categoryId)
-				.orElseThrow(() -> new IllegalArgumentException("Not found Category"));
+			.orElseThrow(() -> new IllegalArgumentException("Not found Category"));
 
 		LocalDate thisMonth = LocalDate.now().withDayOfMonth(1);
 		ConsumptionGoal consumptionGoal = consumptionGoalRepository
-				.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, category, thisMonth)
-				.orElseGet(() -> generateConsumptionGoal(user, category, thisMonth));
+			.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, category, thisMonth)
+			.orElseGet(() -> generateConsumptionGoal(user, category, thisMonth));
 
 		consumptionGoal.updateConsumeAmount(amount);
 		consumptionGoalRepository.save(consumptionGoal);
+	}
+
+	@Override
+	public List<TopConsumptionResponseDTO> getTopConsumption(int top, Long userId, int peerAgeS, int peerAgeE,
+		String peerG) {
+
+		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
+
+		List<ConsumptionGoal> topConsumptions = consumptionGoalRepository.findTopConsumptionAndConsumeAmount(top,
+			peerAgeStart,
+			peerAgeEnd, peerGender);
+		return topConsumptions.stream().map(TopConsumptionConverter::fromEntity).collect(Collectors.toList());
 	}
 }
