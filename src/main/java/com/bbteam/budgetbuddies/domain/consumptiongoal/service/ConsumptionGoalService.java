@@ -9,6 +9,7 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisRe
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
 
 @Service
@@ -25,5 +26,9 @@ public interface ConsumptionGoalService {
 		ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
 
 	ConsumptionAnalysisResponseDTO getTopCategoryAndConsumptionAmount(Long userId);
+
 	void updateConsumeAmount(Long userId, Long categoryId, Long amount);
+
+	List<TopConsumptionResponseDTO> getTopConsumption(int top, Long userId, int peerAgeS, int peerAgeE,
+		String peerG);
 }
