@@ -31,6 +31,7 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalReques
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
@@ -384,5 +385,54 @@ class ConsumptionGoalServiceTest {
 		assertThat(result.get(2).getGoalAmount()).isEqualTo(topConsumptionGoal3.getGoalAmount());
 		assertThat(result.get(3).getCategoryName()).isEqualTo(defaultCategory4.getName());
 		assertThat(result.get(3).getGoalAmount()).isEqualTo(topConsumptionGoal4.getGoalAmount());
+	}
+
+	@Test
+	@DisplayName("getTopConsumption : 또래들이 가장 많이 소비한 카테고리 top3 조회 성공")
+	void getTopConsumptionCategories_Success() {
+		// given
+		Category defaultCategory = Mockito.spy(Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
+		Category defaultCategory2 = Mockito.spy(Category.builder().name("디폴트 카테고리2").user(null).isDefault(true).build());
+		Category defaultCategory3 = Mockito.spy(Category.builder().name("디폴트 카테고리3").user(null).isDefault(true).build());
+
+		ConsumptionGoal topConsumptionGoal1 = ConsumptionGoal.builder()
+			.goalAmount(5000L)
+			.consumeAmount(3000L)
+			.user(user)
+			.category(defaultCategory)
+			.goalMonth(goalMonthRandomDay)
+			.build();
+
+		ConsumptionGoal topConsumptionGoal2 = ConsumptionGoal.builder()
+			.goalAmount(6000L)
+			.consumeAmount(3000L)
+			.user(user)
+			.category(defaultCategory2)
+			.goalMonth(goalMonthRandomDay)
+			.build();
+
+		ConsumptionGoal topConsumptionGoal3 = ConsumptionGoal.builder()
+			.goalAmount(7000L)
+			.consumeAmount(3000L)
+			.user(user)
+			.category(defaultCategory3)
+			.goalMonth(goalMonthRandomDay)
+			.build();
+
+		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+		given(consumptionGoalRepository.findTopConsumptionAndConsumeAmount(3, 23, 25, Gender.MALE)).willReturn(
+			List.of(topConsumptionGoal1, topConsumptionGoal2, topConsumptionGoal3));
+
+		// when
+		List<TopConsumptionResponseDTO> result = consumptionGoalService.getTopConsumption(3, user.getId(), 23, 25, "MALE");
+
+		// then
+		assertThat(result).hasSize(3);
+		assertThat(result.get(0).getCategoryName()).isEqualTo(defaultCategory.getName());
+		assertThat(result.get(0).getConsumeAmount()).isEqualTo(topConsumptionGoal1.getConsumeAmount());
+		assertThat(result.get(1).getCategoryName()).isEqualTo(defaultCategory2.getName());
+		assertThat(result.get(1).getConsumeAmount()).isEqualTo(topConsumptionGoal2.getConsumeAmount());
+		assertThat(result.get(2).getCategoryName()).isEqualTo(defaultCategory3.getName());
+		assertThat(result.get(2).getConsumeAmount()).isEqualTo(topConsumptionGoal3.getConsumeAmount());
 	}
 }
