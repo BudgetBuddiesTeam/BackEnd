@@ -74,7 +74,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 	}
 
 	@GetMapping("/top-consumption")
-	public ResponseEntity<?> getConsumptionGoal(@RequestParam(name = "top", defaultValue = "3") int top,
+	public ResponseEntity<?> getConsumptionGoal(@RequestParam(name = "top", defaultValue = "5") int top,
 		@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
