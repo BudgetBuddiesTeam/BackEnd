@@ -30,7 +30,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 
 	private final ConsumptionGoalService consumptionGoalService;
 
-	@GetMapping("/top-categories")
+	@GetMapping("/top-categories/top-goal")
 	public ResponseEntity<?> getTopGoalCategories(@RequestParam(name = "top", defaultValue = "5") int top,
 		@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
@@ -41,7 +41,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ResponseEntity.ok(topCategory);
 	}
 
-	@GetMapping("/top-category")
+	@GetMapping("/top-category/top-goal")
 	public ResponseEntity<?> getTopGoalCategory(@RequestParam(name = "userId") Long userId) {
 		ConsumptionAnalysisResponseDTO response = consumptionGoalService.getTopCategoryAndConsumptionAmount(userId);
 		return ResponseEntity.ok(response);
@@ -73,7 +73,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 			.body(consumptionGoalService.updateConsumptionGoals(userId, consumptionGoalListRequestDto));
 	}
 
-	@GetMapping("/top-consumption")
+	@GetMapping("/top-categories/top-consumption")
 	public ResponseEntity<?> getConsumptionGoal(@RequestParam(name = "top", defaultValue = "5") int top,
 		@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
