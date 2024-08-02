@@ -33,4 +33,10 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		+ "BETWEEN :startOfWeek AND :endOfWeek ORDER BY cg.consumeAmount DESC limit 1")
 	Optional<ConsumptionGoal> findTopConsumptionByCategoryIdAndCurrentWeek(@Param("categoryId") Long categoryId,
 		@Param("startOfWeek") LocalDate startOfWeek, @Param("endOfWeek") LocalDate endOfWeek);
+
+	@Query("SELECT cg FROM ConsumptionGoal cg " + "WHERE cg.category.isDefault = true "
+		+ "AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " + "AND cg.user.gender = :peerGender "
+		+ "ORDER BY cg.consumeAmount DESC limit :top")
+	List<ConsumptionGoal> findTopConsumptionAndConsumeAmount(@Param("top") int top, @Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd, @Param("peerGender") Gender peerGender);
 }
