@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.service.ExpenseService;
 
@@ -47,8 +48,18 @@ public class ExpenseController implements ExpenseApi {
 
 	@Override
 	@GetMapping("/{userId}/{expenseId}")
-	public ResponseEntity<ExpenseResponseDto> findExpense(@PathVariable Long userId, @PathVariable Long expenseId) {
+	public ResponseEntity<ExpenseResponseDto> findExpense(@PathVariable @Param("userId") Long userId,
+		@PathVariable @Param("expenseId") Long expenseId) {
 
 		return ResponseEntity.ok(expenseService.findExpenseResponseFromUserIdAndExpenseId(userId, expenseId));
+	}
+
+	@Override
+	@PostMapping("/{userId}")
+	public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable @Param("userId") Long userId,
+		@RequestBody ExpenseUpdateRequestDto request) {
+		ExpenseResponseDto response = expenseService.updateExpense(userId, request);
+
+		return ResponseEntity.ok(response);
 	}
 }

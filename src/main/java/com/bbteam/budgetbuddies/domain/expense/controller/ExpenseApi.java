@@ -6,9 +6,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,4 +49,8 @@ public interface ExpenseApi {
 		@ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))})
 	@GetMapping("/{userId}/{expenseId}")
 	ResponseEntity<ExpenseResponseDto> findExpense(@Param("userId") Long userId, @Param("expenseId") Long expenseId);
+
+	@PostMapping("/{userId}")
+	ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable @Param("userId") Long userId,
+		@RequestBody ExpenseUpdateRequestDto request);
 }
