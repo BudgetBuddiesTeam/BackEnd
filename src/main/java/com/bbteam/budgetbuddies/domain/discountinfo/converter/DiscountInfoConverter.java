@@ -1,6 +1,6 @@
 package com.bbteam.budgetbuddies.domain.discountinfo.converter;
 
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequestDto;
+import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequest;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
 import org.springframework.stereotype.Service;
@@ -23,6 +23,7 @@ public class DiscountInfoConverter {
             .discountRate(entity.getDiscountRate())
             .likeCount(entity.getLikeCount())
             .siteUrl(entity.getSiteUrl())
+            .thumbnailUrl(entity.getThumbnailUrl())
             .build();
     }
 
@@ -31,7 +32,7 @@ public class DiscountInfoConverter {
      * @param requestDto
      * @return entity
      */
-    public DiscountInfo toEntity(DiscountRequestDto requestDto) {
+    public DiscountInfo toEntity(DiscountRequest.RegisterDto requestDto) {
 
         return DiscountInfo.builder()
             .title(requestDto.getTitle())
@@ -41,6 +42,7 @@ public class DiscountInfoConverter {
             .discountRate(requestDto.getDiscountRate())
             .likeCount(0)
             .siteUrl(requestDto.getSiteUrl())
+            .thumbnailUrl(requestDto.getThumbnailUrl())
             .build();
     }
 

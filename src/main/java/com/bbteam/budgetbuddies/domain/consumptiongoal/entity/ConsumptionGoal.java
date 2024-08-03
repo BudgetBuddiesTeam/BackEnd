@@ -44,15 +44,15 @@ public class ConsumptionGoal extends BaseEntity {
 	@JoinColumn(name = "category_id")
 	private Category category;
 
+	public void updateConsumeAmount(Long amount) {
+		this.consumeAmount += amount;
+	}
+
 	public void updateGoalAmount(Long goalAmount) {
 		this.goalAmount = goalAmount;
 	}
 
 	public void restoreConsumeAmount(Long previousAmount) {
 		this.consumeAmount -= previousAmount;
-	}
-
-	public void consume(Long amount) {
-		this.consumeAmount += amount;
 	}
 }

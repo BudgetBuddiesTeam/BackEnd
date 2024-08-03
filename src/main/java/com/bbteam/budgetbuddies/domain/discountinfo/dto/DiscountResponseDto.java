@@ -26,4 +26,6 @@ public class DiscountResponseDto {
 
     private String siteUrl;
 
+    private String thumbnailUrl;
+
 }

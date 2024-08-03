@@ -31,6 +31,13 @@ class SupportInfoRepositoryTest {
     @DisplayName("@SoftDelete 테스트")
     void deletedTest() {
         // given
+        SupportInfo discount1 = SupportInfo.builder()
+            .title("지원정보1")
+            .startDate(LocalDate.of(2024, 7, 1))
+            .endDate(LocalDate.of(2024, 7, 21))
+            .siteUrl("http://example1.com")
+            .build();
+
         SupportInfo discount2 = SupportInfo.builder()
             .title("지원정보2")
             .startDate(LocalDate.of(2024, 7, 1))
