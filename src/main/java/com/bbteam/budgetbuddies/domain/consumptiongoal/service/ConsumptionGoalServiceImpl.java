@@ -293,6 +293,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		List<ConsumptionGoal> topConsumptions = consumptionGoalRepository.findTopConsumptionAndConsumeAmount(top,
 			peerAgeStart, peerAgeEnd, peerGender);
+
 		return topConsumptions.stream().map(TopConsumptionConverter::fromEntity).collect(Collectors.toList());
 	}
 }

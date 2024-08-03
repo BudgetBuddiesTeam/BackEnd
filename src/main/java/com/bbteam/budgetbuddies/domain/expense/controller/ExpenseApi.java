@@ -1,7 +1,6 @@
 package com.bbteam.budgetbuddies.domain.expense.controller;
 
 import java.time.LocalDate;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +13,13 @@ import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public interface ExpenseApi {
 	@Operation(summary = "소비 내역 추가", description = "사용자가 소비 내역을 추가합니다.")
@@ -53,4 +52,5 @@ public interface ExpenseApi {
 	@PostMapping("/{userId}")
 	ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable @Param("userId") Long userId,
 		@RequestBody ExpenseUpdateRequestDto request);
+
 }
