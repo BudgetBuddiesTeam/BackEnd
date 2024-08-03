@@ -29,6 +29,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 
 	private final ConsumptionGoalService consumptionGoalService;
 
+	@Override
 	@GetMapping("/top-categories")
 	public ResponseEntity<?> getTopGoalCategories(@RequestParam(name = "top", defaultValue = "5") int top,
 		@RequestParam(name = "userId") Long userId,
@@ -40,12 +41,14 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ResponseEntity.ok(topCategory);
 	}
 
+	@Override
 	@GetMapping("/top-category")
 	public ResponseEntity<?> getTopGoalCategory(@RequestParam(name = "userId") Long userId) {
 		ConsumptionAnalysisResponseDTO response = consumptionGoalService.getTopCategoryAndConsumptionAmount(userId);
 		return ResponseEntity.ok(response);
 	}
 
+	@Override
 	@GetMapping("/peer-info")
 	public ResponseEntity<?> getPeerInfo(@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
@@ -55,15 +58,17 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ResponseEntity.ok(response);
 	}
 
+	@Override
 	@GetMapping("/{userId}")
 	public ResponseEntity<ConsumptionGoalResponseListDto> findUserConsumptionGoal(
 		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @PathVariable Long userId) {
 
-		ConsumptionGoalResponseListDto response = consumptionGoalService.findUserConsumptionGoal(userId, date);
+		ConsumptionGoalResponseListDto response = consumptionGoalService.findUserConsumptionGoalList(userId, date);
 
 		return ResponseEntity.ok(response);
 	}
 
+	@Override
 	@PostMapping("/{userId}")
 	public ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(@PathVariable Long userId,
 		@RequestBody ConsumptionGoalListRequestDto consumptionGoalListRequestDto) {
