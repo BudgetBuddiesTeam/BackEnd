@@ -9,9 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
+import com.bbteam.budgetbuddies.domain.category.service.CategoryService;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
 import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
@@ -27,7 +30,9 @@ public class ExpenseServiceImpl implements ExpenseService {
 	private final ExpenseRepository expenseRepository;
 	private final UserRepository userRepository;
 	private final CategoryRepository categoryRepository;
+	private final CategoryService categoryService;
 	private final ExpenseConverter expenseConverter;
+	private final ConsumptionGoalService consumptionGoalService;
 
 	@Override
 	public ExpenseResponseDto createExpense(ExpenseRequestDto expenseRequestDto) {
@@ -61,13 +66,30 @@ public class ExpenseServiceImpl implements ExpenseService {
 		Expense expense = expenseRepository.findById(expenseId)
 			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
 
-		if (isAllowedUser(userId, expense))
-			throw new IllegalArgumentException("Unauthorized user");
+		checkUserAuthority(userId, expense);
 
 		return expenseConverter.toExpenseResponseDto(expense);
 	}
 
-	private boolean isAllowedUser(Long userId, Expense expense) {
-		return expense.getUser().getId() != userId;
+	private void checkUserAuthority(Long userId, Expense expense) {
+		if (!expense.getUser().getId().equals(userId))
+			throw new IllegalArgumentException("Unauthorized user");
+	}
+
+	@Override
+	@Transactional
+	public ExpenseResponseDto updateExpense(Long userId, ExpenseUpdateRequestDto request) {
+		Expense expense = expenseRepository.findById(request.getExpenseId())
+			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
+
+		User user = userRepository.findById(userId)
+			.orElseThrow(() -> new IllegalArgumentException("Not found user"));
+		checkUserAuthority(userId, expense);
+
+		Category categoryToReplace = categoryService.handleCategoryChange(expense, request, user);
+
+		expense.updateExpenseFromRequest(request, categoryToReplace);
+
+		return expenseConverter.toExpenseResponseDto(expenseRepository.save(expense));
 	}
 }
