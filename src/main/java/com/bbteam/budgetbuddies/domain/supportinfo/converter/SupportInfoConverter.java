@@ -1,9 +1,6 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.converter;
 
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequestDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
-import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
-import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequestDto;
+import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.entity.SupportInfo;
 import org.springframework.stereotype.Service;
@@ -24,6 +21,7 @@ public class SupportInfoConverter {
             .anonymousNumber(entity.getAnonymousNumber())
             .likeCount(entity.getLikeCount())
             .siteUrl(entity.getSiteUrl())
+            .thumbnailUrl(entity.getThumbnailUrl())
             .build();
     }
 
@@ -32,7 +30,7 @@ public class SupportInfoConverter {
      * @param requestDto
      * @return entity
      */
-    public SupportInfo toEntity(SupportRequestDto requestDto) {
+    public SupportInfo toEntity(SupportRequest.RegisterDto requestDto) {
 
         return SupportInfo.builder()
             .title(requestDto.getTitle())
@@ -41,6 +39,7 @@ public class SupportInfoConverter {
             .anonymousNumber(0)
             .likeCount(0)
             .siteUrl(requestDto.getSiteUrl())
+            .thumbnailUrl(requestDto.getThumbnailUrl())
             .build();
     }
 }
