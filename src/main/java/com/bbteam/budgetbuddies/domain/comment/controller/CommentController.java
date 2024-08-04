@@ -64,13 +64,13 @@ public class CommentController implements CommentControllerApi {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/comments/{commentId}/delete")
+    @PostMapping("/comments/delete/{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable("commentId") Long commentId) {
         discountCommentService.deleteComment(commentId);
         return ResponseEntity.ok("ok");
     }
 
-    @GetMapping("/supports/comments/{commentId}/getOne")
+    @GetMapping("/supports/comments/getOne/{commentId}")
     public ResponseEntity<CommentResponseDto.SupportInfoCommentDto> findSupportOne(@PathVariable("commentId")Long commentId) {
         CommentResponseDto.SupportInfoCommentDto result = supportCommentService.findCommentOne(commentId);
         return ResponseEntity.ok(result);
@@ -83,7 +83,7 @@ public class CommentController implements CommentControllerApi {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/discounts/comments/{commentId}/getOne")
+    @GetMapping("/discounts/comments/getOne/{commentId}")
     public ResponseEntity<CommentResponseDto.DiscountInfoCommentDto> findDiscountOne(@PathVariable("commentId")Long commentId) {
         CommentResponseDto.DiscountInfoCommentDto result = discountCommentService.findCommentOne(commentId);
         return ResponseEntity.ok(result);
