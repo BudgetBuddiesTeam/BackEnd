@@ -5,12 +5,15 @@ import com.bbteam.budgetbuddies.domain.category.dto.CategoryRequestDTO;
 import com.bbteam.budgetbuddies.domain.category.dto.CategoryResponseDTO;
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,6 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final CategoryConverter categoryConverter;
+    private final ConsumptionGoalRepository consumptionGoalRepository;
 
     @Override
     public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
@@ -32,9 +36,19 @@ public class CategoryServiceImpl implements CategoryService {
             throw new IllegalArgumentException("User already has a category with the same name");
         }
 
-
         Category category = categoryConverter.toCategoryEntity(categoryRequestDTO, user);
         Category savedCategory = categoryRepository.save(category);
+
+        // custom 카테고리 생성 -> 소비 목표 테이블에 초기 값 추가
+        ConsumptionGoal consumptionGoal = ConsumptionGoal.builder()
+                .user(user)
+                .category(savedCategory)
+                .goalMonth(LocalDate.now().withDayOfMonth(1)) // custom 카테고리를 생성한 현재 달(지금)로 설정
+                .goalAmount(0L)
+                .consumeAmount(0L)
+                .build();
+
+        consumptionGoalRepository.save(consumptionGoal);
 
         return categoryConverter.toCategoryResponseDTO(savedCategory);
     }
