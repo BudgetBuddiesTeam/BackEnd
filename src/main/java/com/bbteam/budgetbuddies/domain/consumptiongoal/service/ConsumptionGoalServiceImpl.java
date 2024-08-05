@@ -10,6 +10,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,14 +56,27 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TopGoalCategoryResponseDTO> getTopGoalCategories(int top, Long userId, int peerAgeS, int peerAgeE,
+	public List<TopGoalCategoryResponseDTO> getTopGoalCategoriesLimit(int top, Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmount(top, peerAgeStart,
+		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(top,
+			peerAgeStart,
 			peerAgeEnd, peerGender);
 		return topGoals.stream().map(TopCategoryConverter::fromEntity).collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<TopGoalCategoryResponseDTO> getTopGoalCategories(Long userId, int peerAgeS, int peerAgeE,
+		String peerG, Pageable pageable) {
+
+		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
+
+		Page<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmount(
+			peerAgeStart, peerAgeEnd, peerGender, pageable);
+		return topGoals.map(TopCategoryConverter::fromEntity);
 	}
 
 	@Override
@@ -79,7 +94,8 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		checkPeerInfo(userId, 0, 0, "none");
 
-		ConsumptionGoal topConsumptionGoal = consumptionGoalRepository.findTopCategoriesAndGoalAmount(1, peerAgeStart,
+		ConsumptionGoal topConsumptionGoal = consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(1,
+			peerAgeStart,
 			peerAgeEnd, peerGender).get(0);
 
 		LocalDate today = LocalDate.now();
