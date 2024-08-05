@@ -5,6 +5,7 @@ import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.comment.dto.CommentRequestDto;
 import com.bbteam.budgetbuddies.domain.comment.dto.CommentResponseDto;
 import com.bbteam.budgetbuddies.domain.comment.validation.ExistComment;
+import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -30,7 +31,7 @@ public interface CommentControllerApi {
             @Parameter(name = "content", description = "댓글 내용입니다. requestBody"),
     })
     ApiResponse<CommentResponseDto.DiscountInfoCommentDto> saveDiscountInfoComment(
-            Long userId,
+            @ExistUser Long userId,
             CommentRequestDto.DiscountInfoCommentDto discountInfoCommentDto);
 
 
@@ -57,7 +58,7 @@ public interface CommentControllerApi {
             @Parameter(name = "content", description = "댓글 내용입니다. requestBody"),
     })
     ApiResponse<CommentResponseDto.SupportInfoCommentDto> saveSupportInfoComment(
-            Long userId,
+            @ExistUser Long userId,
             CommentRequestDto.SupportInfoCommentDto supportInfoCommentDto);
 
     @Operation(summary = "[User] 특정 지원 정보 게시글의 댓글 조회하기", description = "특정 지원 정보 게시글의 댓글을 가져오는 API입니다.")

@@ -20,13 +20,11 @@ public class CommentExistValidation implements ConstraintValidator<ExistComment,
     public boolean isValid(Long aLong, ConstraintValidatorContext constraintValidatorContext) {
         Optional<Comment> comment = commentRepository.findById(aLong);
 
-        log.info("comment.isEmpty={}", comment.isEmpty());
         if(comment.isEmpty()) {
             constraintValidatorContext.disableDefaultConstraintViolation();
             constraintValidatorContext.buildConstraintViolationWithTemplate(ErrorStatus.COMMENT_NOT_FOUND.toString()).addConstraintViolation();
             return false;
         }
-        log.info("test pass");
         return true;
     }
 
