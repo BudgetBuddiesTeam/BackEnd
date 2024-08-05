@@ -250,7 +250,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	}
 
 	@Override
-	public List<TopConsumptionResponseDTO> getTopConsumptionLimit(int top, Long userId, int peerAgeS, int peerAgeE,
+	public List<TopConsumptionResponseDTO> getTopConsumptionsLimit(int top, Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);

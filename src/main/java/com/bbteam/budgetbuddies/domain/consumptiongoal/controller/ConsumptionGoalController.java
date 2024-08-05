@@ -92,7 +92,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
-		List<TopConsumptionResponseDTO> response = consumptionGoalService.getTopConsumptionLimit(top, userId,
+		List<TopConsumptionResponseDTO> response = consumptionGoalService.getTopConsumptionsLimit(top, userId,
 			peerAgeStart, peerAgeEnd, peerGender);
 		return ResponseEntity.ok(response);
 	}
