@@ -86,14 +86,24 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 			.body(consumptionGoalService.updateConsumptionGoals(userId, consumptionGoalListRequestDto));
 	}
 
-	@GetMapping("/top-categories/top-consumption")
-	public ResponseEntity<?> getConsumptionGoal(@RequestParam(name = "top", defaultValue = "5") int top,
+	@GetMapping("/top-categories/top-consumption/{top}")
+	public ResponseEntity<?> getConsumptionGoalList(@PathVariable(name = "top") int top,
 		@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
-		List<TopConsumptionResponseDTO> response = consumptionGoalService.getTopConsumption(top, userId,
+		List<TopConsumptionResponseDTO> response = consumptionGoalService.getTopConsumptionLimit(top, userId,
 			peerAgeStart, peerAgeEnd, peerGender);
 		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/top-categories/top-consumption")
+	public ResponseEntity<?> getConsumptionGoalPage(@RequestParam(name = "userId") Long userId,
+		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
+		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
+		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender, Pageable pageable) {
+		Page<TopConsumptionResponseDTO> response = consumptionGoalService.getTopConsumptions(userId,
+			peerAgeStart, peerAgeEnd, peerGender, pageable);
+		return ResponseEntity.ok(response.getContent());
 	}
 }
