@@ -250,14 +250,25 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	}
 
 	@Override
-	public List<TopConsumptionResponseDTO> getTopConsumption(int top, Long userId, int peerAgeS, int peerAgeE,
+	public List<TopConsumptionResponseDTO> getTopConsumptionLimit(int top, Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		List<ConsumptionGoal> topConsumptions = consumptionGoalRepository.findTopConsumptionAndConsumeAmount(top,
+		List<ConsumptionGoal> topConsumptions = consumptionGoalRepository.findTopConsumptionAndConsumeAmountLimit(top,
 			peerAgeStart,
 			peerAgeEnd, peerGender);
 		return topConsumptions.stream().map(TopConsumptionConverter::fromEntity).collect(Collectors.toList());
+	}
+
+	@Override
+	public Page<TopConsumptionResponseDTO> getTopConsumptions(Long userId, int peerAgeS, int peerAgeE,
+		String peerG, Pageable pageable) {
+
+		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
+
+		Page<ConsumptionGoal> topConsumptions = consumptionGoalRepository.findTopConsumptionAndConsumeAmount(
+			peerAgeStart, peerAgeEnd, peerGender, pageable);
+		return topConsumptions.map(TopConsumptionConverter::fromEntity);
 	}
 }

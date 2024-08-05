@@ -34,6 +34,9 @@ public interface ConsumptionGoalService {
 
 	void updateConsumeAmount(Long userId, Long categoryId, Long amount);
 
-	List<TopConsumptionResponseDTO> getTopConsumption(int top, Long userId, int peerAgeS, int peerAgeE,
+	List<TopConsumptionResponseDTO> getTopConsumptionLimit(int top, Long userId, int peerAgeS, int peerAgeE,
 		String peerG);
+
+	Page<TopConsumptionResponseDTO> getTopConsumptions(Long userId, int peerAgeS, int peerAgeE,
+		String peerG, Pageable pageable);
 }
