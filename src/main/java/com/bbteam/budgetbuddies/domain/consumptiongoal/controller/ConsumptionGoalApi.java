@@ -56,7 +56,7 @@ public interface ConsumptionGoalApi {
 	ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(Long userId,
 		ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
 
-	@Operation(summary = "또래들이 가장 많이한 소비 카테고리 조회 API", description = "특정 사용자의 소비 카테고리별 소비 금액을 조회하는 API 입니다.")
+	@Operation(summary = "또래들이 가장 많이한 소비 카테고리 조회 Top4 API", description = "특정 사용자의 소비 카테고리별 소비 금액을 조회하는 API 입니다.")
 	@ApiResponses(value = {@ApiResponse(responseCode = "COMMON200", description = "OK, 성공")})
 	@Parameters({@Parameter(name = "top", description = "가장 큰 소비 카테고리의 개수를 지정합니다."),
 		@Parameter(name = "userId", description = "로그인 한 유저 아이디"),
@@ -66,7 +66,7 @@ public interface ConsumptionGoalApi {
 	ResponseEntity<?> getConsumptionGoalList(int top, Long userId, int peerAgeStart, int peerAgeEnd,
 		String peerGender);
 
-	@Operation(summary = "또래들이 가장 많이한 소비 카테고리 조회 API", description = "특정 사용자의 소비 카테고리별 소비 금액을 조회하는 API 입니다.")
+	@Operation(summary = "또래들이 가장 많이한 소비 카테고리 조회 API", description = "특정 사용자의 소비 카테고리별 소비 금액을 전체 조회하는 API 입니다.")
 	@ApiResponses(value = {@ApiResponse(responseCode = "COMMON200", description = "OK, 성공")})
 	@Parameters({@Parameter(name = "userId", description = "로그인 한 유저 아이디"),
 		@Parameter(name = "peerAgeStart", description = "또래나이 시작 범위"),
