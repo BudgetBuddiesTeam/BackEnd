@@ -3,6 +3,8 @@ package com.bbteam.budgetbuddies.domain.consumptiongoal.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,15 +32,26 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 
 	private final ConsumptionGoalService consumptionGoalService;
 
-	@GetMapping("/top-categories/top-goal")
-	public ResponseEntity<?> getTopGoalCategories(@RequestParam(name = "top", defaultValue = "-1") int top,
+	@GetMapping("/top-categories/top-goal/{top}")
+	public ResponseEntity<?> getTopGoalCategoriesList(@PathVariable(name = "top") int top,
 		@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
-		List<TopGoalCategoryResponseDTO> topCategory = consumptionGoalService.getTopGoalCategories(top, userId,
+		List<TopGoalCategoryResponseDTO> topCategoriesList = consumptionGoalService.getTopGoalCategoriesLimit(top,
+			userId,
 			peerAgeStart, peerAgeEnd, peerGender);
-		return ResponseEntity.ok(topCategory);
+		return ResponseEntity.ok(topCategoriesList);
+	}
+
+	@GetMapping("/top-categories/top-goal")
+	public ResponseEntity<?> getTopGoalCategoriesPage(@RequestParam(name = "userId") Long userId,
+		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
+		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
+		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender, Pageable pageable) {
+		Page<TopGoalCategoryResponseDTO> topCategoriesPage = consumptionGoalService.getTopGoalCategories(userId,
+			peerAgeStart, peerAgeEnd, peerGender, pageable);
+		return ResponseEntity.ok(topCategoriesPage.getContent());
 	}
 
 	@GetMapping("/top-category/top-goal")
