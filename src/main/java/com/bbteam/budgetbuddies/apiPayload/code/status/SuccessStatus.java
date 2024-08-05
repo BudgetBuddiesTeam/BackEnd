@@ -1,14 +1,15 @@
 package com.bbteam.budgetbuddies.apiPayload.code.status;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public enum SuccessStatus {
-    OK("200", "OK");
+    _OK(HttpStatus.OK, "200", "okay");
 
+    private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 }
-
