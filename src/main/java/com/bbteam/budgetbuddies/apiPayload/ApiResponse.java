@@ -1,5 +1,6 @@
 package com.bbteam.budgetbuddies.apiPayload;
 
+
 import com.bbteam.budgetbuddies.apiPayload.code.BaseCode;
 import com.bbteam.budgetbuddies.apiPayload.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,7 +13,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public class ApiResponse<T> {
-
     @JsonProperty("isSuccess")
     private final Boolean isSuccess;
     private final String code;
@@ -20,19 +20,18 @@ public class ApiResponse<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
 
-
-    // 성공한 경우 응답 생성
     public static <T> ApiResponse<T> onSuccess(T result){
-        return new ApiResponse<>(true, SuccessStatus.OK.getCode() , SuccessStatus.OK.getMessage(), result);
+        return new ApiResponse<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
+
     }
 
     public static <T> ApiResponse<T> of(BaseCode code, T result){
-            return new ApiResponse<>(true, code.getReasonHttpStatus().getCode() , code.getReasonHttpStatus().getMessage(), result);
+        return new ApiResponse<>(true, code.getReasonHttpStatus().getCode(),
+                code.getReasonHttpStatus().getMessage(), result);
     }
 
 
-    // 실패한 경우 응답 생성
     public static <T> ApiResponse<T> onFailure(String code, String message, T data){
-        return new ApiResponse<>(true, code, message, data);
+        return new ApiResponse<>(false, code,message, data);
     }
 }
