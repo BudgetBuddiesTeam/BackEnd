@@ -24,14 +24,14 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		+ "AND cg.goalMonth >= :currentMonth " + "ORDER BY cg.goalAmount DESC limit :top")
 	List<ConsumptionGoal> findTopCategoriesAndGoalAmountLimit(@Param("top") int top,
 		@Param("peerAgeStart") int peerAgeStart, @Param("peerAgeEnd") int peerAgeEnd,
-		@Param("peerGender") Gender peerGender, LocalDate currentMonth);
+		@Param("peerGender") Gender peerGender, @Param("currentMonth") LocalDate currentMonth);
 
 	@Query("SELECT cg FROM ConsumptionGoal cg " + "WHERE cg.category.isDefault = true "
 		+ "AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " + "AND cg.user.gender = :peerGender "
-		+ "AND cg.goalAmount >= :currentMonth " + "ORDER BY cg.goalAmount DESC")
+		+ "AND cg.goalMonth >= :currentMonth " + "ORDER BY cg.goalAmount DESC")
 	Page<ConsumptionGoal> findTopCategoriesAndGoalAmount(@Param("peerAgeStart") int peerAgeStart,
-		@Param("peerAgeEnd") int peerAgeEnd, @Param("peerGender") Gender peerGender, LocalDate currentMonth,
-		Pageable pageable);
+		@Param("peerAgeEnd") int peerAgeEnd, @Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth, Pageable pageable);
 
 	@Query(value = "SELECT cg FROM ConsumptionGoal AS cg WHERE cg.user.id = :userId AND cg.goalMonth = :goalMonth")
 	List<ConsumptionGoal> findConsumptionGoalByUserIdAndGoalMonth(Long userId, LocalDate goalMonth);
@@ -49,13 +49,13 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		+ "AND cg.goalMonth >= :currentMonth " + "ORDER BY cg.consumeAmount DESC limit :top")
 	List<ConsumptionGoal> findTopConsumptionAndConsumeAmountLimit(@Param("top") int top,
 		@Param("peerAgeStart") int peerAgeStart, @Param("peerAgeEnd") int peerAgeEnd,
-		@Param("peerGender") Gender peerGender, LocalDate currentMonth);
+		@Param("peerGender") Gender peerGender, @Param("currentMonth") LocalDate currentMonth);
 
 	@Query("SELECT cg FROM ConsumptionGoal cg " + "WHERE cg.category.isDefault = true "
 		+ "AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " + "AND cg.user.gender = :peerGender "
 		+ "AND cg.goalMonth >= :currentMonth " + "ORDER BY cg.consumeAmount DESC")
 	Page<ConsumptionGoal> findTopConsumptionAndConsumeAmount(@Param("peerAgeStart") int peerAgeStart,
-		@Param("peerAgeEnd") int peerAgeEnd, @Param("peerGender") Gender peerGender, LocalDate currentMonth,
-		Pageable pageable);
+		@Param("peerAgeEnd") int peerAgeEnd, @Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth, Pageable pageable);
 
 }
