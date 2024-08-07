@@ -85,7 +85,7 @@ public interface CommentControllerApi {
     })
     public ApiResponse<String> deleteComment(@PathVariable("commentId") @ExistComment Long commentId);
 
-    @Operation(summary = "[User] SupportInfo의 댓글 요청 API ", description = "특정 댓글을 요청하는 API입니다.")
+    @Operation(summary = "[User] SupportInfo의 특정 댓글 요청 API ", description = "특정 댓글을 요청하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
@@ -107,7 +107,7 @@ public interface CommentControllerApi {
             @RequestBody CommentRequestDto.CommentModifyDto dto);
 
 
-    @Operation(summary = "[User] DiscountInfo의 댓글 요청 API ", description = "특정 댓글을 요청하는 API입니다.")
+    @Operation(summary = "[User] DiscountInfo의 특정 댓글 요청 API", description = "특정 댓글을 요청하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })

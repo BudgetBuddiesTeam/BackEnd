@@ -70,7 +70,7 @@ public class CommentController implements CommentControllerApi {
         return ApiResponse.onSuccess(result);
     }
 
-    @PostMapping("/comments/delete/{commentId}")
+    @DeleteMapping("/comments/delete/{commentId}")
     public ApiResponse<String> deleteComment(@PathVariable("commentId") @ExistComment Long commentId) {
         discountCommentService.deleteComment(commentId);
         return ApiResponse.onSuccess("ok");
@@ -82,7 +82,7 @@ public class CommentController implements CommentControllerApi {
         return ApiResponse.onSuccess(result);
     }
 
-    @PostMapping("/supports/comments/modify")
+    @PutMapping("/supports/comments/modify")
     public ApiResponse<CommentResponseDto.SupportInfoCommentDto> modifySupportOne(
             @RequestBody CommentRequestDto.CommentModifyDto dto) {
         CommentResponseDto.SupportInfoCommentDto result = supportCommentService.modifyComment(dto);
@@ -95,13 +95,11 @@ public class CommentController implements CommentControllerApi {
         return ApiResponse.onSuccess(result);
     }
 
-    @PostMapping("/discounts/comments/modify")
+    @PutMapping("/discounts/comments/modify")
     public ApiResponse<CommentResponseDto.DiscountInfoCommentDto> modifyDiscountOne(
             @RequestBody CommentRequestDto.CommentModifyDto dto) {
         CommentResponseDto.DiscountInfoCommentDto result = discountCommentService.modifyComment(dto);
         return ApiResponse.onSuccess(result);
     }
-
-
 
 }
