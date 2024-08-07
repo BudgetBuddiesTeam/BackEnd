@@ -15,6 +15,7 @@ public class ExpenseResponseDto {
     private Long expenseId;
     private Long userId;
     private Long categoryId;
+    private String categoryName;
     private Long amount;
     private String description;
     private LocalDateTime expenseDate;

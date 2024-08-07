@@ -92,7 +92,7 @@ class ConsumptionGoalServiceTest {
 			.toList();
 
 		// when
-		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoal(user.getId(),
+		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoalList(user.getId(),
 			goalMonthRandomDay);
 
 		// then
@@ -139,7 +139,7 @@ class ConsumptionGoalServiceTest {
 			.toList();
 
 		// when
-		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoal(user.getId(),
+		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoalList(user.getId(),
 			goalMonthRandomDay);
 
 		// then
@@ -176,7 +176,7 @@ class ConsumptionGoalServiceTest {
 			List.of(goalMonthUserCategoryGoal));
 
 		// when
-		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoal(user.getId(),
+		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoalList(user.getId(),
 			goalMonthRandomDay);
 
 		// then
@@ -190,6 +190,7 @@ class ConsumptionGoalServiceTest {
 		// given
 		Long defaultGoalAmount = 100L;
 		Long userGoalAmount = 200L;
+		LocalDate thisMonth = LocalDate.now().withDayOfMonth(1);
 
 		given(userRepository.findById(user.getId())).willReturn(Optional.ofNullable(user));
 
@@ -210,13 +211,13 @@ class ConsumptionGoalServiceTest {
 			.consumeAmount(20_000L)
 			.user(user)
 			.category(defaultCategory)
-			.goalMonth(GOAL_MONTH)
+			.goalMonth(thisMonth)
 			.build();
 		given(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, defaultCategory,
-			GOAL_MONTH)).willReturn(Optional.ofNullable(defaultCategoryGoal));
+			thisMonth)).willReturn(Optional.ofNullable(defaultCategoryGoal));
 
 		given(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, userCategory,
-			GOAL_MONTH)).willReturn(Optional.ofNullable(null));
+			thisMonth)).willReturn(Optional.ofNullable(null));
 
 		when(consumptionGoalRepository.saveAll(any())).thenAnswer(invocation -> {
 			List<ConsumptionGoal> goalsToSave = invocation.getArgument(0);

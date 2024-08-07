@@ -40,7 +40,7 @@ public class MainPageServiceImpl implements MainPageService{
         }
         TopGoalCategoryResponseDTO topGoalCategoryResponseDTO = topGoalCategoryResponseDTOList.get(0);
 
-        ConsumptionGoalResponseListDto userConsumptionGoal = consumptionGoalService.findUserConsumptionGoal(userId, now);
+        ConsumptionGoalResponseListDto userConsumptionGoal = consumptionGoalService.findUserConsumptionGoalList(userId, now);
 
         return MainPageConverter.toMainPageResponseDto(discountResponseDtoList, supportResponseDtoList,
                 topGoalCategoryResponseDTO, userConsumptionGoal);
