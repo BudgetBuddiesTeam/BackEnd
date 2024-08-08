@@ -39,6 +39,7 @@ public class CalendarConverter {
                 .endDate(discountInfo.getEndDate())
                 .discountRate(discountInfo.getDiscountRate())
                 .siteUrl(discountInfo.getSiteUrl())
+                .thumbnailURL(discountInfo.getThumbnailUrl())
                 .build();
     }
 
@@ -50,6 +51,7 @@ public class CalendarConverter {
                 .startDate(supportInfo.getStartDate())
                 .endDate(supportInfo.getEndDate())
                 .siteUrl(supportInfo.getSiteUrl())
+                .thumbnailURL(supportInfo.getThumbnailUrl())
                 .build();
     }
 
