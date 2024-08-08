@@ -17,10 +17,11 @@ public interface SupportInfoRepository extends JpaRepository<SupportInfo, Long> 
     " ORDER BY i.likeCount DESC")
     Page<SupportInfo> findByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
 
-    @Query("SELECT i FROM SupportInfo i WHERE ((i.startDate BETWEEN :startDate AND :endDate) OR i.endDate BETWEEN :startDate AND :endDate)")
+    @Query("SELECT i FROM SupportInfo i WHERE (i.startDate <= :endDate AND i.endDate >= :startDate)" +
+            " ORDER BY i.likeCount DESC")
     List<SupportInfo> findByMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT i FROM SupportInfo i WHERE ((i.startDate BETWEEN :startDate AND :endDate) OR i.endDate BETWEEN :startDate AND :endDate)" +
+    @Query("SELECT i FROM SupportInfo i WHERE (i.startDate <= :endDate AND i.endDate >= :startDate)" +
             " ORDER BY i.likeCount DESC" +
             " LIMIT 2")
     List<SupportInfo> findRecommendInfoByMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
