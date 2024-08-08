@@ -47,7 +47,12 @@ public class ConsumptionGoal extends BaseEntity {
 	public void updateConsumeAmount(Long amount) {
 		this.consumeAmount += amount;
 	}
+
 	public void updateGoalAmount(Long goalAmount) {
 		this.goalAmount = goalAmount;
+	}
+
+	public void restoreConsumeAmount(Long previousAmount) {
+		this.consumeAmount -= previousAmount;
 	}
 }

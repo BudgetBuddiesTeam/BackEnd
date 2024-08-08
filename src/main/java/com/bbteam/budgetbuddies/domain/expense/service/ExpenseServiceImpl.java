@@ -9,10 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
+import com.bbteam.budgetbuddies.domain.category.service.CategoryService;
+
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
 import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
@@ -28,6 +31,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	private final ExpenseRepository expenseRepository;
 	private final UserRepository userRepository;
 	private final CategoryRepository categoryRepository;
+	private final CategoryService categoryService;
 	private final ExpenseConverter expenseConverter;
 	private final ConsumptionGoalService consumptionGoalService;
 
@@ -58,11 +62,32 @@ public class ExpenseServiceImpl implements ExpenseService {
 			throw new IllegalArgumentException("User and category are not matched properly.");
 		}
 
+        /*
+        case 1)
+         - 카테고리 ID가 1~10 사이 && default => DB의 immutable 필드인 default category
+         - DB 관리 이슈로 category에 default 카테고리의 중복이 발생할 경우, 이를 대비하기 위해 1<= id <= 10 조건도 추가
+         */
+		if (expenseRequestDto.getCategoryId() >= 1 && expenseRequestDto.getCategoryId() <= 10
+			&& category.getIsDefault()) {
+			//  category.setUser(user);
+			// default category
+		}
+        /*
+         Case 2)
+         !default && 키테고리 테이블의 UserId 컬럼의 값이 나와 맞으면 (= custom cateogory)
+         */
+		else if (!category.getIsDefault() && category.getUser().getId().equals(expenseRequestDto.getUserId())) {
+			// custom category
+		} else {
+			throw new IllegalArgumentException("User and category are not matched properly.");
+		}
+
 		Expense expense = expenseConverter.toExpenseEntity(expenseRequestDto, user, category);
 		expenseRepository.save(expense);
 
 		// 소비 목표 업데이트
-		consumptionGoalService.updateConsumeAmount(expenseRequestDto.getUserId(), expenseRequestDto.getCategoryId(), expenseRequestDto.getAmount());
+		consumptionGoalService.updateConsumeAmount(expenseRequestDto.getUserId(), expenseRequestDto.getCategoryId(),
+			expenseRequestDto.getAmount());
 
 		return expenseConverter.toExpenseResponseDto(expense);
         /*
@@ -77,13 +102,44 @@ public class ExpenseServiceImpl implements ExpenseService {
 		LocalDate startOfMonth = localDate.withDayOfMonth(1);
 		LocalDate endOfMonth = localDate.withDayOfMonth(startOfMonth.lengthOfMonth());
 
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+
+		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
 		Slice<Expense> expenseSlice = expenseRepository.findAllByUserIdForPeriod(pageable, user,
 				startOfMonth.atStartOfDay(), endOfMonth.atStartOfDay());
 
 		return expenseConverter.toMonthlyExpenseCompactResponseDto(expenseSlice, startOfMonth);
+	}
+
+	@Override
+	public ExpenseResponseDto findExpenseResponseFromUserIdAndExpenseId(Long userId, Long expenseId) {
+		Expense expense = expenseRepository.findById(expenseId)
+			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
+
+		checkUserAuthority(userId, expense);
+
+		return expenseConverter.toExpenseResponseDto(expense);
+	}
+
+	private void checkUserAuthority(Long userId, Expense expense) {
+		if (!expense.getUser().getId().equals(userId))
+			throw new IllegalArgumentException("Unauthorized user");
+	}
+
+	@Override
+	@Transactional
+	public ExpenseResponseDto updateExpense(Long userId, ExpenseUpdateRequestDto request) {
+		Expense expense = expenseRepository.findById(request.getExpenseId())
+			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
+
+		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Not found user"));
+		checkUserAuthority(userId, expense);
+
+		Category categoryToReplace = categoryService.handleCategoryChange(expense, request, user);
+
+		expense.updateExpenseFromRequest(request, categoryToReplace);
+
+		return expenseConverter.toExpenseResponseDto(expenseRepository.save(expense));
 	}
 }
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.service.ExpenseService;
 import lombok.RequiredArgsConstructor;
@@ -41,5 +42,22 @@ public class ExpenseController implements ExpenseApi {
 																				 @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 
 		return ResponseEntity.ok(expenseService.getMonthlyExpense(pageable, userId, date));
+	}
+
+	@Override
+	@GetMapping("/{userId}/{expenseId}")
+	public ResponseEntity<ExpenseResponseDto> findExpense(@PathVariable @Param("userId") Long userId,
+		@PathVariable @Param("expenseId") Long expenseId) {
+
+		return ResponseEntity.ok(expenseService.findExpenseResponseFromUserIdAndExpenseId(userId, expenseId));
+	}
+
+	@Override
+	@PostMapping("/{userId}")
+	public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable @Param("userId") Long userId,
+		@RequestBody ExpenseUpdateRequestDto request) {
+		ExpenseResponseDto response = expenseService.updateExpense(userId, request);
+
+		return ResponseEntity.ok(response);
 	}
 }

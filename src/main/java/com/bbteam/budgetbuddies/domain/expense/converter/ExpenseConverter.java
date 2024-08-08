@@ -32,6 +32,7 @@ public class ExpenseConverter {
 			.expenseId(expense.getId())
 			.userId(expense.getUser().getId())
 			.categoryId(expense.getCategory().getId())
+			.categoryName(expense.getCategory().getName())
 			.amount(expense.getAmount())
 			.description(expense.getDescription())
 			.expenseDate(expense.getExpenseDate())
