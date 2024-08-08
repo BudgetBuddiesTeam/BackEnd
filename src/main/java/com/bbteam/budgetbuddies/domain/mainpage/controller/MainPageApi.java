@@ -1,6 +1,8 @@
 package com.bbteam.budgetbuddies.domain.mainpage.controller;
 
+import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.mainpage.dto.MainPageResponseDto;
+import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -17,5 +19,5 @@ public interface MainPageApi {
     @Parameters({
             @Parameter(name = "userId", description = "현재 데이터를 요청하는 사용자입니다. parameter"),
     })
-    ResponseEntity<MainPageResponseDto> getMainPage(Long userId);
+    ApiResponse<MainPageResponseDto> getMainPage(@RequestParam("userId") @ExistUser Long userId);
 }
