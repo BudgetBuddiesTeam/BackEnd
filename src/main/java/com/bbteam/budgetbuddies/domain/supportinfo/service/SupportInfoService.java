@@ -1,0 +1,25 @@
+package com.bbteam.budgetbuddies.domain.supportinfo.service;
+
+import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
+import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
+import org.springframework.data.domain.Page;
+
+public interface SupportInfoService {
+    Page<SupportResponseDto> getSupportsByYearAndMonth(
+        Integer year,
+        Integer month,
+        Integer page,
+        Integer size
+    );
+
+    SupportResponseDto registerSupportInfo(SupportRequest.RegisterDto supportRequest);
+
+    SupportResponseDto toggleLike(Long userId, Long supportInfoId);
+
+    SupportResponseDto updateSupportInfo(Long userId, SupportRequest.UpdateDto supportRequestDto);
+
+    String deleteSupportInfo(Long userId, Long supportInfoId);
+
+    SupportResponseDto getSupportInfoById(Long userId, Long supportInfoId);
+
+}
