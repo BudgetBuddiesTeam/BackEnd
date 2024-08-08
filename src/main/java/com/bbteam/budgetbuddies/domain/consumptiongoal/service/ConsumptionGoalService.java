@@ -21,17 +21,17 @@ import com.bbteam.budgetbuddies.domain.user.entity.User;
 public interface ConsumptionGoalService {
 
 	List<TopGoalCategoryResponseDTO> getTopGoalCategoriesLimit(int top, Long userId, int peerAgeStart, int peerAgeEnd,
-		String peerGender);
+															   String peerGender);
 
 	Page<TopGoalCategoryResponseDTO> getTopGoalCategories(Long userId, int peerAgeStart, int peerAgeEnd,
-		String peerGender, Pageable pageable);
+														  String peerGender, Pageable pageable);
 
 	ConsumptionGoalResponseListDto findUserConsumptionGoalList(Long userId, LocalDate date);
 
 	PeerInfoResponseDTO getPeerInfo(Long userId, int peerAgeStart, int peerAgeEnd, String peerGender);
 
 	ConsumptionGoalResponseListDto updateConsumptionGoals(Long userId,
-		ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
+														  ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
 
 	ConsumptionAnalysisResponseDTO getTopCategoryAndConsumptionAmount(Long userId);
 
@@ -39,9 +39,10 @@ public interface ConsumptionGoalService {
 
 	void updateConsumeAmount(Long userId, Long categoryId, Long amount);
 
-	List<TopConsumptionResponseDTO> getTopConsumptionsLimit(int top, Long userId, int peerAgeS, int peerAgeE,
-		String peerG);
+	void decreaseConsumeAmount(Long userId, Long categoryId, Long amount, LocalDate expenseDate);
+
+	List<TopConsumptionResponseDTO> getTopConsumption(int top, Long userId, int peerAgeS, int peerAgeE, String peerG);
 
 	Page<TopConsumptionResponseDTO> getTopConsumptions(Long userId, int peerAgeS, int peerAgeE,
-		String peerG, Pageable pageable);
+													   String peerG, Pageable pageable);
 }
