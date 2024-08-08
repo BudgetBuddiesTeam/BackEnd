@@ -10,6 +10,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +39,9 @@ import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import com.bbteam.budgetbuddies.enums.Gender;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
@@ -52,16 +56,32 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	private int peerAgeEnd;
 	private Gender peerGender;
 
+	private final LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
+	private final LocalDate startOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+	private final LocalDate endOfWeek = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
 	@Override
 	@Transactional(readOnly = true)
-	public List<TopGoalCategoryResponseDTO> getTopGoalCategories(int top, Long userId, int peerAgeS, int peerAgeE,
+	public List<TopGoalCategoryResponseDTO> getTopGoalCategoriesLimit(int top, Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmount(top, peerAgeStart,
-			peerAgeEnd, peerGender);
+		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(top,
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
 		return topGoals.stream().map(TopCategoryConverter::fromEntity).collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<TopGoalCategoryResponseDTO> getTopGoalCategories(Long userId, int peerAgeS, int peerAgeE, String peerG,
+		Pageable pageable) {
+
+		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
+
+		Page<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmount(peerAgeStart,
+			peerAgeEnd, peerGender, currentMonth, pageable);
+		return topGoals.map(TopCategoryConverter::fromEntity);
 	}
 
 	@Override
@@ -79,12 +99,8 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		checkPeerInfo(userId, 0, 0, "none");
 
-		ConsumptionGoal topConsumptionGoal = consumptionGoalRepository.findTopCategoriesAndGoalAmount(1, peerAgeStart,
-			peerAgeEnd, peerGender).get(0);
-
-		LocalDate today = LocalDate.now();
-		LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-		LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+		ConsumptionGoal topConsumptionGoal = consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(1,
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth).get(0);
 
 		ConsumptionGoal currentWeekConsumptionAmount = consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
 				topConsumptionGoal.getCategory().getId(), startOfWeek, endOfWeek)
@@ -94,6 +110,28 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		Long totalConsumptionAmountForCurrentWeek = currentWeekConsumptionAmount.getConsumeAmount();
 
 		return ConsumptionAnalysisConverter.fromEntity(topConsumptionGoal, totalConsumptionAmountForCurrentWeek);
+	}
+
+	@Override
+	public List<TopConsumptionResponseDTO> getTopConsumptionsLimit(int top, Long userId, int peerAgeS, int peerAgeE,
+		String peerG) {
+
+		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
+
+		List<ConsumptionGoal> topConsumptions = consumptionGoalRepository.findTopConsumptionAndConsumeAmountLimit(top,
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
+		return topConsumptions.stream().map(TopConsumptionConverter::fromEntity).collect(Collectors.toList());
+	}
+
+	@Override
+	public Page<TopConsumptionResponseDTO> getTopConsumptions(Long userId, int peerAgeS, int peerAgeE, String peerG,
+		Pageable pageable) {
+
+		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
+
+		Page<ConsumptionGoal> topConsumptions = consumptionGoalRepository.findTopConsumptionAndConsumeAmount(
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth, pageable);
+		return topConsumptions.map(TopConsumptionConverter::fromEntity);
 	}
 
 	private User findUserById(Long userId) {
@@ -283,17 +321,5 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		consumptionGoal.updateConsumeAmount(amount);
 		consumptionGoalRepository.save(consumptionGoal);
-	}
-
-	@Override
-	public List<TopConsumptionResponseDTO> getTopConsumption(int top, Long userId, int peerAgeS, int peerAgeE,
-		String peerG) {
-
-		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
-
-		List<ConsumptionGoal> topConsumptions = consumptionGoalRepository.findTopConsumptionAndConsumeAmount(top,
-			peerAgeStart, peerAgeEnd, peerGender);
-
-		return topConsumptions.stream().map(TopConsumptionConverter::fromEntity).collect(Collectors.toList());
 	}
 }
