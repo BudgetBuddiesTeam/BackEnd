@@ -27,7 +27,7 @@ public class CalendarController {
             @Parameter(name = "year", description = "호출할 연도입니다."),
             @Parameter(name = "month", description = "호출할 연도의 월입니다."),
     })
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<CalendarDto.CalendarMonthResponseDto> request(
             @RequestParam("year") Integer year, @RequestParam("month") Integer month
     ) {
