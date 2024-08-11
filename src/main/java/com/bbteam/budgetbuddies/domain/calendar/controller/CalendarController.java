@@ -28,7 +28,7 @@ public class CalendarController {
             @Parameter(name = "month", description = "호출할 연도의 월입니다."),
     })
     @GetMapping
-    public ResponseEntity<CalendarDto.CalendarMonthResponseDto> request(
+    public ApiResponse<CalendarDto.CalendarMonthResponseDto> request(
             @RequestParam("year") Integer year, @RequestParam("month") Integer month
     ) {
         CalendarDto.CalendarMonthResponseDto result = calendarService.find(year, month);
