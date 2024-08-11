@@ -176,15 +176,16 @@ class CalendarServiceTest {
         List<CalendarDto.CalendarDiscountInfoDto> discountInfoDtoList = result.getCalendarMonthInfoDto().getDiscountInfoDtoList();
         List<CalendarDto.CalendarSupportInfoDto> supportInfoDtoList = result.getCalendarMonthInfoDto().getSupportInfoDtoList();
 
+
         assertThat(discountInfoDtoList.size()).isEqualTo(3);
-        CalendarDto.CalendarDiscountInfoDto discountDto1 = CalendarConverter.toCalendarDiscountInfoDto(discountInfo1);
-        CalendarDto.CalendarDiscountInfoDto discountDto2 = CalendarConverter.toCalendarDiscountInfoDto(discountInfo2);
-        CalendarDto.CalendarDiscountInfoDto discountDto3 = CalendarConverter.toCalendarDiscountInfoDto(discountInfo3);
+        CalendarDto.CalendarDiscountInfoDto discountDto1 = CalendarConverter.toCalendarDiscountInfoDto(discountInfo1, firstDay, lastDay);
+        CalendarDto.CalendarDiscountInfoDto discountDto2 = CalendarConverter.toCalendarDiscountInfoDto(discountInfo2, firstDay, lastDay);
+        CalendarDto.CalendarDiscountInfoDto discountDto3 = CalendarConverter.toCalendarDiscountInfoDto(discountInfo3, firstDay, lastDay);
         assertThat(discountInfoDtoList).containsExactlyInAnyOrder(discountDto1, discountDto2, discountDto3);
 
         assertThat(supportInfoDtoList.size()).isEqualTo(2);
-        CalendarDto.CalendarSupportInfoDto supportDto1 = CalendarConverter.toCalendarSupportInfoDto(supportInfo1);
-        CalendarDto.CalendarSupportInfoDto supportDto3 = CalendarConverter.toCalendarSupportInfoDto(supportInfo3);
+        CalendarDto.CalendarSupportInfoDto supportDto1 = CalendarConverter.toCalendarSupportInfoDto(supportInfo1, firstDay, lastDay);
+        CalendarDto.CalendarSupportInfoDto supportDto3 = CalendarConverter.toCalendarSupportInfoDto(supportInfo3, firstDay, lastDay);
         assertThat(supportInfoDtoList).containsExactlyInAnyOrder(supportDto1, supportDto3);
 
         List<CalendarDto.CalendarDiscountInfoDto> recDiscountDtoList = result.getRecommendMonthInfoDto().getDiscountInfoDtoList();
