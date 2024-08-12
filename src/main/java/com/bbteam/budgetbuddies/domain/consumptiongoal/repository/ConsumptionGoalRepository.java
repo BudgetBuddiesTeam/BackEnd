@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryAvgConsumptionDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.enums.Gender;
@@ -57,5 +58,16 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	Page<ConsumptionGoal> findTopConsumptionAndConsumeAmount(@Param("peerAgeStart") int peerAgeStart,
 		@Param("peerAgeEnd") int peerAgeEnd, @Param("peerGender") Gender peerGender,
 		@Param("currentMonth") LocalDate currentMonth, Pageable pageable);
+
+	@Query(
+		"SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryAvgConsumptionDTO(cg.category.id, AVG(cg.consumeAmount))"
+			+ "FROM ConsumptionGoal cg " + "WHERE cg.category.isDefault = true "
+			+ "AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " + "AND cg.user.gender = :peerGender "
+			+ "AND cg.goalMonth >= :currentMonth " + "GROUP BY cg.category.id " + "ORDER BY AVG(cg.consumeAmount) DESC")
+	List<CategoryAvgConsumptionDTO> findAvgConsumptionByCategory(
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth);
 
 }
