@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryAvgConsumptionDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.enums.Gender;
@@ -26,13 +25,6 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	List<ConsumptionGoal> findTopCategoriesAndGoalAmountLimit(@Param("top") int top,
 		@Param("peerAgeStart") int peerAgeStart, @Param("peerAgeEnd") int peerAgeEnd,
 		@Param("peerGender") Gender peerGender, @Param("currentMonth") LocalDate currentMonth);
-
-	@Query("SELECT cg FROM ConsumptionGoal cg " + "WHERE cg.category.isDefault = true "
-		+ "AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " + "AND cg.user.gender = :peerGender "
-		+ "AND cg.goalMonth >= :currentMonth " + "ORDER BY cg.goalAmount DESC")
-	Page<ConsumptionGoal> findTopCategoriesAndGoalAmount(@Param("peerAgeStart") int peerAgeStart,
-		@Param("peerAgeEnd") int peerAgeEnd, @Param("peerGender") Gender peerGender,
-		@Param("currentMonth") LocalDate currentMonth, Pageable pageable);
 
 	@Query(value = "SELECT cg FROM ConsumptionGoal AS cg WHERE cg.user.id = :userId AND cg.goalMonth = :goalMonth")
 	List<ConsumptionGoal> findConsumptionGoalByUserIdAndGoalMonth(Long userId, LocalDate goalMonth);
@@ -56,4 +48,9 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		@Param("peerGender") Gender peerGender,
 		@Param("currentMonth") LocalDate currentMonth);
 
+	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionDTO("
+		+ "cg.category.id, SUM(cg.consumeAmount)) " + "FROM ConsumptionGoal cg "
+		+ "WHERE cg.category.isDefault = true " + "AND cg.user.id = :userId "
+		+ "GROUP BY cg.category.id " + "ORDER BY cg.category.id")
+	List<MyConsumptionDTO> findAllConsumptionAmountByUserId(@Param("userId") Long userId);
 }
