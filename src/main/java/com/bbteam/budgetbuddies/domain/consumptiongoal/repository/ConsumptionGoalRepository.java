@@ -19,23 +19,22 @@ import com.bbteam.budgetbuddies.enums.Gender;
 @Repository
 public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal, Long> {
 
-	@Query("SELECT cg FROM ConsumptionGoal cg " + "WHERE cg.category.isDefault = true "
-		+ "AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " + "AND cg.user.gender = :peerGender "
-		+ "AND cg.goalMonth >= :currentMonth " + "ORDER BY cg.goalAmount DESC limit :top")
-	List<ConsumptionGoal> findTopCategoriesAndGoalAmountLimit(@Param("top") int top,
-		@Param("peerAgeStart") int peerAgeStart, @Param("peerAgeEnd") int peerAgeEnd,
-		@Param("peerGender") Gender peerGender, @Param("currentMonth") LocalDate currentMonth);
-
 	@Query(value = "SELECT cg FROM ConsumptionGoal AS cg WHERE cg.user.id = :userId AND cg.goalMonth = :goalMonth")
 	List<ConsumptionGoal> findConsumptionGoalByUserIdAndGoalMonth(Long userId, LocalDate goalMonth);
 
 	Optional<ConsumptionGoal> findConsumptionGoalByUserAndCategoryAndGoalMonth(User user, Category category,
 		LocalDate goalMonth);
 
-	@Query("SELECT cg FROM ConsumptionGoal cg JOIN cg.category c WHERE c.id = :categoryId AND cg.goalMonth "
-		+ "BETWEEN :startOfWeek AND :endOfWeek ORDER BY cg.consumeAmount DESC limit 1")
-	Optional<ConsumptionGoal> findTopConsumptionByCategoryIdAndCurrentWeek(@Param("categoryId") Long categoryId,
-		@Param("startOfWeek") LocalDate startOfWeek, @Param("endOfWeek") LocalDate endOfWeek);
+	@Query("SELECT AVG(cg.consumeAmount) FROM ConsumptionGoal cg " +
+		"JOIN cg.category c " +
+		"WHERE c.id = :categoryId " +
+		"AND cg.goalMonth BETWEEN :startOfWeek AND :endOfWeek " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender")
+	Optional<Long> findAvgConsumptionByCategoryIdAndCurrentWeek(
+		@Param("categoryId") Long categoryId, @Param("startOfWeek") LocalDate startOfWeek,
+		@Param("endOfWeek") LocalDate endOfWeek, @Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd, @Param("peerGender") Gender peerGender);
 
 	@Query(
 		"SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto(cg.category.id, AVG(cg.consumeAmount))"
