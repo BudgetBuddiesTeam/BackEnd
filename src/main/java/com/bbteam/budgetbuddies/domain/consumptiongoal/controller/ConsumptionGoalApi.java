@@ -25,10 +25,14 @@ public interface ConsumptionGoalApi {
 	ResponseEntity<?> getTopGoalCategoriesList(int top, Long userId,
 		int peerAgeStart, int peerAgeEnd, String peerGender);
 
-	@Operation(summary = "또래가 가장 큰 계획을 세운 카테고리와 이번 주 사용한 금액 조회 API", description = "로그인 한 유저의 또래 중 가장 큰 소비 목표 금액을 가진 카테고리와 이번 주 사용한 금액을 조회하는 API 입니다")
+	@Operation(summary = "또래들이 가장 많이 계획한 카테고리와 평균 금액 및 내 목표금액 차이 조회 API", description = "특정 사용자의 또래 소비 카테고리별 평균 목표 금액을 조회하는 API 입니다.")
 	@ApiResponses(value = {@ApiResponse(responseCode = "COMMON200", description = "OK, 성공")})
-	@Parameters({@Parameter(name = "userId", description = "로그인 한 유저 아이디")})
-	ResponseEntity<?> getTopGoalCategory(Long userId);
+	@Parameters({@Parameter(name = "userId", description = "로그인 한 유저 아이디"),
+		@Parameter(name = "peerAgeStart", description = "또래나이 시작 범위"),
+		@Parameter(name = "peerAgeEnd", description = "또래나이 끝 범위"),
+		@Parameter(name = "peerGender", description = "또래 성별")})
+	ResponseEntity<?> getAllConsumptionGoalCategories(Long userId, int peerAgeStart, int peerAgeEnd,
+		String peerGender);
 
 	@Operation(summary = "또래나이와 성별 조회 API", description = "또래나이와 성별을 조회하는 API 입니다.")
 	@ApiResponses(value = {@ApiResponse(responseCode = "COMMON200", description = "OK, 성공")})

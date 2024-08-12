@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDTO;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
@@ -42,10 +41,14 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ResponseEntity.ok(topCategoriesList);
 	}
 
-	@Override
-	@GetMapping("/top-category/top-goal")
-	public ResponseEntity<?> getTopGoalCategory(@RequestParam(name = "userId") Long userId) {
-		ConsumptionAnalysisResponseDTO response = consumptionGoalService.getTopCategoryAndConsumptionAmount(userId);
+	@GetMapping("/top-categories/top-goal")
+	public ResponseEntity<?> getAllConsumptionGoalCategories(@RequestParam(name = "userId") Long userId,
+		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
+		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
+		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
+		List<TopConsumptionResponseDTO> response = consumptionGoalService.getAllConsumptionGoalCategories(userId,
+			peerAgeStart,
+			peerAgeEnd, peerGender);
 		return ResponseEntity.ok(response);
 	}
 
