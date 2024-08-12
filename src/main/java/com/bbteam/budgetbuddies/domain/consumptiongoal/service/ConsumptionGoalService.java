@@ -18,7 +18,7 @@ import com.bbteam.budgetbuddies.domain.user.entity.User;
 @Service
 public interface ConsumptionGoalService {
 
-	List<TopGoalCategoryResponseDto> getTopGoalCategoriesLimit(int top, Long userId, int peerAgeStart, int peerAgeEnd,
+	List<TopGoalCategoryResponseDto> getTopConsumptionGoalCategories(Long userId, int peerAgeStart, int peerAgeEnd,
 		String peerGender);
 
 	List<TopConsumptionResponseDto> getAllConsumptionGoalCategories(Long userId, int peerAgeS, int peerAgeE,
