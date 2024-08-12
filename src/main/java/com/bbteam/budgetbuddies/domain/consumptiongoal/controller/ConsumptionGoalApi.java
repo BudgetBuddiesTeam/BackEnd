@@ -52,6 +52,6 @@ public interface ConsumptionGoalApi {
 		@Parameter(name = "peerAgeStart", description = "또래나이 시작 범위"),
 		@Parameter(name = "peerAgeEnd", description = "또래나이 끝 범위"),
 		@Parameter(name = "peerGender", description = "또래 성별")})
-	ResponseEntity<?> getConsumptionGoalList(Long userId, int peerAgeStart, int peerAgeEnd,
+	ResponseEntity<?> getAllConsumptionCategories(Long userId, int peerAgeStart, int peerAgeEnd,
 		String peerGender);
 }

@@ -102,7 +102,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TopConsumptionResponseDTO> getTopConsumptionsLimit(Long userId, int peerAgeS, int peerAgeE,
+	public List<TopConsumptionResponseDTO> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);

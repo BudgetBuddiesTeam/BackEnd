@@ -36,6 +36,6 @@ public interface ConsumptionGoalService {
 
 	void decreaseConsumeAmount(Long userId, Long categoryId, Long amount, LocalDate expenseDate);
 
-	List<TopConsumptionResponseDTO> getTopConsumptionsLimit(Long userId, int peerAgeS, int peerAgeE,
+	List<TopConsumptionResponseDTO> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
 		String peerG);
 }

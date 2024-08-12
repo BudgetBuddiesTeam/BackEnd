@@ -78,11 +78,12 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 	}
 
 	@GetMapping("/top-categories/top-consumption")
-	public ResponseEntity<?> getConsumptionGoalList(@RequestParam(name = "userId") Long userId,
+	public ResponseEntity<?> getAllConsumptionCategories(@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
-		List<TopConsumptionResponseDTO> response = consumptionGoalService.getTopConsumptionsLimit(userId, peerAgeStart,
+		List<TopConsumptionResponseDTO> response = consumptionGoalService.getAllConsumptionCategories(userId,
+			peerAgeStart,
 			peerAgeEnd, peerGender);
 		return ResponseEntity.ok(response);
 	}
