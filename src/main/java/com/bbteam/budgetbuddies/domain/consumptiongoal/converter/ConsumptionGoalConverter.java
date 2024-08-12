@@ -10,7 +10,6 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisRe
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.UserConsumptionGoalResponse;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.enums.Gender;
@@ -78,17 +77,6 @@ public class ConsumptionGoalConverter {
 			.peerAgeStart(peerAgeStart)
 			.peerAgeEnd(peerAgeEnd)
 			.peerGender(peerGender.name())
-			.build();
-	}
-
-	public TopGoalCategoryResponseDto toTopGoalCategories(ConsumptionGoal consumptionGoal) {
-		if (consumptionGoal == null || consumptionGoal.getCategory() == null) {
-			return null;
-		}
-
-		return TopGoalCategoryResponseDto.builder()
-			.categoryName(consumptionGoal.getCategory().getName())
-			.goalAmount(consumptionGoal.getGoalAmount())
 			.build();
 	}
 }
