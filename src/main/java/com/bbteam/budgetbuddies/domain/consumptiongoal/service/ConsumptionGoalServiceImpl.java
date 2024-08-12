@@ -136,19 +136,21 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		checkPeerInfo(userId, 0, 0, "none");
 
-		ConsumptionGoal topConsumptionGoal = consumptionGoalRepository.findTopCategoriesAndAvgGoalAmount(1,
+		List<AvgConsumptionGoalDto> avgConsumptionGoalList = consumptionGoalRepository.findAvgGoalAmountByCategory(
 			peerAgeStart,
-			peerAgeEnd, peerGender, currentMonth).get(0);
+			peerAgeEnd, peerGender, currentMonth);
 
-		ConsumptionGoal currentWeekConsumptionAmount = consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
-				topConsumptionGoal.getCategory().getId(), startOfWeek, endOfWeek)
-			.orElseThrow(() -> new IllegalArgumentException(
-				"카테고리 ID " + topConsumptionGoal.getCategory().getId() + "에 대한 현재 주 소비 데이터가 없습니다."));
+		Long topConsumptionGoalCategoryId = avgConsumptionGoalList.get(0).getCategoryId();
 
-		Long totalConsumptionAmountForCurrentWeek = currentWeekConsumptionAmount.getConsumeAmount();
+		Long currentWeekConsumptionAmount = consumptionGoalRepository
+			.findAvgConsumptionByCategoryIdAndCurrentWeek(topConsumptionGoalCategoryId, startOfWeek, endOfWeek,
+				peerAgeStart, peerAgeEnd, peerGender)
+			.orElse(0L);
 
-		return consumptionGoalConverter.toTopCategoryAndConsumptionAmount(topConsumptionGoal,
-			totalConsumptionAmountForCurrentWeek);
+		String topGoalCategory = getCategoryNameById(topConsumptionGoalCategoryId);
+
+		return consumptionGoalConverter.toTopCategoryAndConsumptionAmount(topGoalCategory,
+			currentWeekConsumptionAmount);
 	}
 
 	@Override
