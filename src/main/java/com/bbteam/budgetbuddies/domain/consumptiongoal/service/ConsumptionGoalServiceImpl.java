@@ -16,10 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionAnalysisConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoalConverter;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.PeerInfoConverter;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.TopCategoryConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
@@ -69,7 +66,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(top,
 			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
-		return topGoals.stream().map(TopCategoryConverter::fromEntity).collect(Collectors.toList());
+		return topGoals.stream().map(consumptionGoalConverter::toTopGoalCategories).collect(Collectors.toList());
 	}
 
 	@Override
@@ -122,7 +119,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		return PeerInfoConverter.fromEntity(peerAgeStart, peerAgeEnd, peerGender);
+		return consumptionGoalConverter.toPeerInfo(peerAgeStart, peerAgeEnd, peerGender);
 	}
 
 	@Override
@@ -141,7 +138,8 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		Long totalConsumptionAmountForCurrentWeek = currentWeekConsumptionAmount.getConsumeAmount();
 
-		return ConsumptionAnalysisConverter.fromEntity(topConsumptionGoal, totalConsumptionAmountForCurrentWeek);
+		return consumptionGoalConverter.toTopCategoryAndConsumptionAmount(topConsumptionGoal,
+			totalConsumptionAmountForCurrentWeek);
 	}
 
 	@Override
