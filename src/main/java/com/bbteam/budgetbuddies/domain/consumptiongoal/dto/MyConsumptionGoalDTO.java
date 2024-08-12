@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MyConsumptionDTO {
+public class MyConsumptionGoalDTO {
 
 	private Long categoryId;
-	private Long ConsumeAmount; // Change to Long
+	private Long MyAmount;
 }
