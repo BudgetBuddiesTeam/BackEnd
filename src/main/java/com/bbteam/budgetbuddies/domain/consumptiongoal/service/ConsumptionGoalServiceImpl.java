@@ -20,16 +20,16 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionAnal
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoalConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.PeerInfoConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.TopCategoryConverter;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDTO;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDTO;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDTO;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
@@ -62,7 +62,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TopGoalCategoryResponseDTO> getTopGoalCategoriesLimit(int top, Long userId, int peerAgeS, int peerAgeE,
+	public List<TopGoalCategoryResponseDto> getTopGoalCategoriesLimit(int top, Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
@@ -74,27 +74,27 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TopConsumptionResponseDTO> getAllConsumptionGoalCategories(Long userId, int peerAgeS, int peerAgeE,
+	public List<TopConsumptionResponseDto> getAllConsumptionGoalCategories(Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		List<AvgConsumptionGoalDTO> categoryAvgList = getAvgGoalAmount();
+		List<AvgConsumptionGoalDto> categoryAvgList = getAvgGoalAmount();
 
-		List<MyConsumptionGoalDTO> myConsumptionAmountList = getMyGoalAmount(userId);
+		List<MyConsumptionGoalDto> myConsumptionAmountList = getMyGoalAmount(userId);
 
 		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
 		return defaultCategories.stream()
 			.map(category -> {
-				MyConsumptionGoalDTO myConsumptionAmountDTO = myConsumptionAmountList.stream()
+				MyConsumptionGoalDto myConsumptionAmountDTO = myConsumptionAmountList.stream()
 					.filter(dto -> dto.getCategoryId().equals(category.getId()))
 					.findFirst()
-					.orElse(new MyConsumptionGoalDTO(category.getId(), 0L));
+					.orElse(new MyConsumptionGoalDto(category.getId(), 0L));
 
-				AvgConsumptionGoalDTO avgDTO = categoryAvgList.stream()
+				AvgConsumptionGoalDto avgDTO = categoryAvgList.stream()
 					.filter(dto -> dto.getCategoryId().equals(category.getId()))
 					.findFirst()
-					.orElse(new AvgConsumptionGoalDTO(category.getId(), 0L));
+					.orElse(new AvgConsumptionGoalDto(category.getId(), 0L));
 
 				Long avgConsumeAmount = avgDTO.getAverageAmount();
 				Long myConsumeAmount = myConsumptionAmountDTO.getMyAmount();
@@ -106,7 +106,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 					consumeAmountDifference = myConsumeAmount - avgConsumeAmount;
 				}
 
-				return TopConsumptionResponseDTO.builder()
+				return TopConsumptionResponseDto.builder()
 					.categoryName(category.getName())
 					.avgConsumeAmount(avgConsumeAmount)
 					.consumeAmountDifference(consumeAmountDifference)
@@ -118,7 +118,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public PeerInfoResponseDTO getPeerInfo(Long userId, int peerAgeS, int peerAgeE, String peerG) {
+	public PeerInfoResponseDto getPeerInfo(Long userId, int peerAgeS, int peerAgeE, String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
@@ -127,7 +127,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ConsumptionAnalysisResponseDTO getTopCategoryAndConsumptionAmount(Long userId) {
+	public ConsumptionAnalysisResponseDto getTopCategoryAndConsumptionAmount(Long userId) {
 
 		checkPeerInfo(userId, 0, 0, "none");
 
@@ -146,28 +146,28 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TopConsumptionResponseDTO> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
+	public List<TopConsumptionResponseDto> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		List<AvgConsumptionGoalDTO> categoryAvgList = getAvgConsumptionAmount();
+		List<AvgConsumptionGoalDto> categoryAvgList = getAvgConsumptionAmount();
 
-		List<MyConsumptionGoalDTO> myConsumptionAmountList = getMyConsumptionAmount(userId);
+		List<MyConsumptionGoalDto> myConsumptionAmountList = getMyConsumptionAmount(userId);
 
 		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
 
 		return defaultCategories.stream()
 			.map(category -> {
-				MyConsumptionGoalDTO myConsumptionAmountDTO = myConsumptionAmountList.stream()
+				MyConsumptionGoalDto myConsumptionAmountDTO = myConsumptionAmountList.stream()
 					.filter(dto -> dto.getCategoryId().equals(category.getId()))
 					.findFirst()
-					.orElse(new MyConsumptionGoalDTO(category.getId(), 0L));
+					.orElse(new MyConsumptionGoalDto(category.getId(), 0L));
 
-				AvgConsumptionGoalDTO avgDTO = categoryAvgList.stream()
+				AvgConsumptionGoalDto avgDTO = categoryAvgList.stream()
 					.filter(dto -> dto.getCategoryId().equals(category.getId()))
 					.findFirst()
-					.orElse(new AvgConsumptionGoalDTO(category.getId(), 0L));
+					.orElse(new AvgConsumptionGoalDto(category.getId(), 0L));
 
 				Long avgConsumeAmount = avgDTO.getAverageAmount();
 				Long myConsumeAmount = myConsumptionAmountDTO.getMyAmount();
@@ -179,7 +179,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 					consumeAmountDifference = myConsumeAmount - avgConsumeAmount;
 				}
 
-				return TopConsumptionResponseDTO.builder()
+				return TopConsumptionResponseDto.builder()
 					.categoryName(category.getName())
 					.avgConsumeAmount(avgConsumeAmount)
 					.consumeAmountDifference(consumeAmountDifference)
@@ -233,80 +233,80 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		}
 	}
 
-	private List<AvgConsumptionGoalDTO> getAvgConsumptionAmount() {
+	private List<AvgConsumptionGoalDto> getAvgConsumptionAmount() {
 
 		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
-		List<AvgConsumptionGoalDTO> categoryAvgList = new ArrayList<>();
+		List<AvgConsumptionGoalDto> categoryAvgList = new ArrayList<>();
 
-		List<AvgConsumptionGoalDTO> avgConsumptionGoalDTO = consumptionGoalRepository.findAvgConsumptionAmountByCategory(
+		List<AvgConsumptionGoalDto> avgConsumptionGoalDTO = consumptionGoalRepository.findAvgConsumptionAmountByCategory(
 			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
 
-		Map<Long, AvgConsumptionGoalDTO> categoryAvgMap = avgConsumptionGoalDTO.stream()
-			.collect(Collectors.toMap(AvgConsumptionGoalDTO::getCategoryId, Function.identity()));
+		Map<Long, AvgConsumptionGoalDto> categoryAvgMap = avgConsumptionGoalDTO.stream()
+			.collect(Collectors.toMap(AvgConsumptionGoalDto::getCategoryId, Function.identity()));
 
 		for (Category category : defaultCategories) {
-			AvgConsumptionGoalDTO avgDTO = categoryAvgMap.getOrDefault(category.getId(),
-				new AvgConsumptionGoalDTO(category.getId(), 0.0));
+			AvgConsumptionGoalDto avgDTO = categoryAvgMap.getOrDefault(category.getId(),
+				new AvgConsumptionGoalDto(category.getId(), 0.0));
 
 			categoryAvgList.add(avgDTO);
 		}
 		return categoryAvgList;
 	}
 
-	private List<MyConsumptionGoalDTO> getMyConsumptionAmount(Long userId) {
+	private List<MyConsumptionGoalDto> getMyConsumptionAmount(Long userId) {
 
 		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
-		List<MyConsumptionGoalDTO> myConsumptionAmountList = new ArrayList<>();
+		List<MyConsumptionGoalDto> myConsumptionAmountList = new ArrayList<>();
 
-		List<MyConsumptionGoalDTO> myConsumptionGoalDTO = consumptionGoalRepository.findAllConsumptionAmountByUserId(
+		List<MyConsumptionGoalDto> myConsumptionGoalDTO = consumptionGoalRepository.findAllConsumptionAmountByUserId(
 			userId);
 
-		Map<Long, MyConsumptionGoalDTO> myConsumptionMap = myConsumptionGoalDTO.stream()
-			.collect(Collectors.toMap(MyConsumptionGoalDTO::getCategoryId, Function.identity()));
+		Map<Long, MyConsumptionGoalDto> myConsumptionMap = myConsumptionGoalDTO.stream()
+			.collect(Collectors.toMap(MyConsumptionGoalDto::getCategoryId, Function.identity()));
 
 		for (Category category : defaultCategories) {
-			MyConsumptionGoalDTO mylDTO = myConsumptionMap.getOrDefault(category.getId(),
-				new MyConsumptionGoalDTO(category.getId(), 0L));
+			MyConsumptionGoalDto mylDTO = myConsumptionMap.getOrDefault(category.getId(),
+				new MyConsumptionGoalDto(category.getId(), 0L));
 
 			myConsumptionAmountList.add(mylDTO);
 		}
 		return myConsumptionAmountList;
 	}
 
-	private List<AvgConsumptionGoalDTO> getAvgGoalAmount() {
+	private List<AvgConsumptionGoalDto> getAvgGoalAmount() {
 
 		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
-		List<AvgConsumptionGoalDTO> categoryAvgList = new ArrayList<>();
+		List<AvgConsumptionGoalDto> categoryAvgList = new ArrayList<>();
 
-		List<AvgConsumptionGoalDTO> avgConsumptionGoalDTO = consumptionGoalRepository.findAvgGoalAmountByCategory(
+		List<AvgConsumptionGoalDto> avgConsumptionGoalDTO = consumptionGoalRepository.findAvgGoalAmountByCategory(
 			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
 
-		Map<Long, AvgConsumptionGoalDTO> categoryAvgMap = avgConsumptionGoalDTO.stream()
-			.collect(Collectors.toMap(AvgConsumptionGoalDTO::getCategoryId, Function.identity()));
+		Map<Long, AvgConsumptionGoalDto> categoryAvgMap = avgConsumptionGoalDTO.stream()
+			.collect(Collectors.toMap(AvgConsumptionGoalDto::getCategoryId, Function.identity()));
 
 		for (Category category : defaultCategories) {
-			AvgConsumptionGoalDTO avgDTO = categoryAvgMap.getOrDefault(category.getId(),
-				new AvgConsumptionGoalDTO(category.getId(), 0.0));
+			AvgConsumptionGoalDto avgDTO = categoryAvgMap.getOrDefault(category.getId(),
+				new AvgConsumptionGoalDto(category.getId(), 0.0));
 
 			categoryAvgList.add(avgDTO);
 		}
 		return categoryAvgList;
 	}
 
-	private List<MyConsumptionGoalDTO> getMyGoalAmount(Long userId) {
+	private List<MyConsumptionGoalDto> getMyGoalAmount(Long userId) {
 
 		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
-		List<MyConsumptionGoalDTO> myConsumptionAmountList = new ArrayList<>();
+		List<MyConsumptionGoalDto> myConsumptionAmountList = new ArrayList<>();
 
-		List<MyConsumptionGoalDTO> myConsumptionGoalDTO = consumptionGoalRepository.findAllGoalAmountByUserId(
+		List<MyConsumptionGoalDto> myConsumptionGoalDTO = consumptionGoalRepository.findAllGoalAmountByUserId(
 			userId);
 
-		Map<Long, MyConsumptionGoalDTO> myConsumptionMap = myConsumptionGoalDTO.stream()
-			.collect(Collectors.toMap(MyConsumptionGoalDTO::getCategoryId, Function.identity()));
+		Map<Long, MyConsumptionGoalDto> myConsumptionMap = myConsumptionGoalDTO.stream()
+			.collect(Collectors.toMap(MyConsumptionGoalDto::getCategoryId, Function.identity()));
 
 		for (Category category : defaultCategories) {
-			MyConsumptionGoalDTO myDTO = myConsumptionMap.getOrDefault(category.getId(),
-				new MyConsumptionGoalDTO(category.getId(), 0L));
+			MyConsumptionGoalDto myDTO = myConsumptionMap.getOrDefault(category.getId(),
+				new MyConsumptionGoalDto(category.getId(), 0L));
 
 			myConsumptionAmountList.add(myDTO);
 		}

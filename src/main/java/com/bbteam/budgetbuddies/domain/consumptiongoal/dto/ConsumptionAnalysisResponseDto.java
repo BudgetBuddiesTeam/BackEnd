@@ -1,14 +1,17 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class MyConsumptionGoalDTO {
+@AllArgsConstructor
+public class ConsumptionAnalysisResponseDto {
 
-	private Long categoryId;
-	private Long MyAmount;
+	private String goalCategory;
+
+	private Long currentWeekConsumptionAmount;
 }

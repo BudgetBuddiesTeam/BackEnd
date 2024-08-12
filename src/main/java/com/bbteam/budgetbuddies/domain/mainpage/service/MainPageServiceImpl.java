@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.discountinfo.service.DiscountInfoService;
@@ -36,12 +36,12 @@ public class MainPageServiceImpl implements MainPageService {
 				now.getMonthValue(), 0, 2)
 			.getContent();
 
-		List<TopGoalCategoryResponseDTO> topGoalCategoryResponseDTOList = consumptionGoalService.getTopGoalCategoriesLimit(
+		List<TopGoalCategoryResponseDto> topGoalCategoryResponseDtoList = consumptionGoalService.getTopGoalCategoriesLimit(
 			1, userId, 0, 0, "NONE");
-		if (topGoalCategoryResponseDTOList.size() == 0) {
+		if (topGoalCategoryResponseDtoList.size() == 0) {
 			throw new NoSuchElementException("Category xx");
 		}
-		TopGoalCategoryResponseDTO topGoalCategoryResponseDTO = topGoalCategoryResponseDTOList.get(0);
+		TopGoalCategoryResponseDto topGoalCategoryResponseDTO = topGoalCategoryResponseDtoList.get(0);
 
 		ConsumptionGoalResponseListDto userConsumptionGoal = consumptionGoalService.findUserConsumptionGoalList(userId,
 			now);

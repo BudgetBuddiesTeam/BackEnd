@@ -5,12 +5,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDTO;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
@@ -18,20 +18,20 @@ import com.bbteam.budgetbuddies.domain.user.entity.User;
 @Service
 public interface ConsumptionGoalService {
 
-	List<TopGoalCategoryResponseDTO> getTopGoalCategoriesLimit(int top, Long userId, int peerAgeStart, int peerAgeEnd,
+	List<TopGoalCategoryResponseDto> getTopGoalCategoriesLimit(int top, Long userId, int peerAgeStart, int peerAgeEnd,
 		String peerGender);
 
-	List<TopConsumptionResponseDTO> getAllConsumptionGoalCategories(Long userId, int peerAgeS, int peerAgeE,
+	List<TopConsumptionResponseDto> getAllConsumptionGoalCategories(Long userId, int peerAgeS, int peerAgeE,
 		String peerG);
 
 	ConsumptionGoalResponseListDto findUserConsumptionGoalList(Long userId, LocalDate date);
 
-	PeerInfoResponseDTO getPeerInfo(Long userId, int peerAgeStart, int peerAgeEnd, String peerGender);
+	PeerInfoResponseDto getPeerInfo(Long userId, int peerAgeStart, int peerAgeEnd, String peerGender);
 
 	ConsumptionGoalResponseListDto updateConsumptionGoals(Long userId,
 		ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
 
-	ConsumptionAnalysisResponseDTO getTopCategoryAndConsumptionAmount(Long userId);
+	ConsumptionAnalysisResponseDto getTopCategoryAndConsumptionAmount(Long userId);
 
 	void recalculateConsumptionAmount(Expense expense, ExpenseUpdateRequestDto request, User user);
 
@@ -39,6 +39,6 @@ public interface ConsumptionGoalService {
 
 	void decreaseConsumeAmount(Long userId, Long categoryId, Long amount, LocalDate expenseDate);
 
-	List<TopConsumptionResponseDTO> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
+	List<TopConsumptionResponseDto> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
 		String peerG);
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PeerInfoResponseDTO {
+public class PeerInfoResponseDto {
 
 	private int peerAgeStart;
 
