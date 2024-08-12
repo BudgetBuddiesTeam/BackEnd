@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoalConverter;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AllConsumptionCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
@@ -26,7 +27,6 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalRespon
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
@@ -79,7 +79,8 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TopConsumptionResponseDto> getAllConsumptionGoalCategories(Long userId, int peerAgeS, int peerAgeE,
+	public List<AllConsumptionCategoryResponseDto> getAllConsumptionGoalCategories(Long userId, int peerAgeS,
+		int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
@@ -111,10 +112,10 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 					consumeAmountDifference = myConsumeAmount - avgConsumeAmount;
 				}
 
-				return TopConsumptionResponseDto.builder()
+				return AllConsumptionCategoryResponseDto.builder()
 					.categoryName(category.getName())
-					.avgConsumeAmount(avgConsumeAmount)
-					.consumeAmountDifference(consumeAmountDifference)
+					.avgAmount(avgConsumeAmount)
+					.amountDifference(consumeAmountDifference)
 					.build();
 			})
 			.collect(Collectors.toList());
@@ -155,7 +156,15 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TopConsumptionResponseDto> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
+	public List<TopGoalCategoryResponseDto> getTopConsumptionCategories(Long userId, int peerAgeStart, int peerAgeEnd,
+		String peerGender) {
+		// TODO
+		return List.of();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<AllConsumptionCategoryResponseDto> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
@@ -188,10 +197,10 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 					consumeAmountDifference = myConsumeAmount - avgConsumeAmount;
 				}
 
-				return TopConsumptionResponseDto.builder()
+				return AllConsumptionCategoryResponseDto.builder()
 					.categoryName(category.getName())
-					.avgConsumeAmount(avgConsumeAmount)
-					.consumeAmountDifference(consumeAmountDifference)
+					.avgAmount(avgConsumeAmount)
+					.amountDifference(consumeAmountDifference)
 					.build();
 			})
 			.collect(Collectors.toList());

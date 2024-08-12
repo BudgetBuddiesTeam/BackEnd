@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopConsumptionResponseDto {
+public class AllConsumptionCategoryResponseDto {
 
 	private String categoryName;
 
-	private Long avgConsumeAmount;
+	private Long avgAmount;
 
-	private Long consumeAmountDifference;
+	private Long amountDifference;
 }

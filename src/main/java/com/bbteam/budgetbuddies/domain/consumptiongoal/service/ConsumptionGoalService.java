@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AllConsumptionCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
@@ -21,7 +21,7 @@ public interface ConsumptionGoalService {
 	List<TopGoalCategoryResponseDto> getTopConsumptionGoalCategories(Long userId, int peerAgeStart, int peerAgeEnd,
 		String peerGender);
 
-	List<TopConsumptionResponseDto> getAllConsumptionGoalCategories(Long userId, int peerAgeS, int peerAgeE,
+	List<AllConsumptionCategoryResponseDto> getAllConsumptionGoalCategories(Long userId, int peerAgeS, int peerAgeE,
 		String peerG);
 
 	ConsumptionGoalResponseListDto findUserConsumptionGoalList(Long userId, LocalDate date);
@@ -39,6 +39,9 @@ public interface ConsumptionGoalService {
 
 	void decreaseConsumeAmount(Long userId, Long categoryId, Long amount, LocalDate expenseDate);
 
-	List<TopConsumptionResponseDto> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
+	List<TopGoalCategoryResponseDto> getTopConsumptionCategories(Long userId, int peerAgeStart, int peerAgeEnd,
+		String peerGender);
+
+	List<AllConsumptionCategoryResponseDto> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
 		String peerG);
 }
