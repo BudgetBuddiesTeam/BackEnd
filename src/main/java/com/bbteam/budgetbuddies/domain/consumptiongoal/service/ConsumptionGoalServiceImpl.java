@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -59,14 +60,21 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<TopGoalCategoryResponseDto> getTopGoalCategoriesLimit(int top, Long userId, int peerAgeS, int peerAgeE,
+	public List<TopGoalCategoryResponseDto> getTopConsumptionGoalCategories(Long userId, int peerAgeS, int peerAgeE,
 		String peerG) {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		List<ConsumptionGoal> topGoals = consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(top,
-			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
-		return topGoals.stream().map(consumptionGoalConverter::toTopGoalCategories).collect(Collectors.toList());
+		List<AvgConsumptionGoalDto> categoryAvgList = getAvgGoalAmount();
+
+		return categoryAvgList.stream()
+			.sorted(Comparator.comparing(AvgConsumptionGoalDto::getAverageAmount).reversed())
+			.limit(4)
+			.map(avgGoal -> TopGoalCategoryResponseDto.builder()
+				.categoryName(getCategoryNameById(avgGoal.getCategoryId()))
+				.goalAmount(avgGoal.getAverageAmount())
+				.build())
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -128,8 +136,9 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		checkPeerInfo(userId, 0, 0, "none");
 
-		ConsumptionGoal topConsumptionGoal = consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(1,
-			peerAgeStart, peerAgeEnd, peerGender, currentMonth).get(0);
+		ConsumptionGoal topConsumptionGoal = consumptionGoalRepository.findTopCategoriesAndAvgGoalAmount(1,
+			peerAgeStart,
+			peerAgeEnd, peerGender, currentMonth).get(0);
 
 		ConsumptionGoal currentWeekConsumptionAmount = consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
 				topConsumptionGoal.getCategory().getId(), startOfWeek, endOfWeek)
@@ -309,6 +318,12 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			myConsumptionAmountList.add(myDTO);
 		}
 		return myConsumptionAmountList;
+	}
+
+	private String getCategoryNameById(Long categoryId) {
+		Category category = categoryRepository.findById(categoryId)
+			.orElseThrow(() -> new RuntimeException("카테고리 " + categoryId + "를 찾을 수 없습니다.: "));
+		return category.getName();
 	}
 
 	@Override
