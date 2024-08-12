@@ -13,5 +13,7 @@ public class TopConsumptionResponseDTO {
 
 	private String categoryName;
 
-	private Long consumeAmount;
+	private Long avgConsumeAmount;
+
+	private Long consumeAmountDifference;
 }
