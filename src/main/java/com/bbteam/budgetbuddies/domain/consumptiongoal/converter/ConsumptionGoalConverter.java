@@ -63,11 +63,11 @@ public class ConsumptionGoalConverter {
 			.build();
 	}
 
-	public ConsumptionAnalysisResponseDto toTopCategoryAndConsumptionAmount(ConsumptionGoal consumptionGoal,
+	public ConsumptionAnalysisResponseDto toTopCategoryAndConsumptionAmount(String categoryName,
 		Long topAmount) {
 
 		return ConsumptionAnalysisResponseDto.builder()
-			.goalCategory(consumptionGoal.getCategory().getName())
+			.goalCategory(categoryName)
 			.currentWeekConsumptionAmount(topAmount)
 			.build();
 	}
