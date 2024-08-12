@@ -36,8 +36,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
 		List<TopGoalCategoryResponseDto> topCategoriesList = consumptionGoalService.getTopConsumptionGoalCategories(
-			userId,
-			peerAgeStart, peerAgeEnd, peerGender);
+			userId, peerAgeStart, peerAgeEnd, peerGender);
 		return ResponseEntity.ok(topCategoriesList);
 	}
 
@@ -47,8 +46,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
 		List<TopConsumptionResponseDto> response = consumptionGoalService.getAllConsumptionGoalCategories(userId,
-			peerAgeStart,
-			peerAgeEnd, peerGender);
+			peerAgeStart, peerAgeEnd, peerGender);
 		return ResponseEntity.ok(response);
 	}
 
@@ -86,8 +84,12 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
 		List<TopConsumptionResponseDto> response = consumptionGoalService.getAllConsumptionCategories(userId,
-			peerAgeStart,
-			peerAgeEnd, peerGender);
+			peerAgeStart, peerAgeEnd, peerGender);
 		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/top-categories/top-consumption/{userId}")
+	public ResponseEntity<?> getTopCategoryAndConsumptionAmount(@PathVariable Long userId) {
+		return ResponseEntity.ok(consumptionGoalService.getTopCategoryAndConsumptionAmount(userId));
 	}
 }

@@ -3,6 +3,7 @@ package com.bbteam.budgetbuddies.domain.consumptiongoal.controller;
 import java.time.LocalDate;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
@@ -57,4 +58,8 @@ public interface ConsumptionGoalApi {
 		@Parameter(name = "peerGender", description = "또래 성별")})
 	ResponseEntity<?> getAllConsumptionCategories(Long userId, int peerAgeStart, int peerAgeEnd,
 		String peerGender);
+
+	@Operation(summary = "또래들이 가장 큰 목표로 세운 카테고리와 그 카테고리에서 이번주 사용한 금액 조회 API", description = "특정 사용자의 또래 소비 카테고리별 이번주 소비 금액을 조회하는 API 입니다.")
+	@ApiResponses(value = {@ApiResponse(responseCode = "COMMON200", description = "OK, 성공")})
+	ResponseEntity<?> getTopCategoryAndConsumptionAmount(@PathVariable Long userId);
 }
