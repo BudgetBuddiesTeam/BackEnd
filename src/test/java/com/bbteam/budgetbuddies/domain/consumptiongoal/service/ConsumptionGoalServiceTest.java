@@ -87,18 +87,19 @@ class ConsumptionGoalServiceTest {
 
 		List<Category> categoryList = List.of(defaultCategory, userCategory);
 
-		given(categoryRepository.findUserCategoryByUserId(user.getId())).willReturn(categoryList);
-
-		List<ConsumptionGoalResponseDto> expected = categoryList.stream()
-			.map(category -> consumptionGoalConverter.toConsumptionGoalResponseDto(category))
-			.toList();
+		List<ConsumptionGoalResponseDto> expected = List.of(
+			new ConsumptionGoalResponseDto(defaultCategory.getName(), defaultCategory.getId(), 0L, 0L),
+			new ConsumptionGoalResponseDto(userCategory.getName(), userCategory.getId(), 0L, 0L));
 
 		// when
+		when(categoryRepository.findUserCategoryByUserId(user.getId())).thenReturn(categoryList);
+
 		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoalList(user.getId(),
 			goalMonthRandomDay);
 
 		// then
 		assertThat(result.getConsumptionGoalList()).usingRecursiveComparison().isEqualTo(expected);
+		assertEquals(result.getTotalRemainingBalance(), 0L);
 	}
 
 	@Test
@@ -116,11 +117,13 @@ class ConsumptionGoalServiceTest {
 
 		ConsumptionGoal previousMonthDefaultCategoryGoal = ConsumptionGoal.builder()
 			.goalAmount(1_000_000L)
-			.consumeAmount(20_000L)
+			.consumeAmount(200_000L)
 			.user(user)
 			.category(defaultCategory)
 			.goalMonth(goalMonthRandomDay.minusMonths(1))
 			.build();
+		Long previousMonthDefaultGoalRemainingBalance =
+			previousMonthDefaultCategoryGoal.getGoalAmount() - previousMonthDefaultCategoryGoal.getConsumeAmount();
 
 		ConsumptionGoal previousMonthUserCategoryGoal = ConsumptionGoal.builder()
 			.goalAmount(1_000_000L)
@@ -129,23 +132,27 @@ class ConsumptionGoalServiceTest {
 			.category(userCategory)
 			.goalMonth(goalMonthRandomDay.minusMonths(1))
 			.build();
+		Long previousMonthUseGoalRemainingBalance =
+			previousMonthUserCategoryGoal.getGoalAmount() - previousMonthUserCategoryGoal.getConsumeAmount();
 
 		List<ConsumptionGoal> previousGoalList = List.of(previousMonthDefaultCategoryGoal,
 			previousMonthUserCategoryGoal);
 
-		given(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(),
-			GOAL_MONTH.minusMonths(1))).willReturn(previousGoalList);
-
-		List<ConsumptionGoalResponseDto> expected = previousGoalList.stream()
-			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
-			.toList();
+		List<ConsumptionGoalResponseDto> expected = List.of(
+			consumptionGoalConverter.toConsumptionGoalResponseDto(previousMonthUserCategoryGoal),
+			consumptionGoalConverter.toConsumptionGoalResponseDto(previousMonthDefaultCategoryGoal));
 
 		// when
+		when(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(),
+			GOAL_MONTH.minusMonths(1))).thenReturn(previousGoalList);
+
 		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoalList(user.getId(),
 			goalMonthRandomDay);
 
 		// then
 		assertThat(result.getConsumptionGoalList()).usingRecursiveComparison().isEqualTo(expected);
+		assertEquals(result.getTotalRemainingBalance(),
+			previousMonthDefaultGoalRemainingBalance + previousMonthUseGoalRemainingBalance);
 	}
 
 	@Test
@@ -171,13 +178,13 @@ class ConsumptionGoalServiceTest {
 			.goalMonth(goalMonthRandomDay)
 			.build();
 
-		given(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(),
-			GOAL_MONTH.minusMonths(1))).willReturn(List.of(previousMonthUserCategoryGoal));
+		// when
+		when(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(),
+			GOAL_MONTH.minusMonths(1))).thenReturn(List.of(previousMonthUserCategoryGoal));
 
-		given(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(), GOAL_MONTH)).willReturn(
+		when(consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(user.getId(), GOAL_MONTH)).thenReturn(
 			List.of(goalMonthUserCategoryGoal));
 
-		// when
 		ConsumptionGoalResponseListDto result = consumptionGoalService.findUserConsumptionGoalList(user.getId(),
 			goalMonthRandomDay);
 
