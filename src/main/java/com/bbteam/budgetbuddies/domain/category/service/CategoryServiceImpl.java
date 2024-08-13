@@ -34,11 +34,11 @@ public class CategoryServiceImpl implements CategoryService {
 	private final ConsumptionGoalRepository consumptionGoalRepository;
 
 	@Override
-	public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
-		User user = userRepository.findById(categoryRequestDTO.getUserId())
+	public CategoryResponseDTO createCategory(Long userId, CategoryRequestDTO categoryRequestDTO) {
+		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new IllegalArgumentException("cannot find user"));
 
-		if (categoryRepository.existsByUserIdAndName(categoryRequestDTO.getUserId(), categoryRequestDTO.getName())) {
+		if (categoryRepository.existsByUserIdAndName(userId, categoryRequestDTO.getName())) {
 			throw new IllegalArgumentException("User already has a category with the same name");
 		}
 
