@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryConsumptionCountDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
@@ -30,7 +33,66 @@ class ConsumptionGoalRepositoryTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
-	LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
+	private User peerUser1;
+	private User peerUser2;
+	private Category defaultCategory1;
+	private Category defaultCategory2;
+
+	@BeforeEach
+	void setUp() {
+		defaultCategory1 = categoryRepository.save(
+			Category.builder().name("Category 1").user(null).isDefault(true).build());
+
+		defaultCategory2 = categoryRepository.save(
+			Category.builder().name("Category 2").user(null).isDefault(true).build());
+
+		peerUser1 = userRepository.save(
+			User.builder()
+				.email("peer1@example.com")
+				.age(24)
+				.name("Peer User 1")
+				.gender(Gender.MALE)
+				.phoneNumber("010-1111-1111")
+				.build());
+
+		peerUser2 = userRepository.save(
+			User.builder()
+				.email("peer2@example.com")
+				.age(25)
+				.name("Peer User 2")
+				.gender(Gender.MALE)
+				.phoneNumber("010-2222-2222")
+				.build());
+
+		LocalDate currentMonth = LocalDate.now();
+
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(100L)
+				.consumeAmount(50L)
+				.user(peerUser1)
+				.category(defaultCategory1)
+				.goalMonth(currentMonth)
+				.build());
+
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(150L)
+				.consumeAmount(100L)
+				.user(peerUser1)
+				.category(defaultCategory1)
+				.goalMonth(currentMonth)
+				.build());
+
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(200L)
+				.consumeAmount(150L)
+				.user(peerUser2)
+				.category(defaultCategory2)
+				.goalMonth(currentMonth)
+				.build());
+	}
 
 	@Test
 	@DisplayName("유저 아이디와 goalMonth를 통해 GoalConsumption 조회 성공")
@@ -77,95 +139,96 @@ class ConsumptionGoalRepositoryTest {
 	}
 
 	@Test
-	@DisplayName("또래 나이와 성별 정보를 통해 GoalConsumption 조회 성공")
-	void findTopCategoriesAndGoalAmount_Success() {
-		//given
-		User mainUser = userRepository.save(
-			User.builder()
-				.email("email")
-				.age(24)
-				.name("name")
-				.gender(Gender.MALE)
-				.phoneNumber("010-1234-5678")
+	@DisplayName("또래 나이와 성별 정보를 통해 카테고리와 평균 소비 금액 조회 성공")
+	void findAvgConsumptionAmountByCategory_Success() {
+		// given
+		Category defaultCategory1 = categoryRepository.save(
+			Category.builder()
+				.name("Default Category 1")
+				.user(null)
+				.isDefault(true)
 				.build());
 
-		Category defaultCategory = categoryRepository.save(
-			Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
+		Category defaultCategory2 = categoryRepository.save(
+			Category.builder()
+				.name("Default Category 2")
+				.user(null)
+				.isDefault(true)
+				.build());
 
-		LocalDate goalMonth = LocalDate.now();
+		LocalDate currentMonth = LocalDate.now();
 
-		ConsumptionGoal defaultCategoryConsumptionGoal = consumptionGoalRepository.save(ConsumptionGoal.builder()
-			.goalAmount(1L)
-			.consumeAmount(1L)
-			.user(mainUser)
-			.goalMonth(goalMonth)
-			.category(defaultCategory)
-			.build());
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(100L)
+				.consumeAmount(50L)
+				.user(peerUser1)
+				.goalMonth(currentMonth)
+				.category(defaultCategory1)
+				.build());
+
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(100L)
+				.consumeAmount(150L)
+				.user(peerUser1)
+				.goalMonth(currentMonth)
+				.category(defaultCategory1)
+				.build());
+
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(200L)
+				.consumeAmount(300L)
+				.user(peerUser2)
+				.goalMonth(currentMonth)
+				.category(defaultCategory2)
+				.build());
 
 		// when
-		int top = 4;
-		int peerAgeStart = 23;
-		int peerAgeEnd = 25;
+		int peerAgeStart = 20;
+		int peerAgeEnd = 40;
 		Gender peerGender = Gender.MALE;
 
-		List<ConsumptionGoal> result = consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(
-			top, peerAgeStart, peerAgeEnd, peerGender, currentMonth);
+		List<AvgConsumptionGoalDto> result = consumptionGoalRepository.findAvgConsumptionAmountByCategory(
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
 
 		// then
-		ConsumptionGoal resultGoal = result.get(0);
-		assertThat(resultGoal.getGoalAmount()).isEqualTo(1L);
-		assertThat(resultGoal.getConsumeAmount()).isEqualTo(1L);
-		assertThat(resultGoal.getUser().getAge()).isEqualTo(24);
-		assertThat(resultGoal.getCategory().getName()).isEqualTo("디폴트 카테고리");
-		assertThat(resultGoal.getUser().getGender()).isEqualTo(Gender.MALE);
+		assertThat(result).isNotEmpty();
+
+		AvgConsumptionGoalDto resultGoal1 = result.stream()
+			.filter(dto -> dto.getCategoryId().equals(defaultCategory1.getId()))
+			.findFirst()
+			.orElseThrow();
+		assertThat(resultGoal1.getAverageAmount()).isEqualTo(100L); // (50L + 150L) / 2 = 100L
+
+		AvgConsumptionGoalDto resultGoal2 = result.stream()
+			.filter(dto -> dto.getCategoryId().equals(defaultCategory2.getId()))
+			.findFirst()
+			.orElseThrow();
+		assertThat(resultGoal2.getAverageAmount()).isEqualTo(300L); // Only one value so average is the same
 	}
 
 	@Test
-	@DisplayName("또래들이 가장 큰 목표로 세운 카테고리와 그 카테고리에서 이번 주의 소비 목표 조회 성공")
-	void findTopConsumptionByCategoryIdAndCurrentWeek_Success() {
-		// given
-		LocalDate startOfWeek = LocalDate.of(2024, 7, 1); // 월요일
-		LocalDate endOfWeek = LocalDate.of(2024, 7, 7); // 일요일
-
-		User mainUser = userRepository.save(User.builder()
-			.email("email")
-			.age(24)
-			.name("name")
-			.gender(Gender.MALE)
-			.phoneNumber("010-1234-5678")
-			.build());
-
-		Category category = categoryRepository.save(Category.builder()
-			.name("Test Category")
-			.user(mainUser)
-			.isDefault(false)
-			.build());
-
-		ConsumptionGoal goal1 = consumptionGoalRepository.save(ConsumptionGoal.builder()
-			.goalAmount(5000L)
-			.consumeAmount(2000L)
-			.user(mainUser)
-			.category(category)
-			.goalMonth(startOfWeek)
-			.build());
-
-		ConsumptionGoal goal2 = consumptionGoalRepository.save(ConsumptionGoal.builder()
-			.goalAmount(3000L)
-			.consumeAmount(1500L)
-			.user(mainUser)
-			.category(category)
-			.goalMonth(startOfWeek)
-			.build());
-
+	@DisplayName("또래 나이와 성별 정보를 통해 카테고리와 나의 소비 금액 조회 성공")
+	void findAllConsumptionAmountByUserId_Success() {
 		// when
-		Optional<ConsumptionGoal> result = consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(
-			category.getId(), startOfWeek, endOfWeek);
+		List<MyConsumptionGoalDto> result = consumptionGoalRepository.findAllConsumptionAmountByUserId(
+			peerUser1.getId());
 
 		// then
-		ConsumptionGoal topGoal = result.get();
-		assertThat(topGoal.getConsumeAmount()).isEqualTo(2000L);
-		assertThat(topGoal.getGoalAmount()).isEqualTo(5000L);
-		assertThat(topGoal.getCategory().getId()).isEqualTo(category.getId());
+		assertThat(result).isNotEmpty();
+
+		Long categoryId1 = defaultCategory1.getId();
+
+		MyConsumptionGoalDto firstResult = result.stream()
+			.filter(dto -> dto.getCategoryId().equals(categoryId1))
+			.findFirst()
+			.orElseThrow(() -> new AssertionError("Category ID " + categoryId1 + " not found"));
+
+		assertThat(firstResult.getCategoryId()).isEqualTo(categoryId1);
+		assertThat(firstResult.getMyAmount()).isEqualTo(150L);
+
 	}
 
 	private void setUnselectedConsumptionGoal(User mainUser, LocalDate goalMonth, Category defaultCategory) {
@@ -192,46 +255,161 @@ class ConsumptionGoalRepositoryTest {
 	}
 
 	@Test
-	@DisplayName("또래 나이와 성별 정보를 통해 GoalConsumption 조회 성공")
-	void findTopConsumptionAndConsumeAmount_Success() {
-		//given
-		User mainUser = userRepository.save(
-			User.builder()
-				.email("email")
-				.age(24)
-				.name("name")
-				.gender(Gender.MALE)
-				.phoneNumber("010-1234-5678")
+	@DisplayName("또래 나이와 성별 정보를 통해 카테고리와 평균 목표 금액 조회 성공")
+	void findAvgGoalAmountByCategory_Success() {
+		// given
+		Category defaultCategory1 = categoryRepository.save(
+			Category.builder()
+				.name("Default Category 1")
+				.user(null)
+				.isDefault(true)
 				.build());
 
-		Category defaultCategory = categoryRepository.save(
-			Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
+		Category defaultCategory2 = categoryRepository.save(
+			Category.builder()
+				.name("Default Category 2")
+				.user(null)
+				.isDefault(true)
+				.build());
 
-		LocalDate goalMonth = LocalDate.now();
+		LocalDate currentMonth = LocalDate.now();
 
-		ConsumptionGoal defaultCategoryConsumptionGoal = consumptionGoalRepository.save(ConsumptionGoal.builder()
-			.goalAmount(1L)
-			.consumeAmount(1L)
-			.user(mainUser)
-			.goalMonth(goalMonth)
-			.category(defaultCategory)
-			.build());
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(100L)
+				.consumeAmount(50L)
+				.user(peerUser1)
+				.goalMonth(currentMonth)
+				.category(defaultCategory1)
+				.build());
+
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(150L)
+				.consumeAmount(100L)
+				.user(peerUser2)
+				.goalMonth(currentMonth)
+				.category(defaultCategory1)
+				.build());
+
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(200L)
+				.consumeAmount(150L)
+				.user(peerUser1)
+				.goalMonth(currentMonth)
+				.category(defaultCategory2)
+				.build());
 
 		// when
-		int top = 4;
 		int peerAgeStart = 23;
 		int peerAgeEnd = 25;
 		Gender peerGender = Gender.MALE;
 
-		List<ConsumptionGoal> result = consumptionGoalRepository.findTopConsumptionAndConsumeAmountLimit(
-			top, peerAgeStart, peerAgeEnd, peerGender, currentMonth);
+		List<AvgConsumptionGoalDto> result = consumptionGoalRepository.findAvgGoalAmountByCategory(
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
 
 		// then
-		ConsumptionGoal resultGoal = result.get(0);
-		assertThat(resultGoal.getGoalAmount()).isEqualTo(1L);
-		assertThat(resultGoal.getConsumeAmount()).isEqualTo(1L);
-		assertThat(resultGoal.getUser().getAge()).isEqualTo(24);
-		assertThat(resultGoal.getCategory().getName()).isEqualTo("디폴트 카테고리");
-		assertThat(resultGoal.getUser().getGender()).isEqualTo(Gender.MALE);
+		assertThat(result).isNotEmpty();
+
+		AvgConsumptionGoalDto firstResult = result.stream()
+			.filter(dto -> dto.getCategoryId().equals(defaultCategory1.getId()))
+			.findFirst()
+			.orElseThrow(() -> new AssertionError("Category ID " + defaultCategory1.getId() + " not found"));
+
+		AvgConsumptionGoalDto secondResult = result.stream()
+			.filter(dto -> dto.getCategoryId().equals(defaultCategory2.getId()))
+			.findFirst()
+			.orElseThrow(() -> new AssertionError("Category ID " + defaultCategory2.getId() + " not found"));
+
+		assertThat(firstResult.getAverageAmount()).isEqualTo(125L);
+		assertThat(secondResult.getAverageAmount()).isEqualTo(200L);
+	}
+
+	@Test
+	@DisplayName("또래 나이와 성별 정보를 통해 카테고리와 평균 목표 금액 조회 성공")
+	void findAllGoalAmountByUserId_Success() {
+		// given
+		Category defaultCategory1 = categoryRepository.save(
+			Category.builder()
+				.name("Default Category 1")
+				.user(null)
+				.isDefault(true)
+				.build());
+
+		Category defaultCategory2 = categoryRepository.save(
+			Category.builder()
+				.name("Default Category 2")
+				.user(null)
+				.isDefault(true)
+				.build());
+
+		LocalDate currentMonth = LocalDate.now();
+
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(100L)
+				.consumeAmount(50L)
+				.user(peerUser1)
+				.goalMonth(currentMonth)
+				.category(defaultCategory1)
+				.build());
+
+		consumptionGoalRepository.save(
+			ConsumptionGoal.builder()
+				.goalAmount(200L)
+				.consumeAmount(150L)
+				.user(peerUser1)
+				.goalMonth(currentMonth)
+				.category(defaultCategory2)
+				.build());
+
+		// when
+		List<MyConsumptionGoalDto> result = consumptionGoalRepository.findAllGoalAmountByUserId(peerUser1.getId());
+
+		// then
+		assertThat(result).isNotEmpty();
+
+		MyConsumptionGoalDto firstResult = result.stream()
+			.filter(dto -> dto.getCategoryId().equals(defaultCategory1.getId()))
+			.findFirst()
+			.orElseThrow(() -> new AssertionError("Category ID " + defaultCategory1.getId() + " not found"));
+
+		MyConsumptionGoalDto secondResult = result.stream()
+			.filter(dto -> dto.getCategoryId().equals(defaultCategory2.getId()))
+			.findFirst()
+			.orElseThrow(() -> new AssertionError("Category ID " + defaultCategory2.getId() + " not found"));
+
+		assertThat(firstResult.getMyAmount()).isEqualTo(100L);
+		assertThat(secondResult.getMyAmount()).isEqualTo(200L);
+	}
+
+	@Test
+	@DisplayName("또래 나이와 성별 정보를 통해 카테고리별 소비 횟수 조회 성공")
+	void findTopCategoriesByConsumptionCount_Success() {
+		// when
+		int peerAgeStart = 20;
+		int peerAgeEnd = 30;
+		Gender peerGender = Gender.MALE;
+		LocalDate currentMonth = LocalDate.now();
+
+		List<CategoryConsumptionCountDto> result = consumptionGoalRepository.findTopCategoriesByConsumptionCount(
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
+
+		// then
+		assertThat(result).isNotEmpty();
+
+		CategoryConsumptionCountDto firstResult = result.stream()
+			.filter(dto -> dto.getCategoryId().equals(defaultCategory1.getId()))
+			.findFirst()
+			.orElseThrow(() -> new AssertionError("Category ID " + defaultCategory1.getId() + " not found"));
+
+		CategoryConsumptionCountDto secondResult = result.stream()
+			.filter(dto -> dto.getCategoryId().equals(defaultCategory2.getId()))
+			.findFirst()
+			.orElseThrow(() -> new AssertionError("Category ID " + defaultCategory2.getId() + " not found"));
+
+		assertThat(firstResult.getConsumptionCount()).isEqualTo(2);
+		assertThat(secondResult.getConsumptionCount()).isEqualTo(1);
 	}
 }
