@@ -22,9 +22,10 @@ public interface CategoryApi {
             @ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
             @ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
-    @PostMapping("/add")
+    @PostMapping("/add/{userId}")
     ResponseEntity<CategoryResponseDTO> createCategory(
-            @Parameter(description = "user_id, name(사용자가 입력한 카테고리명), is_default(default 카테고리 여부)로 request")
+            @PathVariable Long userId,
+            @Parameter(description = "name(사용자가 입력한 카테고리명), is_default(default 카테고리 여부)로 request")
             @RequestBody CategoryRequestDTO categoryRequestDTO);
 
 
