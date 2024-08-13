@@ -2,12 +2,11 @@ package com.bbteam.budgetbuddies.domain.mainpage.service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.discountinfo.service.DiscountInfoService;
@@ -36,17 +35,12 @@ public class MainPageServiceImpl implements MainPageService {
 				now.getMonthValue(), 0, 2)
 			.getContent();
 
-		List<TopGoalCategoryResponseDto> topGoalCategoryResponseDtoList = consumptionGoalService.getTopGoalCategoriesLimit(
-			1, userId, 0, 0, "NONE");
-		if (topGoalCategoryResponseDtoList.size() == 0) {
-			throw new NoSuchElementException("Category xx");
-		}
-		TopGoalCategoryResponseDto topGoalCategoryResponseDTO = topGoalCategoryResponseDtoList.get(0);
+		ConsumptionAnalysisResponseDto responseDto = consumptionGoalService.getTopCategoryAndConsumptionAmount(userId);
 
 		ConsumptionGoalResponseListDto userConsumptionGoal = consumptionGoalService.findUserConsumptionGoalList(userId,
 			now);
 
 		return MainPageConverter.toMainPageResponseDto(discountResponseDtoList, supportResponseDtoList,
-			topGoalCategoryResponseDTO, userConsumptionGoal);
+			responseDto, userConsumptionGoal);
 	}
 }
