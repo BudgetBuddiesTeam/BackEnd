@@ -2,8 +2,8 @@ package com.bbteam.budgetbuddies.domain.mainpage.dto;
 
 import java.util.List;
 
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 
@@ -14,7 +14,7 @@ import lombok.Getter;
 @Builder
 public class MainPageResponseDto {
 
-	private TopGoalCategoryResponseDto topGoalCategoryResponseDto;
+	private ConsumptionAnalysisResponseDto consumptionAnalysisResponseDto;
 	private ConsumptionGoalResponseListDto consumptionGoalResponseListDto;
 	private List<DiscountResponseDto> discountResponseDtoList;
 	private List<SupportResponseDto> supportResponseDtoList;
