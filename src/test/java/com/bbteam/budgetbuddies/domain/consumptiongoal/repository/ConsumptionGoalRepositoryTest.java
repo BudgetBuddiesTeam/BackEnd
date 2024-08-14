@@ -30,6 +30,8 @@ class ConsumptionGoalRepositoryTest {
 	@Autowired
 	CategoryRepository categoryRepository;
 
+	LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
+
 	@Test
 	@DisplayName("유저 아이디와 goalMonth를 통해 GoalConsumption 조회 성공")
 	void findConsumptionGoalByUserIdAndGoalMonth_Success() {
@@ -90,7 +92,7 @@ class ConsumptionGoalRepositoryTest {
 		Category defaultCategory = categoryRepository.save(
 			Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
 
-		LocalDate goalMonth = LocalDate.of(2024, 07, 01);
+		LocalDate goalMonth = LocalDate.now();
 
 		ConsumptionGoal defaultCategoryConsumptionGoal = consumptionGoalRepository.save(ConsumptionGoal.builder()
 			.goalAmount(1L)
@@ -106,8 +108,8 @@ class ConsumptionGoalRepositoryTest {
 		int peerAgeEnd = 25;
 		Gender peerGender = Gender.MALE;
 
-		List<ConsumptionGoal> result = consumptionGoalRepository.findTopCategoriesAndGoalAmount(
-			top, peerAgeStart, peerAgeEnd, peerGender);
+		List<ConsumptionGoal> result = consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(
+			top, peerAgeStart, peerAgeEnd, peerGender, currentMonth);
 
 		// then
 		ConsumptionGoal resultGoal = result.get(0);
@@ -205,7 +207,7 @@ class ConsumptionGoalRepositoryTest {
 		Category defaultCategory = categoryRepository.save(
 			Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
 
-		LocalDate goalMonth = LocalDate.of(2024, 07, 01);
+		LocalDate goalMonth = LocalDate.now();
 
 		ConsumptionGoal defaultCategoryConsumptionGoal = consumptionGoalRepository.save(ConsumptionGoal.builder()
 			.goalAmount(1L)
@@ -221,8 +223,8 @@ class ConsumptionGoalRepositoryTest {
 		int peerAgeEnd = 25;
 		Gender peerGender = Gender.MALE;
 
-		List<ConsumptionGoal> result = consumptionGoalRepository.findTopConsumptionAndConsumeAmount(
-			top, peerAgeStart, peerAgeEnd, peerGender);
+		List<ConsumptionGoal> result = consumptionGoalRepository.findTopConsumptionAndConsumeAmountLimit(
+			top, peerAgeStart, peerAgeEnd, peerGender, currentMonth);
 
 		// then
 		ConsumptionGoal resultGoal = result.get(0);

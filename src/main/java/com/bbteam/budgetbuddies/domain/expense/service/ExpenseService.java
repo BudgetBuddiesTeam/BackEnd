@@ -17,4 +17,6 @@ public interface ExpenseService {
 	ExpenseResponseDto findExpenseResponseFromUserIdAndExpenseId(Long userId, Long expenseId);
 
 	ExpenseResponseDto updateExpense(Long userId, ExpenseUpdateRequestDto request);
+
+	void deleteExpense(Long expenseId);
 }
