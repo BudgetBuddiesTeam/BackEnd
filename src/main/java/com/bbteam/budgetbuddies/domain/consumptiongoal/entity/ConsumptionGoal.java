@@ -17,12 +17,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @SuperBuilder
+@Slf4j
 public class ConsumptionGoal extends BaseEntity {
 
 	@Column(nullable = false)
@@ -54,5 +56,12 @@ public class ConsumptionGoal extends BaseEntity {
 
 	public void restoreConsumeAmount(Long previousAmount) {
 		this.consumeAmount -= previousAmount;
+	}
+
+	public void decreaseConsumeAmount(Long amount) {
+		if (this.consumeAmount - amount < 0) {
+			log.warn("소비 내역 삭제의 결과가 음수이므로 확인이 필요합니다.(현재 소비 금액: {}, 차감할 금액: {}). 소비 금액을 0으로 설정합니다.", this.consumeAmount, amount);
+		}
+		this.consumeAmount = Math.max(0, this.consumeAmount - amount);
 	}
 }

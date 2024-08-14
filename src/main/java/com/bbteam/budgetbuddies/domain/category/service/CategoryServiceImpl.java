@@ -34,11 +34,11 @@ public class CategoryServiceImpl implements CategoryService {
 	private final ConsumptionGoalRepository consumptionGoalRepository;
 
 	@Override
-	public CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
-		User user = userRepository.findById(categoryRequestDTO.getUserId())
-			.orElseThrow(() -> new IllegalArgumentException("cannot find user"));
+	public CategoryResponseDTO createCategory(Long userId, CategoryRequestDTO categoryRequestDTO) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new IllegalArgumentException("cannot find user"));
 
-		if (categoryRepository.existsByUserIdAndName(categoryRequestDTO.getUserId(), categoryRequestDTO.getName())) {
+		if (categoryRepository.existsByUserIdAndName(userId, categoryRequestDTO.getName())) {
 			throw new IllegalArgumentException("User already has a category with the same name");
 		}
 
@@ -47,12 +47,12 @@ public class CategoryServiceImpl implements CategoryService {
 
 		// custom 카테고리 생성 -> 소비 목표 테이블에 초기 값 추가
 		ConsumptionGoal consumptionGoal = ConsumptionGoal.builder()
-			.user(user)
-			.category(savedCategory)
-			.goalMonth(LocalDate.now().withDayOfMonth(1)) // custom 카테고리를 생성한 현재 달(지금)로 설정
-			.goalAmount(0L)
-			.consumeAmount(0L)
-			.build();
+				.user(user)
+				.category(savedCategory)
+				.goalMonth(LocalDate.now().withDayOfMonth(1)) // custom 카테고리를 생성한 현재 달(지금)로 설정
+				.goalAmount(0L)
+				.consumeAmount(0L)
+				.build();
 
 		consumptionGoalRepository.save(consumptionGoal);
 		return categoryConverter.toCategoryResponseDTO(savedCategory);

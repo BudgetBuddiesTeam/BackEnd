@@ -5,14 +5,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class CommentResponseDto {
 
     @Getter
     @Builder
-    public static class DiscountInfoCommentDto{
+    public static class DiscountInfoCommentResponseDto {
         private Long commentId;
         private Long userId;
         private Long discountInfoId;
@@ -24,7 +23,7 @@ public class CommentResponseDto {
 
     @Getter
     @Builder
-    public static class SupportInfoCommentDto{
+    public static class SupportInfoCommentResponseDto {
         private Long commentId;
         private Long userId;
         private Long supportInfoId;

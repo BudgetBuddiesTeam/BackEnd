@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PeerInfoResponseDTO {
+public class AllConsumptionCategoryResponseDto {
 
-	private int peerAgeStart;
+	private String categoryName;
 
-	private int peerAgeEnd;
+	private Long avgAmount;
 
-	private String peerGender;
+	private Long amountDifference;
 }

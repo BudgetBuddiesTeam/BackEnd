@@ -38,12 +38,12 @@ public class CalendarServiceImpl implements CalendarService{
     private CalendarDto.CalendarMonthInfoDto getCalendarMonthInfoDto(LocalDate firstDay, LocalDate lastDay) {
         List<DiscountInfo> monthDiscountInfoList = discountInfoRepository.findByMonth(firstDay, lastDay);
         List<SupportInfo> monthSupportInfoList = supportInfoRepository.findByMonth(firstDay, lastDay);
-        return CalendarConverter.toCalendarMonthInfoDto(monthDiscountInfoList, monthSupportInfoList);
+        return CalendarConverter.toCalendarMonthInfoDto(monthDiscountInfoList, monthSupportInfoList, firstDay, lastDay);
     }
 
     private CalendarDto.CalendarMonthInfoDto getRecommendMonthInfoDto(LocalDate firstDay, LocalDate lastDay) {
         List<DiscountInfo> recommendDiscountInfoList = discountInfoRepository.findRecommendInfoByMonth(firstDay, lastDay);
         List<SupportInfo> recommendSupportInfoList = supportInfoRepository.findRecommendInfoByMonth(firstDay, lastDay);
-        return CalendarConverter.toCalendarMonthInfoDto(recommendDiscountInfoList, recommendSupportInfoList);
+        return CalendarConverter.toCalendarMonthInfoDto(recommendDiscountInfoList, recommendSupportInfoList, firstDay, lastDay);
     }
 }

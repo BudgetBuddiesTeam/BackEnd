@@ -12,11 +12,11 @@ public interface SupportInfoService {
         Integer size
     );
 
-    SupportResponseDto registerSupportInfo(SupportRequest.RegisterDto supportRequest);
+    SupportResponseDto registerSupportInfo(SupportRequest.RegisterSupportDto supportRequest);
 
     SupportResponseDto toggleLike(Long userId, Long supportInfoId);
 
-    SupportResponseDto updateSupportInfo(Long userId, SupportRequest.UpdateDto supportRequestDto);
+    SupportResponseDto updateSupportInfo(Long userId, SupportRequest.UpdateSupportDto supportRequestDto);
 
     String deleteSupportInfo(Long userId, Long supportInfoId);
 

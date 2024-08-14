@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopConsumptionResponseDTO {
+public class PeerInfoResponseDto {
 
-	private String categoryName;
+	private int peerAgeStart;
 
-	private Long consumeAmount;
+	private int peerAgeEnd;
+
+	private String peerGender;
 }

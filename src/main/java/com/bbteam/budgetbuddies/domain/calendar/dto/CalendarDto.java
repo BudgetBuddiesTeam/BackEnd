@@ -34,6 +34,7 @@ public class CalendarDto {
         private Integer likeCount;
         private Integer discountRate;
         private String siteUrl;
+        private String thumbnailURL;
     }
 
     @Getter
@@ -46,5 +47,6 @@ public class CalendarDto {
         private LocalDate endDate;
         private Integer likeCount;
         private String siteUrl;
+        private String thumbnailURL;
     }
 }

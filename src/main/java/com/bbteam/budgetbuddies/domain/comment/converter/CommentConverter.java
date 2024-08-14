@@ -9,7 +9,7 @@ import com.bbteam.budgetbuddies.domain.user.entity.User;
 
 public class CommentConverter {
 
-    public static Comment toDiscountComment(CommentRequestDto.DiscountInfoCommentDto dto, User user, DiscountInfo discountInfo,
+    public static Comment toDiscountComment(CommentRequestDto.DiscountInfoCommentRequestDto dto, User user, DiscountInfo discountInfo,
                                             Integer anonymousNumber) {
         return Comment.builder()
                 .user(user)
@@ -19,7 +19,7 @@ public class CommentConverter {
                 .build();
     }
 
-    public static Comment toSupportComment(CommentRequestDto.SupportInfoCommentDto dto, User user, SupportInfo supportInfo,
+    public static Comment toSupportComment(CommentRequestDto.SupportInfoCommentRequestDto dto, User user, SupportInfo supportInfo,
                                            Integer anonymousNumber) {
         return Comment.builder()
                 .user(user)
@@ -29,8 +29,8 @@ public class CommentConverter {
                 .build();
     }
 
-    public static CommentResponseDto.DiscountInfoCommentDto toDiscountInfoCommentDto(Comment comment){
-        return CommentResponseDto.DiscountInfoCommentDto.builder()
+    public static CommentResponseDto.DiscountInfoCommentResponseDto toDiscountInfoCommentDto(Comment comment){
+        return CommentResponseDto.DiscountInfoCommentResponseDto.builder()
                 .commentId(comment.getId())
                 .discountInfoId(comment.getDiscountInfo().getId())
                 .userId(comment.getUser().getId())
@@ -41,8 +41,8 @@ public class CommentConverter {
 
     }
 
-    public static CommentResponseDto.SupportInfoCommentDto toSupportInfoCommentDto(Comment comment){
-        return CommentResponseDto.SupportInfoCommentDto.builder()
+    public static CommentResponseDto.SupportInfoCommentResponseDto toSupportInfoCommentDto(Comment comment){
+        return CommentResponseDto.SupportInfoCommentResponseDto.builder()
                 .commentId(comment.getId())
                 .supportInfoId(comment.getSupportInfo().getId())
                 .userId(comment.getUser().getId())

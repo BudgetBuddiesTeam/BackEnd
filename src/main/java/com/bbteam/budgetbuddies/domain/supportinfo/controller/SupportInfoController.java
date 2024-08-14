@@ -1,13 +1,12 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.controller;
 
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequest;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
+import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.service.SupportInfoService;
+import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +18,7 @@ public class SupportInfoController implements SupportInfoApi {
 
     @Override
     @GetMapping("")
-    public ResponseEntity<Page<SupportResponseDto>> getSupportsByYearAndMonth(
+    public ApiResponse<Page<SupportResponseDto>> getSupportsByYearAndMonth(
         @RequestParam Integer year,
         @RequestParam Integer month,
         @RequestParam(defaultValue = "0") Integer page,
@@ -27,61 +26,61 @@ public class SupportInfoController implements SupportInfoApi {
     ) {
         Page<SupportResponseDto> supports = supportInfoService.getSupportsByYearAndMonth(year, month, page, size);
 
-        return ResponseEntity.ok(supports);
+        return ApiResponse.onSuccess(supports);
     }
 
     @Override
     @PostMapping("")
-    public ResponseEntity<SupportResponseDto> registerSupportInfo(
-        @RequestBody SupportRequest.RegisterDto requestDto
+    public ApiResponse<SupportResponseDto> registerSupportInfo(
+        @RequestBody SupportRequest.RegisterSupportDto requestDto
     ) {
         SupportResponseDto supportResponseDto = supportInfoService.registerSupportInfo(requestDto);
 
-        return ResponseEntity.ok(supportResponseDto);
+        return ApiResponse.onSuccess(supportResponseDto);
     }
 
     @Override
     @PostMapping("/likes/{supportInfoId}")
-    public ResponseEntity<SupportResponseDto> likeSupportInfo(
-        @RequestParam Long userId,
+    public ApiResponse<SupportResponseDto> likeSupportInfo(
+        @RequestParam @ExistUser Long userId,
         @PathVariable Long supportInfoId
     ) {
         SupportResponseDto supportResponseDto = supportInfoService.toggleLike(userId, supportInfoId);
 
-        return ResponseEntity.ok(supportResponseDto);
+        return ApiResponse.onSuccess(supportResponseDto);
     }
 
     @Override
     @PutMapping("")
-    public ResponseEntity<SupportResponseDto> updateSupportInfo(
-        @RequestParam Long userId,
-        @RequestBody SupportRequest.UpdateDto supportRequestDto
+    public ApiResponse<SupportResponseDto> updateSupportInfo(
+        @RequestParam @ExistUser Long userId,
+        @RequestBody SupportRequest.UpdateSupportDto supportRequestDto
     ) {
         SupportResponseDto supportResponseDto = supportInfoService.updateSupportInfo(userId, supportRequestDto);
 
-        return ResponseEntity.ok(supportResponseDto);
+        return ApiResponse.onSuccess(supportResponseDto);
     }
 
     @Override
     @DeleteMapping("/{supportInfoId}")
-    public ResponseEntity<String> deleteSupportInfo(
-        @RequestParam Long userId,
+    public ApiResponse<String> deleteSupportInfo(
+        @RequestParam @ExistUser Long userId,
         @PathVariable Long supportInfoId
     ) {
         String message = supportInfoService.deleteSupportInfo(userId, supportInfoId);
 
-        return ResponseEntity.ok(message);
+        return ApiResponse.onSuccess(message);
     }
 
     @Override
     @GetMapping("/{supportInfoId}")
-    public ResponseEntity<SupportResponseDto> getSupportInfo(
-        @RequestParam Long userId,
+    public ApiResponse<SupportResponseDto> getSupportInfo(
+        @RequestParam @ExistUser Long userId,
         @PathVariable Long supportInfoId
     ) {
         SupportResponseDto supportResponseDto = supportInfoService.getSupportInfoById(userId, supportInfoId);
 
-        return ResponseEntity.ok(supportResponseDto);
+        return ApiResponse.onSuccess(supportResponseDto);
     }
 
 }
