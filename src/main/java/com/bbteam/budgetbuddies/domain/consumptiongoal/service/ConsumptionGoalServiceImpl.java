@@ -4,7 +4,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -198,10 +197,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		updateGoalMapWithPreviousMonth(userId, goalMonth, goalMap);
 		updateGoalMapWithCurrentMonth(userId, goalMonth, goalMap);
 
-		List<ConsumptionGoalResponseDto> consumptionGoalList = new ArrayList<>(goalMap.values());
-
-		return consumptionGoalConverter.toConsumptionGoalResponseListDto(
-			orderByRemainingBalanceDescending(consumptionGoalList), goalMonth);
+		return consumptionGoalConverter.toConsumptionGoalResponseListDto(new ArrayList<>(goalMap.values()), goalMonth);
 	}
 
 	private Map<Long, ConsumptionGoalResponseDto> initializeGoalMap(Long userId) {
@@ -225,13 +221,6 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			.stream()
 			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
 			.forEach(goal -> goalMap.put(goal.getCategoryId(), goal));
-	}
-
-	private List<ConsumptionGoalResponseDto> orderByRemainingBalanceDescending(
-		List<ConsumptionGoalResponseDto> consumptionGoalList) {
-		return consumptionGoalList.stream()
-			.sorted(Comparator.comparingLong(ConsumptionGoalResponseDto::getRemainingBalance).reversed())
-			.toList();
 	}
 
 	@Override

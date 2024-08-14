@@ -9,7 +9,6 @@ public class ConsumptionGoalResponseDto {
 	private Long categoryId;
 	private Long goalAmount;
 	private Long consumeAmount;
-	private Long remainingBalance;
 
 	@Builder
 	public ConsumptionGoalResponseDto(String categoryName, Long categoryId, Long goalAmount, Long consumeAmount) {
@@ -17,6 +16,5 @@ public class ConsumptionGoalResponseDto {
 		this.categoryId = categoryId;
 		this.goalAmount = goalAmount;
 		this.consumeAmount = consumeAmount;
-		this.remainingBalance = goalAmount - consumeAmount;
 	}
 }
