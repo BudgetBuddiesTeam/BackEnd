@@ -33,6 +33,11 @@ public class UserDto {
         private Long id;
         private String phoneNumber;
         private String name;
+        private String email;
+        private Integer age;
+        private Gender gender;
+        private String photoUrl;
+        private String consumptionPattern;
         private LocalDateTime lastLoginAt;
     }
 }
