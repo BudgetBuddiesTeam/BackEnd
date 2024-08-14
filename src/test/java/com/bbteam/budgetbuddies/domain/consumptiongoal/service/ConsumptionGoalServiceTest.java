@@ -60,6 +60,8 @@ class ConsumptionGoalServiceTest {
 	@Spy
 	private ConsumptionGoalConverter consumptionGoalConverter;
 
+	private final LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
+
 	@BeforeEach
 	void setUp() {
 		Random random = new Random();
@@ -312,7 +314,8 @@ class ConsumptionGoalServiceTest {
 		LocalDate endOfWeek = goalMonthRandomDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-		given(consumptionGoalRepository.findTopCategoriesAndGoalAmount(1, 23, 25, Gender.MALE)).willReturn(
+		given(consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(1, 23, 25, Gender.MALE,
+			currentMonth)).willReturn(
 			List.of(topConsumptionGoal));
 		given(
 			consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(defaultCategory.getId(), startOfWeek,
@@ -371,11 +374,13 @@ class ConsumptionGoalServiceTest {
 			.build();
 
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-		given(consumptionGoalRepository.findTopCategoriesAndGoalAmount(4, 23, 25, Gender.MALE)).willReturn(
+		given(consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(4, 23, 25, Gender.MALE,
+			currentMonth)).willReturn(
 			List.of(topConsumptionGoal1, topConsumptionGoal2, topConsumptionGoal3, topConsumptionGoal4));
 
 		// when
-		List<TopGoalCategoryResponseDTO> result = consumptionGoalService.getTopGoalCategories(4, user.getId(), 0, 0,
+		List<TopGoalCategoryResponseDTO> result = consumptionGoalService.getTopGoalCategoriesLimit(4, user.getId(), 0,
+			0,
 			"none");
 
 		// then
@@ -425,11 +430,13 @@ class ConsumptionGoalServiceTest {
 			.build();
 
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-		given(consumptionGoalRepository.findTopConsumptionAndConsumeAmount(3, 23, 25, Gender.MALE)).willReturn(
+		given(consumptionGoalRepository.findTopConsumptionAndConsumeAmountLimit(3, 23, 25, Gender.MALE,
+			currentMonth)).willReturn(
 			List.of(topConsumptionGoal1, topConsumptionGoal2, topConsumptionGoal3));
 
 		// when
-		List<TopConsumptionResponseDTO> result = consumptionGoalService.getTopConsumption(3, user.getId(), 23, 25,
+		List<TopConsumptionResponseDTO> result = consumptionGoalService.getTopConsumptionsLimit(3, user.getId(), 23, 25,
+
 			"MALE");
 
 		// then
