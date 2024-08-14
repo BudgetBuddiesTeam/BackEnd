@@ -10,7 +10,7 @@ import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 
 public interface CategoryService {
-	CategoryResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO);
+	CategoryResponseDTO createCategory(Long userId, CategoryRequestDTO categoryRequestDTO);
 
 	List<CategoryResponseDTO> getUserCategories(Long userId);
 
