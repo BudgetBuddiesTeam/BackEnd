@@ -1,5 +1,6 @@
 package com.bbteam.budgetbuddies.domain.calendar.controller;
 
+import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.calendar.dto.CalendarDto;
 import com.bbteam.budgetbuddies.domain.calendar.service.CalendarService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,9 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/calendar")
-public class CalendarController {
+public class CalendarController implements CalendarApi{
 
     private final CalendarService calendarService;
+
     @Operation(summary = "[User] 주머니 캘린더 API", description = "주머니 캘린더 화면에 필요한 API를 호출합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
@@ -32,6 +34,6 @@ public class CalendarController {
             @RequestParam("year") Integer year, @RequestParam("month") Integer month
     ) {
         CalendarDto.CalendarMonthResponseDto result = calendarService.find(year, month);
-        return ResponseEntity.ok(result);
+        return ApiResponse.onSuccess(result);
     }
 }
