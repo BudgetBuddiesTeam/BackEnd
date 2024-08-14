@@ -26,14 +26,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoalConverter;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AllConsumptionCategoryResponseDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryConsumptionCountDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDTO;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopConsumptionResponseDTO;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDTO;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopCategoryConsumptionDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
@@ -258,7 +261,7 @@ class ConsumptionGoalServiceTest {
 		int peerAgeEnd = 25;
 		String peerGender = "MALE";
 
-		PeerInfoResponseDTO result = consumptionGoalService.getPeerInfo(user.getId(), peerAgeStart, peerAgeEnd,
+		PeerInfoResponseDto result = consumptionGoalService.getPeerInfo(user.getId(), peerAgeStart, peerAgeEnd,
 			peerGender);
 
 		// then
@@ -289,10 +292,16 @@ class ConsumptionGoalServiceTest {
 	@DisplayName("getTopCategoryAndConsumptionAmount : 가장 큰 계획 카테고리와 이번 주 소비 금액 조회 성공")
 	void getTopCategoryAndConsumptionAmount_Success() {
 		// given
-		Category defaultCategory = Mockito.spy(Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
-		given(defaultCategory.getId()).willReturn(-1L);
+		Category defaultCategory = Mockito.spy(Category.builder()
+			.name("디폴트 카테고리")
+			.user(null)
+			.isDefault(true)
+			.build());
+		given(defaultCategory.getId()).willReturn(1L);
 
 		LocalDate goalMonthRandomDay = LocalDate.now();
+		LocalDate startOfWeek = goalMonthRandomDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		LocalDate endOfWeek = goalMonthRandomDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
 		ConsumptionGoal topConsumptionGoal = ConsumptionGoal.builder()
 			.goalAmount(5000L)
@@ -310,19 +319,29 @@ class ConsumptionGoalServiceTest {
 			.goalMonth(goalMonthRandomDay)
 			.build();
 
-		LocalDate startOfWeek = goalMonthRandomDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-		LocalDate endOfWeek = goalMonthRandomDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+		List<AvgConsumptionGoalDto> avgConsumptionGoalList = List.of(
+			new AvgConsumptionGoalDto(defaultCategory.getId(), 5000L)
+		);
+
+		int peerAgeStart = 23;
+		int peerAgeEnd = 25;
+		Gender peerGender = Gender.MALE;
 
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-		given(consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(1, 23, 25, Gender.MALE,
-			currentMonth)).willReturn(
-			List.of(topConsumptionGoal));
-		given(
-			consumptionGoalRepository.findTopConsumptionByCategoryIdAndCurrentWeek(defaultCategory.getId(), startOfWeek,
-				endOfWeek)).willReturn(Optional.of(currentWeekConsumptionGoal));
+		given(consumptionGoalRepository.findAvgGoalAmountByCategory(
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth))
+			.willReturn(avgConsumptionGoalList);
+
+		given(consumptionGoalRepository.findAvgConsumptionByCategoryIdAndCurrentWeek(
+			defaultCategory.getId(), startOfWeek, endOfWeek,
+			peerAgeStart, peerAgeEnd, peerGender))
+			.willReturn(Optional.of(currentWeekConsumptionGoal.getConsumeAmount()));
+
+		given(categoryRepository.findById(defaultCategory.getId()))
+			.willReturn(Optional.of(defaultCategory));
 
 		// when
-		ConsumptionAnalysisResponseDTO result = consumptionGoalService.getTopCategoryAndConsumptionAmount(user.getId());
+		ConsumptionAnalysisResponseDto result = consumptionGoalService.getTopCategoryAndConsumptionAmount(user.getId());
 
 		// then
 		assertThat(result.getGoalCategory()).isEqualTo(defaultCategory.getName());
@@ -330,121 +349,156 @@ class ConsumptionGoalServiceTest {
 	}
 
 	@Test
-	@DisplayName("getTopGoalCategories : 또래들이 세운 가장 큰 목표 카테고리 조회 top 4 성공")
-	void getTopGoalCategories_Success() {
-		// given
-		Category defaultCategory = Mockito.spy(Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
-		Category defaultCategory2 = Mockito.spy(
-			Category.builder().name("디폴트 카테고리2").user(null).isDefault(true).build());
-		Category defaultCategory3 = Mockito.spy(
-			Category.builder().name("디폴트 카테고리3").user(null).isDefault(true).build());
-		Category defaultCategory4 = Mockito.spy(
-			Category.builder().name("디폴트 카테고리4").user(null).isDefault(true).build());
-
-		ConsumptionGoal topConsumptionGoal1 = ConsumptionGoal.builder()
-			.goalAmount(5000L)
-			.consumeAmount(3000L)
-			.user(user)
-			.category(defaultCategory)
-			.goalMonth(goalMonthRandomDay)
-			.build();
-
-		ConsumptionGoal topConsumptionGoal2 = ConsumptionGoal.builder()
-			.goalAmount(6000L)
-			.consumeAmount(3000L)
-			.user(user)
-			.category(defaultCategory2)
-			.goalMonth(goalMonthRandomDay)
-			.build();
-
-		ConsumptionGoal topConsumptionGoal3 = ConsumptionGoal.builder()
-			.goalAmount(7000L)
-			.consumeAmount(3000L)
-			.user(user)
-			.category(defaultCategory3)
-			.goalMonth(goalMonthRandomDay)
-			.build();
-
-		ConsumptionGoal topConsumptionGoal4 = ConsumptionGoal.builder()
-			.goalAmount(8000L)
-			.consumeAmount(3000L)
-			.user(user)
-			.category(defaultCategory4)
-			.goalMonth(goalMonthRandomDay)
-			.build();
-
-		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-		given(consumptionGoalRepository.findTopCategoriesAndGoalAmountLimit(4, 23, 25, Gender.MALE,
-			currentMonth)).willReturn(
-			List.of(topConsumptionGoal1, topConsumptionGoal2, topConsumptionGoal3, topConsumptionGoal4));
-
-		// when
-		List<TopGoalCategoryResponseDTO> result = consumptionGoalService.getTopGoalCategoriesLimit(4, user.getId(), 0,
-			0,
-			"none");
-
-		// then
-		assertThat(result).hasSize(4);
-		assertThat(result.get(0).getCategoryName()).isEqualTo(defaultCategory.getName());
-		assertThat(result.get(0).getGoalAmount()).isEqualTo(topConsumptionGoal1.getGoalAmount());
-		assertThat(result.get(1).getCategoryName()).isEqualTo(defaultCategory2.getName());
-		assertThat(result.get(1).getGoalAmount()).isEqualTo(topConsumptionGoal2.getGoalAmount());
-		assertThat(result.get(2).getCategoryName()).isEqualTo(defaultCategory3.getName());
-		assertThat(result.get(2).getGoalAmount()).isEqualTo(topConsumptionGoal3.getGoalAmount());
-		assertThat(result.get(3).getCategoryName()).isEqualTo(defaultCategory4.getName());
-		assertThat(result.get(3).getGoalAmount()).isEqualTo(topConsumptionGoal4.getGoalAmount());
-	}
-
-	@Test
-	@DisplayName("getTopConsumption : 또래들이 가장 많이 소비한 카테고리 top3 조회 성공")
+	@DisplayName("getTopConsumptionCategories : 또래들이 가장 많이 소비한 카테고리 top3 조회 성공")
 	void getTopConsumptionCategories_Success() {
 		// given
-		Category defaultCategory = Mockito.spy(Category.builder().name("디폴트 카테고리").user(null).isDefault(true).build());
-		Category defaultCategory2 = Mockito.spy(
-			Category.builder().name("디폴트 카테고리2").user(null).isDefault(true).build());
-		Category defaultCategory3 = Mockito.spy(
-			Category.builder().name("디폴트 카테고리3").user(null).isDefault(true).build());
+		Category defaultCategory1 = Mockito.mock(Category.class);
+		Category defaultCategory2 = Mockito.mock(Category.class);
+		Category defaultCategory3 = Mockito.mock(Category.class);
 
-		ConsumptionGoal topConsumptionGoal1 = ConsumptionGoal.builder()
-			.goalAmount(5000L)
-			.consumeAmount(3000L)
-			.user(user)
-			.category(defaultCategory)
-			.goalMonth(goalMonthRandomDay)
-			.build();
+		given(defaultCategory1.getId()).willReturn(1L);
+		given(defaultCategory2.getId()).willReturn(2L);
+		given(defaultCategory3.getId()).willReturn(3L);
 
-		ConsumptionGoal topConsumptionGoal2 = ConsumptionGoal.builder()
-			.goalAmount(6000L)
-			.consumeAmount(3000L)
-			.user(user)
-			.category(defaultCategory2)
-			.goalMonth(goalMonthRandomDay)
-			.build();
+		given(defaultCategory1.getName()).willReturn("디폴트 카테고리");
+		given(defaultCategory2.getName()).willReturn("디폴트 카테고리2");
+		given(defaultCategory3.getName()).willReturn("디폴트 카테고리3");
 
-		ConsumptionGoal topConsumptionGoal3 = ConsumptionGoal.builder()
-			.goalAmount(7000L)
-			.consumeAmount(3000L)
-			.user(user)
-			.category(defaultCategory3)
-			.goalMonth(goalMonthRandomDay)
-			.build();
+		CategoryConsumptionCountDto topConsumption1 = new CategoryConsumptionCountDto(defaultCategory1.getId(), 30L);
+		CategoryConsumptionCountDto topConsumption2 = new CategoryConsumptionCountDto(defaultCategory2.getId(), 25L);
+		CategoryConsumptionCountDto topConsumption3 = new CategoryConsumptionCountDto(defaultCategory3.getId(), 20L);
+
+		int peerAgeStart = 23;
+		int peerAgeEnd = 25;
+		String peerGender = "MALE";
 
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-		given(consumptionGoalRepository.findTopConsumptionAndConsumeAmountLimit(3, 23, 25, Gender.MALE,
-			currentMonth)).willReturn(
-			List.of(topConsumptionGoal1, topConsumptionGoal2, topConsumptionGoal3));
+		given(consumptionGoalRepository.findTopCategoriesByConsumptionCount(peerAgeStart, peerAgeEnd,
+			Gender.valueOf(peerGender), currentMonth))
+			.willReturn(List.of(topConsumption1, topConsumption2, topConsumption3));
+
+		given(categoryRepository.findById(defaultCategory1.getId())).willReturn(Optional.of(defaultCategory1));
+		given(categoryRepository.findById(defaultCategory2.getId())).willReturn(Optional.of(defaultCategory2));
+		given(categoryRepository.findById(defaultCategory3.getId())).willReturn(Optional.of(defaultCategory3));
 
 		// when
-		List<TopConsumptionResponseDTO> result = consumptionGoalService.getTopConsumptionsLimit(3, user.getId(), 23, 25, "MALE");
+		List<TopCategoryConsumptionDto> result = consumptionGoalService.getTopConsumptionCategories(
+			user.getId(), peerAgeStart, peerAgeEnd, peerGender);
 
 		// then
 		assertThat(result).hasSize(3);
-		assertThat(result.get(0).getCategoryName()).isEqualTo(defaultCategory.getName());
-		assertThat(result.get(0).getConsumeAmount()).isEqualTo(topConsumptionGoal1.getConsumeAmount());
+
+		assertThat(result.get(0).getCategoryName()).isEqualTo(defaultCategory1.getName());
+		assertThat(result.get(0).getConsumptionCount()).isEqualTo(topConsumption1.getConsumptionCount());
+
 		assertThat(result.get(1).getCategoryName()).isEqualTo(defaultCategory2.getName());
-		assertThat(result.get(1).getConsumeAmount()).isEqualTo(topConsumptionGoal2.getConsumeAmount());
+		assertThat(result.get(1).getConsumptionCount()).isEqualTo(topConsumption2.getConsumptionCount());
+
 		assertThat(result.get(2).getCategoryName()).isEqualTo(defaultCategory3.getName());
-		assertThat(result.get(2).getConsumeAmount()).isEqualTo(topConsumptionGoal3.getConsumeAmount());
+		assertThat(result.get(2).getConsumptionCount()).isEqualTo(topConsumption3.getConsumptionCount());
+	}
+
+	@Test
+	@DisplayName("getAllConsumptionGoalCategories : 또래들이 세운 가장 큰 목표 카테고리 전체조회 성공")
+	void getAllConsumptionGoalCategories_Success() {
+		// given
+		Category defaultCategory1 = new Category();
+		Category defaultCategory2 = new Category();
+
+		defaultCategory1.setId(1L);
+		defaultCategory1.setName("디폴트 카테고리1");
+		defaultCategory1.setIsDefault(true);
+
+		defaultCategory2.setId(2L);
+		defaultCategory2.setName("디폴트 카테고리2");
+		defaultCategory2.setIsDefault(true);
+
+		List<AvgConsumptionGoalDto> categoryAvgList = List.of(
+			new AvgConsumptionGoalDto(1L, 3000L),
+			new AvgConsumptionGoalDto(2L, 4000L)
+		);
+
+		List<MyConsumptionGoalDto> myConsumptionAmountList = List.of(
+			new MyConsumptionGoalDto(1L, 5000L),
+			new MyConsumptionGoalDto(2L, 2000L)
+		);
+
+		List<Category> defaultCategories = List.of(defaultCategory1, defaultCategory2);
+
+		given(categoryRepository.findAllByIsDefaultTrue()).willReturn(defaultCategories);
+		given(consumptionGoalRepository.findAvgGoalAmountByCategory(
+			anyInt(), anyInt(), any(), any())).willReturn(categoryAvgList);
+		given(consumptionGoalRepository.findAllGoalAmountByUserId(user.getId()))
+			.willReturn(myConsumptionAmountList);
+		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+
+		// when
+		List<AllConsumptionCategoryResponseDto> result = consumptionGoalService.getAllConsumptionGoalCategories(
+			user.getId(), 23, 25, "MALE");
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result).hasSize(2);
+
+		AllConsumptionCategoryResponseDto firstCategory = result.get(0);
+		assertThat(firstCategory.getCategoryName()).isEqualTo("디폴트 카테고리1");
+		assertThat(firstCategory.getAvgAmount()).isEqualTo(3000L);
+		assertThat(firstCategory.getAmountDifference()).isEqualTo(2000L);
+
+		AllConsumptionCategoryResponseDto secondCategory = result.get(1);
+		assertThat(secondCategory.getCategoryName()).isEqualTo("디폴트 카테고리2");
+		assertThat(secondCategory.getAvgAmount()).isEqualTo(4000L);
+		assertThat(secondCategory.getAmountDifference()).isEqualTo(-2000L);
+	}
+
+	@Test
+	@DisplayName("getAllConsumptionCategories :  또래들이 가장 많이 소비한 카테고리 전체조회 성공")
+	void getAllConsumptionCategories_Success() {
+		// given
+		Category defaultCategory1 = new Category();
+		defaultCategory1.setId(1L);
+		defaultCategory1.setName("디폴트 카테고리1");
+		defaultCategory1.setIsDefault(true);
+
+		Category defaultCategory2 = new Category();
+		defaultCategory2.setId(2L);
+		defaultCategory2.setName("디폴트 카테고리2");
+		defaultCategory2.setIsDefault(true);
+
+		List<AvgConsumptionGoalDto> categoryAvgList = List.of(
+			new AvgConsumptionGoalDto(1L, 3000L),
+			new AvgConsumptionGoalDto(2L, 4000L)
+		);
+
+		List<MyConsumptionGoalDto> myConsumptionAmountList = List.of(
+			new MyConsumptionGoalDto(1L, 5000L),
+			new MyConsumptionGoalDto(2L, 2000L)
+		);
+
+		List<Category> defaultCategories = List.of(defaultCategory1, defaultCategory2);
+
+		given(categoryRepository.findAllByIsDefaultTrue()).willReturn(defaultCategories);
+		given(consumptionGoalRepository.findAvgConsumptionAmountByCategory(
+			anyInt(), anyInt(), any(), any())).willReturn(categoryAvgList);
+		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
+
+		// when
+		List<AllConsumptionCategoryResponseDto> result = consumptionGoalService.getAllConsumptionCategories(
+			user.getId(), 23, 25, "MALE");
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result).hasSize(2);
+
+		AllConsumptionCategoryResponseDto firstCategory = result.get(0);
+		assertThat(firstCategory.getCategoryName()).isEqualTo("디폴트 카테고리1");
+		assertThat(firstCategory.getAvgAmount()).isEqualTo(3000L);
+		assertThat(firstCategory.getAmountDifference()).isEqualTo(-3000);
+
+		AllConsumptionCategoryResponseDto secondCategory = result.get(1);
+		assertThat(secondCategory.getCategoryName()).isEqualTo("디폴트 카테고리2");
+		assertThat(secondCategory.getAvgAmount()).isEqualTo(4000L);
+		assertThat(secondCategory.getAmountDifference()).isEqualTo(-4000L);
 	}
 
 	@Test

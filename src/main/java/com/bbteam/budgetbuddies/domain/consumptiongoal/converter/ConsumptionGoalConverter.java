@@ -3,13 +3,16 @@ package com.bbteam.budgetbuddies.domain.consumptiongoal.converter;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.UserConsumptionGoalResponse;
 import org.springframework.stereotype.Component;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.UserConsumptionGoalResponse;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
+import com.bbteam.budgetbuddies.enums.Gender;
 
 @Component
 public class ConsumptionGoalConverter {
@@ -52,10 +55,28 @@ public class ConsumptionGoalConverter {
 
 	public UserConsumptionGoalResponse toUserConsumptionGoalResponse(ConsumptionGoal consumptionGoal) {
 		return UserConsumptionGoalResponse.builder()
-				.categoryId(consumptionGoal.getCategory().getId())
-				.goalMonth(consumptionGoal.getGoalMonth())
-				.consumeAmount(consumptionGoal.getConsumeAmount())
-				.goalAmount(consumptionGoal.getGoalAmount())
-				.build();
+			.categoryId(consumptionGoal.getCategory().getId())
+			.goalMonth(consumptionGoal.getGoalMonth())
+			.consumeAmount(consumptionGoal.getConsumeAmount())
+			.goalAmount(consumptionGoal.getGoalAmount())
+			.build();
+	}
+
+	public ConsumptionAnalysisResponseDto toTopCategoryAndConsumptionAmount(String categoryName,
+		Long topAmount) {
+
+		return ConsumptionAnalysisResponseDto.builder()
+			.goalCategory(categoryName)
+			.currentWeekConsumptionAmount(topAmount)
+			.build();
+	}
+
+	public PeerInfoResponseDto toPeerInfo(int peerAgeStart, int peerAgeEnd, Gender peerGender) {
+
+		return PeerInfoResponseDto.builder()
+			.peerAgeStart(peerAgeStart)
+			.peerAgeEnd(peerAgeEnd)
+			.peerGender(peerGender.name())
+			.build();
 	}
 }
