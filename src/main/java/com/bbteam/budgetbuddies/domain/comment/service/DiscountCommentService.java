@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 @Service("discountCommentService")
 @Transactional(readOnly = true)
-public class DiscountCommentService extends AbstractCommentService<CommentRequestDto.DiscountInfoCommentDto,
-        CommentResponseDto.DiscountInfoCommentDto> {
+public class DiscountCommentService extends AbstractCommentService<CommentRequestDto.DiscountInfoCommentRequestDto,
+    CommentResponseDto.DiscountInfoCommentResponseDto> {
     private final UserRepository userRepository;
     private final DiscountInfoRepository discountInfoRepository;
 
@@ -34,7 +34,7 @@ public class DiscountCommentService extends AbstractCommentService<CommentReques
 
     @Override
     @Transactional
-    public CommentResponseDto.DiscountInfoCommentDto saveComment(Long userId, CommentRequestDto.DiscountInfoCommentDto dto) {
+    public CommentResponseDto.DiscountInfoCommentResponseDto saveComment(Long userId, CommentRequestDto.DiscountInfoCommentRequestDto dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저 존재 x"));
         DiscountInfo info = discountInfoRepository.findById(dto.getDiscountInfoId()).orElseThrow(() -> new NoSuchElementException("정보 존재 x")); // dto에서 infoId를 추출하여 찾는 메서드
         int anonymousNumber = getAnonymousNumber(user, info);
@@ -58,18 +58,18 @@ public class DiscountCommentService extends AbstractCommentService<CommentReques
     }
 
     @Override
-    public List<CommentResponseDto.DiscountInfoCommentDto> findByInfo(Long infoId) {
+    public List<CommentResponseDto.DiscountInfoCommentResponseDto> findByInfo(Long infoId) {
         List<Comment> commentList = commentRepository.findByDiscountInfo(infoId);
-        List<CommentResponseDto.DiscountInfoCommentDto> collect = commentList.stream()
+        List<CommentResponseDto.DiscountInfoCommentResponseDto> collect = commentList.stream()
                 .map(CommentConverter::toDiscountInfoCommentDto)
                 .collect(Collectors.toList());
         return collect;
     }
 
     @Override
-    public Page<CommentResponseDto.DiscountInfoCommentDto> findByInfoWithPaging(Long infoId, Pageable pageable) {
+    public Page<CommentResponseDto.DiscountInfoCommentResponseDto> findByInfoWithPaging(Long infoId, Pageable pageable) {
         Page<Comment> commentPage = commentRepository.findByDiscountInfoWithPaging(infoId, pageable);
-        Page<CommentResponseDto.DiscountInfoCommentDto> result = commentPage.map(CommentConverter::toDiscountInfoCommentDto);
+        Page<CommentResponseDto.DiscountInfoCommentResponseDto> result = commentPage.map(CommentConverter::toDiscountInfoCommentDto);
         return result;
     }
 
@@ -81,7 +81,7 @@ public class DiscountCommentService extends AbstractCommentService<CommentReques
     }
 
     @Override
-    public CommentResponseDto.DiscountInfoCommentDto findCommentOne(Long commentId) {
+    public CommentResponseDto.DiscountInfoCommentResponseDto findCommentOne(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("No such comment"));
         if(comment.getDiscountInfo() == null){
             throw new RuntimeException("DiscountInfo comment에 대한 요청이 아닙니다.");
@@ -91,7 +91,7 @@ public class DiscountCommentService extends AbstractCommentService<CommentReques
 
     @Override
     @Transactional
-    public CommentResponseDto.DiscountInfoCommentDto modifyComment(CommentRequestDto.CommentModifyDto dto) {
+    public CommentResponseDto.DiscountInfoCommentResponseDto modifyComment(CommentRequestDto.CommentModifyRequestDto dto) {
         Comment comment = commentRepository.findById(dto.getCommentId()).orElseThrow(() -> new NoSuchElementException("xxx"));
         if (comment.getDiscountInfo() == null) {
             throw new RuntimeException("DiscountInfo comment에 대한 요청이 아닙니다.");

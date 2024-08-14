@@ -7,21 +7,21 @@ import lombok.Getter;
 public class CommentRequestDto {
     @Getter
     @Builder
-    public static class DiscountInfoCommentDto {
+    public static class DiscountInfoCommentRequestDto {
         private String content;
         private Long discountInfoId;
     }
 
     @Getter
     @Builder
-    public static class SupportInfoCommentDto {
+    public static class SupportInfoCommentRequestDto {
         private String content;
         private Long supportInfoId;
     }
 
     @Getter
     @Builder
-    public static class CommentModifyDto {
+    public static class CommentModifyRequestDto {
         private String content;
         private Long commentId;
     }

@@ -5,8 +5,8 @@ import com.bbteam.budgetbuddies.domain.user.entity.User;
 
 public class UserConverter {
 
-    public static UserDto.ResponseDto toDto(User user) {
-        return UserDto.ResponseDto.builder()
+    public static UserDto.ResponseUserDto toDto(User user) {
+        return UserDto.ResponseUserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .phoneNumber(user.getPhoneNumber())
@@ -19,7 +19,7 @@ public class UserConverter {
                 .build();
     }
 
-    public static User toUser(UserDto.RegisterDto dto) {
+    public static User toUser(UserDto.RegisterUserDto dto) {
         return User.builder()
                 .phoneNumber(dto.getPhoneNumber())
                 .email(dto.getEmail())

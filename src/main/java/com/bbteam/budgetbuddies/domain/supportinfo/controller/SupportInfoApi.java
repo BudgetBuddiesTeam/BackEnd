@@ -42,7 +42,7 @@ public interface SupportInfoApi {
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     ApiResponse<SupportResponseDto> registerSupportInfo(
-        @RequestBody SupportRequest.RegisterDto requestDto
+        @RequestBody SupportRequest.RegisterSupportDto requestDto
     );
 
     @Operation(summary = "[User] 특정 지원정보에 좋아요 클릭 API", description = "특정 지원정보에 좋아요 버튼을 클릭하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
@@ -73,7 +73,7 @@ public interface SupportInfoApi {
     })
     ApiResponse<SupportResponseDto> updateSupportInfo(
         @RequestParam Long userId,
-        @RequestBody SupportRequest.UpdateDto supportRequestDto
+        @RequestBody SupportRequest.UpdateSupportDto supportRequestDto
     );
 
     @Operation(summary = "[ADMIN] 특정 지원정보 삭제하기 API", description = "특정 지원정보를 삭제하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")

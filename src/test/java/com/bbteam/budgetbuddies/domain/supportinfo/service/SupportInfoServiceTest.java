@@ -103,7 +103,7 @@ class SupportInfoServiceTest {
     @DisplayName("지원 정보 등록이 정상적으로 되는지 검증")
     void registerSupportInfoTest() {
         // given
-        SupportRequest.RegisterDto requestDto = SupportRequest.RegisterDto.builder()
+        SupportRequest.RegisterSupportDto requestDto = SupportRequest.RegisterSupportDto.builder()
             .title("지원 정보 제목")
             .startDate(LocalDate.of(2024, 7, 1))
             .endDate(LocalDate.of(2024, 7, 21))

@@ -1,9 +1,6 @@
 package com.bbteam.budgetbuddies.domain.user.dto;
 
 import com.bbteam.budgetbuddies.enums.Gender;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +12,7 @@ public class UserDto {
 
     @Getter
     @Builder
-    public static class RegisterDto {
+    public static class RegisterUserDto {
         @Length(min = 11, message = "전화번호 11자리를 입력해주세요.")
         private String phoneNumber;
         private String name;
@@ -29,7 +26,7 @@ public class UserDto {
 
     @Getter
     @Builder
-    public static class ResponseDto {
+    public static class ResponseUserDto {
         private Long id;
         private String phoneNumber;
         private String name;

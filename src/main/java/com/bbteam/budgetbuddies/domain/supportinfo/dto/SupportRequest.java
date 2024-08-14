@@ -14,7 +14,7 @@ public class SupportRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RegisterDto {
+    public static class RegisterSupportDto {
 
         private String title;
 
@@ -32,7 +32,7 @@ public class SupportRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UpdateDto {
+    public static class UpdateSupportDto {
 
         private Long id;
 

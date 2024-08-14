@@ -1,13 +1,11 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.entity;
 
 import com.bbteam.budgetbuddies.common.BaseEntity;
-import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 
@@ -50,7 +48,7 @@ public class SupportInfo extends BaseEntity {
         return anonymousNumber;
     }
 
-    public void update(SupportRequest.UpdateDto supportRequestDto) {
+    public void update(SupportRequest.UpdateSupportDto supportRequestDto) {
         this.title = supportRequestDto.getTitle();
         this.startDate = supportRequestDto.getStartDate();
         this.endDate = supportRequestDto.getEndDate();

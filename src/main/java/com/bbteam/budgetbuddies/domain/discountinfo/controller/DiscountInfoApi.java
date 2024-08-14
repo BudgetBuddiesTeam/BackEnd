@@ -45,7 +45,7 @@ public interface DiscountInfoApi {
 //        @Parameter(name = "discountRequestDto", description = "등록할 할인 정보의 전체 내용입니다."),
     })
     ApiResponse<DiscountResponseDto> registerDiscountInfo(
-        @RequestBody DiscountRequest.RegisterDto discountRequestDto
+        @RequestBody DiscountRequest.RegisterDiscountDto discountRequestDto
     );
 
     @Operation(summary = "[User] 특정 할인정보에 좋아요 클릭 API", description = "특정 할인정보에 좋아요 버튼을 클릭하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
@@ -77,7 +77,7 @@ public interface DiscountInfoApi {
     })
     ApiResponse<DiscountResponseDto> updateDiscountInfo(
         @RequestParam Long userId,
-        @RequestBody DiscountRequest.UpdateDto discountRequestDto
+        @RequestBody DiscountRequest.UpdateDiscountDto discountRequestDto
     );
 
     @Operation(summary = "[ADMIN] 특정 할인정보 삭제하기 API", description = "특정 할인정보를 삭제하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
