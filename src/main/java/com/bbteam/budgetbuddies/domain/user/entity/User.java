@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.user.entity;
 
 import com.bbteam.budgetbuddies.common.BaseEntity;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
 import com.bbteam.budgetbuddies.enums.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -42,5 +43,10 @@ public class User extends BaseEntity {
     private String consumptionPattern;
 
     private LocalDateTime lastLoginAt;
+
+    public void changeUserDate(String email, String name) {
+        this.name = name;
+        this.email = email;
+    }
 
 }

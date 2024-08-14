@@ -1,6 +1,5 @@
 package com.bbteam.budgetbuddies.domain.category.dto;
 
-import com.bbteam.budgetbuddies.domain.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -53,7 +53,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		}
         /*
          Case 2)
-         !default && 키테고리 테이블의 UserId 컬럼의 값이 나와 맞으면 (= custom cateogory)
+         !default && 키테고리 테이블의 UserId 컬럼의 값이 나와 맞으면 (= custom category)
          */
 		else if (!category.getIsDefault() && category.getUser().getId().equals(expenseRequestDto.getUserId())) {
 			// custom category
@@ -94,6 +94,23 @@ public class ExpenseServiceImpl implements ExpenseService {
          결과 Case 1) 해당 유저의 user_id + immutable 필드 중 하나의 조합으로 Expense 테이블에 저장
          결과 Case 2) 내가 직접 생성한 카테고리 중 하나로 카테고리를 설정하여 Expense 테이블에 저장
          */
+	}
+
+
+	@Override
+	public void deleteExpense(Long expenseId) {
+		Expense expense = expenseRepository.findById(expenseId)
+				.orElseThrow(() -> new IllegalArgumentException("Not found Expense"));
+
+		Long userId = expense.getUser().getId();
+		Long categoryId = expense.getCategory().getId();
+		Long amount = expense.getAmount();
+		LocalDate expenseDate = expense.getExpenseDate().toLocalDate();
+
+		expenseRepository.delete(expense);
+
+		// 소비 금액 차감 로직
+		consumptionGoalService.decreaseConsumeAmount(userId, categoryId, amount, expenseDate);
 	}
 
 	@Override

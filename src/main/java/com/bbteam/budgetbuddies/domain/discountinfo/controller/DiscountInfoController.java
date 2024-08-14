@@ -1,11 +1,12 @@
 package com.bbteam.budgetbuddies.domain.discountinfo.controller;
 
+import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequest;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.discountinfo.service.DiscountInfoService;
+import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,7 +18,7 @@ public class DiscountInfoController implements DiscountInfoApi {
 
     @Override
     @GetMapping("")
-    public ResponseEntity<Page<DiscountResponseDto>> getDiscountsByYearAndMonth(
+    public ApiResponse<Page<DiscountResponseDto>> getDiscountsByYearAndMonth(
         @RequestParam Integer year,
         @RequestParam Integer month,
         @RequestParam(defaultValue = "0") Integer page,
@@ -25,62 +26,62 @@ public class DiscountInfoController implements DiscountInfoApi {
     ) {
         Page<DiscountResponseDto> discounts = discountInfoService.getDiscountsByYearAndMonth(year, month, page, size);
 
-        return ResponseEntity.ok(discounts);
+        return ApiResponse.onSuccess(discounts);
     }
 
     @Override
     @PostMapping("")
-    public ResponseEntity<DiscountResponseDto> registerDiscountInfo(
+    public ApiResponse<DiscountResponseDto> registerDiscountInfo(
         @RequestBody DiscountRequest.RegisterDto discountRequestDto
     ) {
         DiscountResponseDto discountResponseDto = discountInfoService.registerDiscountInfo(discountRequestDto);
 
-        return ResponseEntity.ok(discountResponseDto);
+        return ApiResponse.onSuccess(discountResponseDto);
     }
 
     @Override
     @PostMapping("/likes/{discountInfoId}")
-    public ResponseEntity<DiscountResponseDto> likeDiscountInfo(
-        @RequestParam Long userId,
+    public ApiResponse<DiscountResponseDto> likeDiscountInfo(
+        @RequestParam @ExistUser Long userId,
         @PathVariable Long discountInfoId
     ) {
         DiscountResponseDto discountResponseDto = discountInfoService.toggleLike(userId, discountInfoId);
 
-        return ResponseEntity.ok(discountResponseDto);
+        return ApiResponse.onSuccess(discountResponseDto);
     }
 
     @Override
     @PutMapping("")
-    public ResponseEntity<DiscountResponseDto> updateDiscountInfo(
-        @RequestParam Long userId,
+    public ApiResponse<DiscountResponseDto> updateDiscountInfo(
+        @RequestParam @ExistUser Long userId,
         @RequestBody DiscountRequest.UpdateDto discountRequestDto
     ) {
         DiscountResponseDto discountResponseDto = discountInfoService.updateDiscountInfo(userId, discountRequestDto);
 
-        return ResponseEntity.ok(discountResponseDto);
+        return ApiResponse.onSuccess(discountResponseDto);
     }
 
     @Override
     @DeleteMapping("/{discountInfoId}")
-    public ResponseEntity<String> deleteDiscountInfo(
-        @RequestParam Long userId,
+    public ApiResponse<String> deleteDiscountInfo(
+        @RequestParam @ExistUser Long userId,
         @PathVariable Long discountInfoId
     ) {
         String message = discountInfoService.deleteDiscountInfo(userId, discountInfoId);
 
-        return ResponseEntity.ok(message);
+        return ApiResponse.onSuccess(message);
     }
 
 
     @Override
     @GetMapping("/{discountInfoId}")
-    public ResponseEntity<DiscountResponseDto> getDiscountInfo(
-        @RequestParam Long userId,
+    public ApiResponse<DiscountResponseDto> getDiscountInfo(
+        @RequestParam @ExistUser Long userId,
         @PathVariable Long discountInfoId
     ) {
         DiscountResponseDto discountResponseDto = discountInfoService.getDiscountInfoById(userId, discountInfoId);
 
-        return ResponseEntity.ok(discountResponseDto);
+        return ApiResponse.onSuccess(discountResponseDto);
     }
 
 }

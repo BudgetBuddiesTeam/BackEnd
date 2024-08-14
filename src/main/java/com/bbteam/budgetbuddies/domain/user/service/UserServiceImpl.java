@@ -6,6 +6,8 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoal
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.UserConsumptionGoalResponse;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
+import com.bbteam.budgetbuddies.domain.user.converter.UserConverter;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -47,5 +51,27 @@ public class UserServiceImpl implements UserService {
         return savedConsumptionGoals.stream()
                 .map(consumptionGoalConverter::toUserConsumptionGoalResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public UserDto.ResponseDto saveUser(UserDto.RegisterDto dto) {
+        User user = UserConverter.toUser(dto);
+        userRepository.save(user);
+        return UserConverter.toDto(user);
+    }
+
+    @Override
+    public UserDto.ResponseDto findUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저는 존재하지 않습니다."));
+        return UserConverter.toDto(user);
+    }
+
+    @Override
+    @Transactional
+    public UserDto.ResponseDto changeUser(Long userId, String email, String name) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user"));
+        user.changeUserDate(email, name);
+        return UserConverter.toDto(user);
     }
 }
