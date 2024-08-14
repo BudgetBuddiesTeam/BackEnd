@@ -15,7 +15,7 @@ public class UserDto {
 
     @Getter
     @Builder
-    public static class RegisterDto {
+    public static class RegisterUserDto {
         @Length(min = 11, message = "전화번호 11자리를 입력해주세요.")
         private String phoneNumber;
         private String name;
@@ -29,7 +29,7 @@ public class UserDto {
 
     @Getter
     @Builder
-    public static class ResponseDto {
+    public static class ResponseUserDto {
         private Long id;
         private String phoneNumber;
         private String name;
