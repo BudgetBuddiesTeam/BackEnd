@@ -17,6 +17,5 @@ public class ConsumptionGoalResponseListDto {
 	private LocalDate goalMonth;
 	private Long totalGoalAmount;
 	private Long totalConsumptionAmount;
-	private Long totalRemainingBalance;
 	private List<ConsumptionGoalResponseDto> consumptionGoalList;
 }
