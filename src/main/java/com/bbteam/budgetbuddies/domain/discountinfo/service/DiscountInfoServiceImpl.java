@@ -53,7 +53,7 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
 
     @Transactional
     @Override
-    public DiscountResponseDto registerDiscountInfo(DiscountRequest.RegisterDto discountRequestDto) {
+    public DiscountResponseDto registerDiscountInfo(DiscountRequest.RegisterDiscountDto discountRequestDto) {
         /**
          * 1. RequestDto -> Entity로 변환
          * 2. Entity 저장
@@ -117,7 +117,7 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
 
     @Transactional
     @Override
-    public DiscountResponseDto updateDiscountInfo(Long userId, DiscountRequest.UpdateDto discountRequestDto) {
+    public DiscountResponseDto updateDiscountInfo(Long userId, DiscountRequest.UpdateDiscountDto discountRequestDto) {
         /**
          * 1. 사용자 조회 -> 없으면 에러
          * 2. 할인정보 조회 -> 없으면 에러

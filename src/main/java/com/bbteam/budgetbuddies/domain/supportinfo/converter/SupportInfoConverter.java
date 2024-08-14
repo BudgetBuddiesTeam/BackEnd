@@ -30,7 +30,7 @@ public class SupportInfoConverter {
      * @param requestDto
      * @return entity
      */
-    public SupportInfo toEntity(SupportRequest.RegisterDto requestDto) {
+    public SupportInfo toEntity(SupportRequest.RegisterSupportDto requestDto) {
 
         return SupportInfo.builder()
             .title(requestDto.getTitle())

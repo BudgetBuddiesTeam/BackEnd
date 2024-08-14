@@ -27,18 +27,18 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ApiResponse<UserDto.ResponseDto> registerUser(@RequestBody UserDto.RegisterDto dto) {
+    public ApiResponse<UserDto.ResponseUserDto> registerUser(@RequestBody UserDto.RegisterUserDto dto) {
         return ApiResponse.onSuccess(userService.saveUser(dto));
     }
 
     @GetMapping("/{userId}/find")
-    public ApiResponse<UserDto.ResponseDto> findOne(@PathVariable("userId") @ExistUser Long userId) {
+    public ApiResponse<UserDto.ResponseUserDto> findOne(@PathVariable("userId") @ExistUser Long userId) {
         return ApiResponse.onSuccess(userService.findUser(userId));
     }
 
     @PutMapping("/{userId}/change")
-    public ApiResponse<UserDto.ResponseDto> changeOne(@PathVariable("userId") @ExistUser Long userId,
-                                                      @RequestParam("email") String email, @RequestParam("name") String name) {
+    public ApiResponse<UserDto.ResponseUserDto> changeOne(@PathVariable("userId") @ExistUser Long userId,
+                                                          @RequestParam("email") String email, @RequestParam("name") String name) {
         return ApiResponse.onSuccess(userService.changeUser(userId, email, name));
     }
 }

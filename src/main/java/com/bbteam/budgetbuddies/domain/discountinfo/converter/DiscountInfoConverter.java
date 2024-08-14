@@ -32,7 +32,7 @@ public class DiscountInfoConverter {
      * @param requestDto
      * @return entity
      */
-    public DiscountInfo toEntity(DiscountRequest.RegisterDto requestDto) {
+    public DiscountInfo toEntity(DiscountRequest.RegisterDiscountDto requestDto) {
 
         return DiscountInfo.builder()
             .title(requestDto.getTitle())
