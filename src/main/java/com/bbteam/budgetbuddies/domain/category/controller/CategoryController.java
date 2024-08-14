@@ -17,9 +17,11 @@ public class CategoryController implements CategoryApi {
     private final CategoryService categoryService;
 
     @Override
-    @PostMapping("/add")
-    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
-        CategoryResponseDTO response = categoryService.createCategory(categoryRequestDTO);
+    @PostMapping("/add/{userId}")
+    public ResponseEntity<CategoryResponseDTO> createCategory(
+            @PathVariable Long userId,
+            @RequestBody CategoryRequestDTO categoryRequestDTO) {
+        CategoryResponseDTO response = categoryService.createCategory(userId, categoryRequestDTO);
         return ResponseEntity.ok(response);
     }
 
