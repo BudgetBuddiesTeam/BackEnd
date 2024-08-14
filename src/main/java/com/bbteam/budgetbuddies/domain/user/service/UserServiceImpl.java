@@ -55,21 +55,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto.ResponseDto saveUser(UserDto.RegisterDto dto) {
+    public UserDto.ResponseUserDto saveUser(UserDto.RegisterUserDto dto) {
         User user = UserConverter.toUser(dto);
         userRepository.save(user);
         return UserConverter.toDto(user);
     }
 
     @Override
-    public UserDto.ResponseDto findUser(Long userId) {
+    public UserDto.ResponseUserDto findUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저는 존재하지 않습니다."));
         return UserConverter.toDto(user);
     }
 
     @Override
     @Transactional
-    public UserDto.ResponseDto changeUser(Long userId, String email, String name) {
+    public UserDto.ResponseUserDto changeUser(Long userId, String email, String name) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user"));
         user.changeUserDate(email, name);
         return UserConverter.toDto(user);

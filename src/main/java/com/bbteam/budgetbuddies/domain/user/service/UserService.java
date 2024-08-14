@@ -7,9 +7,9 @@ import java.util.List;
 public interface UserService {
     List<UserConsumptionGoalResponse> createConsumptionGoalWithDefaultGoals(Long userId);
 
-    UserDto.ResponseDto saveUser(UserDto.RegisterDto dto);
+    UserDto.ResponseUserDto saveUser(UserDto.RegisterUserDto dto);
 
-    UserDto.ResponseDto findUser(Long userId);
+    UserDto.ResponseUserDto findUser(Long userId);
 
-    UserDto.ResponseDto changeUser(Long userId, String email, String name);
+    UserDto.ResponseUserDto changeUser(Long userId, String email, String name);
 }

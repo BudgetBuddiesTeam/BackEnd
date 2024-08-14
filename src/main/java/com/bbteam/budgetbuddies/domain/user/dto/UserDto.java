@@ -1,9 +1,6 @@
 package com.bbteam.budgetbuddies.domain.user.dto;
 
 import com.bbteam.budgetbuddies.enums.Gender;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Getter;
