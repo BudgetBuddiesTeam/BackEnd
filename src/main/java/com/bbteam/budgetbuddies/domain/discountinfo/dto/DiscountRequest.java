@@ -10,7 +10,7 @@ public class DiscountRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RegisterDto {
+    public static class RegisterDiscountDto {
 
         private String title;
 
@@ -29,7 +29,7 @@ public class DiscountRequest {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UpdateDto {
+    public static class UpdateDiscountDto {
 
         private Long id;
 
