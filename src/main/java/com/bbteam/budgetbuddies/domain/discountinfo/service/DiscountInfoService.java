@@ -12,11 +12,11 @@ public interface DiscountInfoService {
         Integer size
     );
 
-    DiscountResponseDto registerDiscountInfo(DiscountRequest.RegisterDto discountRequestDto);
+    DiscountResponseDto registerDiscountInfo(DiscountRequest.RegisterDiscountDto discountRequestDto);
 
     DiscountResponseDto toggleLike(Long userId, Long discountInfoId);
 
-    DiscountResponseDto updateDiscountInfo(Long userId, DiscountRequest.UpdateDto discountRequestDto);
+    DiscountResponseDto updateDiscountInfo(Long userId, DiscountRequest.UpdateDiscountDto discountRequestDto);
 
     String deleteDiscountInfo(Long userId, Long discountInfoId);
 

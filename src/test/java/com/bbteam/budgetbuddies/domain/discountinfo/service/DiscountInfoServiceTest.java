@@ -103,7 +103,7 @@ class DiscountInfoServiceTest {
     @DisplayName("할인 정보 등록이 정상적으로 되는지 검증")
     void registerDiscountInfoTest() {
         // given
-        DiscountRequest.RegisterDto requestDto = DiscountRequest.RegisterDto.builder()
+        DiscountRequest.RegisterDiscountDto requestDto = DiscountRequest.RegisterDiscountDto.builder()
             .title("할인 정보 제목")
             .startDate(LocalDate.of(2024, 7, 1))
             .endDate(LocalDate.of(2024, 7, 21))

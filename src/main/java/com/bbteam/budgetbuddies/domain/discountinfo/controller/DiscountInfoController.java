@@ -32,7 +32,7 @@ public class DiscountInfoController implements DiscountInfoApi {
     @Override
     @PostMapping("")
     public ApiResponse<DiscountResponseDto> registerDiscountInfo(
-        @RequestBody DiscountRequest.RegisterDto discountRequestDto
+        @RequestBody DiscountRequest.RegisterDiscountDto discountRequestDto
     ) {
         DiscountResponseDto discountResponseDto = discountInfoService.registerDiscountInfo(discountRequestDto);
 
@@ -54,7 +54,7 @@ public class DiscountInfoController implements DiscountInfoApi {
     @PutMapping("")
     public ApiResponse<DiscountResponseDto> updateDiscountInfo(
         @RequestParam @ExistUser Long userId,
-        @RequestBody DiscountRequest.UpdateDto discountRequestDto
+        @RequestBody DiscountRequest.UpdateDiscountDto discountRequestDto
     ) {
         DiscountResponseDto discountResponseDto = discountInfoService.updateDiscountInfo(userId, discountRequestDto);
 

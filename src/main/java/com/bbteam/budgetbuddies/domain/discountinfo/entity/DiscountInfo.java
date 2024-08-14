@@ -6,7 +6,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 
@@ -51,7 +50,7 @@ public class DiscountInfo extends BaseEntity {
         return anonymousNumber;
     }
 
-    public void update(DiscountRequest.UpdateDto discountRequestDto) {
+    public void update(DiscountRequest.UpdateDiscountDto discountRequestDto) {
         this.title = discountRequestDto.getTitle();
         this.startDate = discountRequestDto.getStartDate();
         this.endDate = discountRequestDto.getEndDate();
