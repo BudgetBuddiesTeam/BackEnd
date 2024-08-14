@@ -32,7 +32,7 @@ public class SupportInfoController implements SupportInfoApi {
     @Override
     @PostMapping("")
     public ApiResponse<SupportResponseDto> registerSupportInfo(
-        @RequestBody SupportRequest.RegisterDto requestDto
+        @RequestBody SupportRequest.RegisterSupportDto requestDto
     ) {
         SupportResponseDto supportResponseDto = supportInfoService.registerSupportInfo(requestDto);
 
@@ -54,7 +54,7 @@ public class SupportInfoController implements SupportInfoApi {
     @PutMapping("")
     public ApiResponse<SupportResponseDto> updateSupportInfo(
         @RequestParam @ExistUser Long userId,
-        @RequestBody SupportRequest.UpdateDto supportRequestDto
+        @RequestBody SupportRequest.UpdateSupportDto supportRequestDto
     ) {
         SupportResponseDto supportResponseDto = supportInfoService.updateSupportInfo(userId, supportRequestDto);
 

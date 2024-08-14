@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 @Service("supportCommentService")
 @Transactional(readOnly = true)
-public class SupportCommentService extends AbstractCommentService <CommentRequestDto.SupportInfoCommentDto,
-        CommentResponseDto.SupportInfoCommentDto> {
+public class SupportCommentService extends AbstractCommentService <CommentRequestDto.SupportInfoCommentRequestDto,
+    CommentResponseDto.SupportInfoCommentResponseDto> {
 
     private final UserRepository userRepository;
     private final SupportInfoRepository supportInfoRepository;
@@ -35,7 +35,7 @@ public class SupportCommentService extends AbstractCommentService <CommentReques
 
     @Override
     @Transactional
-    public CommentResponseDto.SupportInfoCommentDto saveComment(Long userId, CommentRequestDto.SupportInfoCommentDto dto) {
+    public CommentResponseDto.SupportInfoCommentResponseDto saveComment(Long userId, CommentRequestDto.SupportInfoCommentRequestDto dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("유저 존재 x"));
         SupportInfo info = supportInfoRepository.findById(dto.getSupportInfoId()).orElseThrow(() -> new NoSuchElementException("정보 존재 x")); // dto에서 infoId를 추출하여 찾는 메서드
         int anonymousNumber = getAnonymousNumber(user, info);
@@ -57,18 +57,18 @@ public class SupportCommentService extends AbstractCommentService <CommentReques
     }
 
     @Override
-    public List<CommentResponseDto.SupportInfoCommentDto> findByInfo(Long infoId) {
+    public List<CommentResponseDto.SupportInfoCommentResponseDto> findByInfo(Long infoId) {
         List<Comment> commentList = commentRepository.findBySupportInfo(infoId);
-        List<CommentResponseDto.SupportInfoCommentDto> collect = commentList.stream()
+        List<CommentResponseDto.SupportInfoCommentResponseDto> collect = commentList.stream()
                 .map(CommentConverter::toSupportInfoCommentDto)
                 .collect(Collectors.toList());
         return collect;
     }
 
     @Override
-    public Page<CommentResponseDto.SupportInfoCommentDto> findByInfoWithPaging(Long infoId, Pageable pageable) {
+    public Page<CommentResponseDto.SupportInfoCommentResponseDto> findByInfoWithPaging(Long infoId, Pageable pageable) {
         Page<Comment> commentPage = commentRepository.findBySupportInfoWithPaging(infoId, pageable);
-        Page<CommentResponseDto.SupportInfoCommentDto> result = commentPage.map(CommentConverter::toSupportInfoCommentDto);
+        Page<CommentResponseDto.SupportInfoCommentResponseDto> result = commentPage.map(CommentConverter::toSupportInfoCommentDto);
         return result;
     }
 
@@ -80,7 +80,7 @@ public class SupportCommentService extends AbstractCommentService <CommentReques
     }
 
     @Override
-    public CommentResponseDto.SupportInfoCommentDto findCommentOne(Long commentId) {
+    public CommentResponseDto.SupportInfoCommentResponseDto findCommentOne(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NoSuchElementException("No such comment"));
         if(comment.getSupportInfo() == null){
             throw new RuntimeException("supportInfo comment에 대한 요청이 아닙니다.");
@@ -90,7 +90,7 @@ public class SupportCommentService extends AbstractCommentService <CommentReques
 
     @Override
     @Transactional
-    public CommentResponseDto.SupportInfoCommentDto modifyComment(CommentRequestDto.CommentModifyDto dto) {
+    public CommentResponseDto.SupportInfoCommentResponseDto modifyComment(CommentRequestDto.CommentModifyRequestDto dto) {
         Comment comment = commentRepository.findById(dto.getCommentId()).orElseThrow(() -> new NoSuchElementException("xxx"));
         if (comment.getSupportInfo() == null) {
             throw new RuntimeException("supportInfo comment에 대한 요청이 아닙니다.");

@@ -53,7 +53,7 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
     @Transactional
     @Override
-    public SupportResponseDto registerSupportInfo(SupportRequest.RegisterDto supportRequest) {
+    public SupportResponseDto registerSupportInfo(SupportRequest.RegisterSupportDto supportRequest) {
         /**
          * 1. RequestDto -> Entity로 변환
          * 2. Entity 저장
@@ -117,7 +117,7 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
     @Transactional
     @Override
-    public SupportResponseDto updateSupportInfo(Long userId, SupportRequest.UpdateDto supportRequestDto) {
+    public SupportResponseDto updateSupportInfo(Long userId, SupportRequest.UpdateSupportDto supportRequestDto) {
         /**
          * 1. 사용자 조회 -> 없으면 에러
          * 2. 지원정보 조회 -> 없으면 에러
