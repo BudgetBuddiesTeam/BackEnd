@@ -11,6 +11,11 @@ public class UserConverter {
                 .name(user.getName())
                 .phoneNumber(user.getPhoneNumber())
                 .lastLoginAt(user.getLastLoginAt())
+                .gender(user.getGender())
+                .consumptionPattern(user.getConsumptionPattern())
+                .photoUrl(user.getPhotoUrl())
+                .email(user.getEmail())
+                .age(user.getAge())
                 .build();
     }
 

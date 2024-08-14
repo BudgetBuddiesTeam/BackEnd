@@ -10,4 +10,6 @@ public interface UserService {
     UserDto.ResponseDto saveUser(UserDto.RegisterDto dto);
 
     UserDto.ResponseDto findUser(Long userId);
+
+    UserDto.ResponseDto changeUser(Long userId, String email, String name);
 }

@@ -35,4 +35,10 @@ public class UserController {
     public ApiResponse<UserDto.ResponseDto> findOne(@PathVariable("userId") @ExistUser Long userId) {
         return ApiResponse.onSuccess(userService.findUser(userId));
     }
+
+    @PutMapping("/{userId}/change")
+    public ApiResponse<UserDto.ResponseDto> changeOne(@PathVariable("userId") @ExistUser Long userId,
+                                                      @RequestParam("email") String email, @RequestParam("name") String name) {
+        return ApiResponse.onSuccess(userService.changeUser(userId, email, name));
+    }
 }

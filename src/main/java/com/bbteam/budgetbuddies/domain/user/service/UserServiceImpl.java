@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDto.ResponseDto saveUser(UserDto.RegisterDto dto) {
         User user = UserConverter.toUser(dto);
         userRepository.save(user);
@@ -63,6 +65,13 @@ public class UserServiceImpl implements UserService {
     public UserDto.ResponseDto findUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("해당 유저는 존재하지 않습니다."));
         return UserConverter.toDto(user);
+    }
 
+    @Override
+    @Transactional
+    public UserDto.ResponseDto changeUser(Long userId, String email, String name) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user"));
+        user.changeUserDate(email, name);
+        return UserConverter.toDto(user);
     }
 }
