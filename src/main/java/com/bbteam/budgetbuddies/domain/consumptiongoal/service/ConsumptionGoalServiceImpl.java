@@ -51,14 +51,12 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	private final UserRepository userRepository;
 
 	private final ConsumptionGoalConverter consumptionGoalConverter;
-
-	private int peerAgeStart;
-	private int peerAgeEnd;
-	private Gender peerGender;
-
 	private final LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
 	private final LocalDate startOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 	private final LocalDate endOfWeek = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+	private int peerAgeStart;
+	private int peerAgeEnd;
+	private Gender peerGender;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -405,7 +403,10 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		updateGoalMapWithPreviousMonth(userId, goalMonth, goalMap);
 		updateGoalMapWithCurrentMonth(userId, goalMonth, goalMap);
 
-		return consumptionGoalConverter.toConsumptionGoalResponseListDto(new ArrayList<>(goalMap.values()), goalMonth);
+		List<ConsumptionGoalResponseDto> consumptionGoalList = new ArrayList<>(goalMap.values());
+
+		return consumptionGoalConverter.toConsumptionGoalResponseListDto(
+			orderByRemainingBalanceDescending(consumptionGoalList), goalMonth);
 	}
 
 	private Map<Long, ConsumptionGoalResponseDto> initializeGoalMap(Long userId) {
@@ -429,6 +430,13 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			.stream()
 			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
 			.forEach(goal -> goalMap.put(goal.getCategoryId(), goal));
+	}
+
+	private List<ConsumptionGoalResponseDto> orderByRemainingBalanceDescending(
+		List<ConsumptionGoalResponseDto> consumptionGoalList) {
+		return consumptionGoalList.stream()
+			.sorted(Comparator.comparingLong(ConsumptionGoalResponseDto::getRemainingBalance).reversed())
+			.toList();
 	}
 
 	@Override
