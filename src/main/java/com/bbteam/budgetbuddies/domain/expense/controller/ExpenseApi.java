@@ -48,6 +48,13 @@ public interface ExpenseApi {
 	@GetMapping("/{userId}/{expenseId}")
 	ResponseEntity<ExpenseResponseDto> findExpense(@Param("userId") Long userId, @Param("expenseId") Long expenseId);
 
+	@Operation(summary = "단일 소비 업데이트하기", description = "소비 아이디와 카테고리 아이디, amount(소비 금액)을 body에 담아서 소비를 업데이트")
+	@ApiResponses({
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+		@ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+		@ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))})
+	@GetMapping("/{userId}/{expenseId}")
 	@PostMapping("/{userId}")
 	ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable @Param("userId") Long userId, @RequestBody ExpenseUpdateRequestDto request);
 
