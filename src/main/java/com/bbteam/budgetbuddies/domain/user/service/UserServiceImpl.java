@@ -74,4 +74,12 @@ public class UserServiceImpl implements UserService {
         user.changeUserDate(email, name);
         return UserConverter.toDto(user);
     }
+
+    @Override
+    public List<UserDto.ResponseUserDto> findAll() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(UserConverter::toDto)
+                .toList();
+    }
 }

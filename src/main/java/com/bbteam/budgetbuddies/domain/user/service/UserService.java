@@ -12,4 +12,6 @@ public interface UserService {
     UserDto.ResponseUserDto findUser(Long userId);
 
     UserDto.ResponseUserDto changeUser(Long userId, String email, String name);
+
+    List<UserDto.ResponseUserDto> findAll();
 }
