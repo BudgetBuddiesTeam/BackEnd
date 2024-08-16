@@ -31,7 +31,7 @@ public class UserController implements UserApi{
         return ApiResponse.onSuccess(userService.saveUser(dto));
     }
 
-    @GetMapping("/find/{userid}")
+    @GetMapping("/find/{userId}")
     public ApiResponse<UserDto.ResponseUserDto> findOne(@PathVariable("userId") @ExistUser Long userId) {
         return ApiResponse.onSuccess(userService.findUser(userId));
     }
