@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.user.dto;
 
 import com.bbteam.budgetbuddies.enums.Gender;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,6 +36,14 @@ public class UserDto {
         private Gender gender;
         private String photoUrl;
         private String consumptionPattern;
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
         private LocalDateTime lastLoginAt;
+    }
+
+    @Getter
+    @Builder
+    public static class ModifyUserDto {
+        private String email;
+        private String name;
     }
 }
