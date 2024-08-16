@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Validated
-public class UserController {
+public class UserController implements UserApi{
 
     private final UserService userService;
 
@@ -31,14 +31,20 @@ public class UserController {
         return ApiResponse.onSuccess(userService.saveUser(dto));
     }
 
-    @GetMapping("/{userId}/find")
+    @GetMapping("/find/{userid}")
     public ApiResponse<UserDto.ResponseUserDto> findOne(@PathVariable("userId") @ExistUser Long userId) {
         return ApiResponse.onSuccess(userService.findUser(userId));
     }
 
-    @PutMapping("/{userId}/change")
+    @Override
+    @GetMapping("/findAll")
+    public ApiResponse<List<UserDto.ResponseUserDto>> findAll() {
+        return ApiResponse.onSuccess(userService.findAll());
+    }
+
+    @PutMapping("/modify/{userId}")
     public ApiResponse<UserDto.ResponseUserDto> changeOne(@PathVariable("userId") @ExistUser Long userId,
-                                                          @RequestParam("email") String email, @RequestParam("name") String name) {
-        return ApiResponse.onSuccess(userService.changeUser(userId, email, name));
+                                                          @RequestBody UserDto.ModifyUserDto dto) {
+        return ApiResponse.onSuccess(userService.modifyUser(userId, dto));
     }
 }

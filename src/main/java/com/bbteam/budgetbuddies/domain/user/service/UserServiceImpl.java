@@ -69,9 +69,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto.ResponseUserDto changeUser(Long userId, String email, String name) {
+    public UserDto.ResponseUserDto modifyUser(Long userId, UserDto.ModifyUserDto dto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user"));
-        user.changeUserDate(email, name);
+        user.changeUserDate(dto.getEmail(), dto.getName());
         return UserConverter.toDto(user);
+    }
+
+    @Override
+    public List<UserDto.ResponseUserDto> findAll() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(UserConverter::toDto)
+                .toList();
     }
 }
