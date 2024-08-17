@@ -59,6 +59,7 @@ public class ExpenseConverter {
 			.description(expense.getDescription())
 			.amount(expense.getAmount())
 			.expenseDate(expense.getExpenseDate())
+			.categoryId(expense.getCategory().getId())
 			.build();
 	}
 }
