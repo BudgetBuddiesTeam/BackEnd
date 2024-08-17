@@ -4,6 +4,7 @@ import com.bbteam.budgetbuddies.domain.category.dto.CategoryRequestDTO;
 import com.bbteam.budgetbuddies.domain.category.dto.CategoryResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -38,4 +39,20 @@ public interface CategoryApi {
     })
     @GetMapping("/get/{userId}")
     ResponseEntity<List<CategoryResponseDTO>> getUserCategories(@PathVariable Long userId);
+
+    @Operation(summary = "특정 카테고리 삭제하기 API", description = "특정 카테고리를 삭제하는 API이며, 사용자의 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
+    @Parameters({
+            @Parameter(name = "userId", description = "해당하는 사용자의 id"),
+            @Parameter(name = "categoryId", description = "삭제할 카테고리의 id"),
+    })
+    ResponseEntity<String> deleteCategory(
+            @RequestParam Long userId,
+            @PathVariable Long categoryId
+    );
 }

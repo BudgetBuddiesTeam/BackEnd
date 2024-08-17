@@ -1,6 +1,5 @@
 package com.bbteam.budgetbuddies.domain.category.entity;
 
-import com.bbteam.budgetbuddies.common.BaseEntity;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,8 +23,11 @@ public class Category {
     @ColumnDefault("1")
     private Boolean isDefault;
 
+    @Column(nullable = false)
+    @ColumnDefault("false")
+    private Boolean deleted = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
 }

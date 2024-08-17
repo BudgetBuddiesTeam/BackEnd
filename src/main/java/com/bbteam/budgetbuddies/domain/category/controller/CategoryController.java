@@ -3,12 +3,7 @@ package com.bbteam.budgetbuddies.domain.category.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.bbteam.budgetbuddies.domain.category.dto.CategoryRequestDTO;
 import com.bbteam.budgetbuddies.domain.category.dto.CategoryResponseDTO;
@@ -32,10 +27,19 @@ public class CategoryController implements CategoryApi {
 		return ResponseEntity.ok(response);
 	}
 
-	@Override
-	@GetMapping("/get/{userId}")
-	public ResponseEntity<List<CategoryResponseDTO>> getUserCategories(@PathVariable Long userId) {
-		List<CategoryResponseDTO> response = categoryService.getUserCategories(userId);
-		return ResponseEntity.ok(response);
-	}
+    @Override
+    @GetMapping("/get/{userId}")
+    public ResponseEntity<List<CategoryResponseDTO>> getUserCategories(@PathVariable Long userId) {
+        List<CategoryResponseDTO> response = categoryService.getUserCategories(userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @DeleteMapping("/delete/{categoryId}")
+    public ResponseEntity<String> deleteCategory(
+            @RequestParam Long userId,
+            @PathVariable Long categoryId) {
+        categoryService.deleteCategory(categoryId, userId);
+        return ResponseEntity.ok("Successfully deleted category!");
+    }
 }
