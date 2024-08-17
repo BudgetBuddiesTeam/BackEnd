@@ -11,9 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
@@ -42,17 +39,16 @@ class ExpenseRepositoryTest {
 		Category userCategory = categoryRepository.save(
 			Category.builder().name("유저 카테고리").user(user).isDefault(false).build());
 
-		LocalDate startDate = LocalDate.of(2024, 07, 01);
+		LocalDate startDate = LocalDate.of(2024, 7, 1);
 		LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
 
 		List<Expense> expected = setExpense(user, userCategory, startDate);
 
-		Pageable pageable = PageRequest.of(0, 5);
-
-		Slice<Expense> result = expenseRepository.findAllByUserIdForPeriod(pageable, user,
+		// when
+		List<Expense> result = expenseRepository.findAllByUserIdForPeriod(user,
 			startDate.atStartOfDay(), endDate.atStartOfDay());
 
-		assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(expected);
+		assertThat(result).usingRecursiveComparison().isEqualTo(expected);
 	}
 
 	private List<Expense> setExpense(User user, Category userCategory, LocalDate startDate) {
