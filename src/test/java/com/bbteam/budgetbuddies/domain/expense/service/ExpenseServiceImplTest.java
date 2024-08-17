@@ -66,6 +66,7 @@ class ExpenseServiceImplTest {
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
 		Category userCategory = Mockito.spy(Category.builder().build());
+		given(userCategory.getId()).willReturn(-1L);
 
 		LocalDate requestMonth = LocalDate.of(2024, 07, 8);
 		Pageable requestPage = PageRequest.of(0, pageSize);
@@ -120,6 +121,7 @@ class ExpenseServiceImplTest {
 				.expenseId((long)-i)
 				.expenseDate(month.withDayOfMonth(i).atStartOfDay())
 				.amount(i * 100000L)
+				.categoryId(-1L)
 				.build());
 		}
 		return compactExpenses;
