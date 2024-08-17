@@ -18,6 +18,7 @@ public class CompactExpenseResponseDto {
 	private Long expenseId;
 	private String description;
 	private Long amount;
+	private Long categoryId;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
 	private LocalDateTime expenseDate;
