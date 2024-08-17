@@ -2,6 +2,7 @@ package com.bbteam.budgetbuddies.domain.expense.dto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MonthlyExpenseCompactResponseDto {
 	private LocalDate expenseMonth;
-	private int currentPage;
-	private boolean hasNext;
-	private List<CompactExpenseResponseDto> expenseList;
+	private Long totalConsumptionAmount;
+
+	private Map<String, List<CompactExpenseResponseDto>> expenses;
 }
