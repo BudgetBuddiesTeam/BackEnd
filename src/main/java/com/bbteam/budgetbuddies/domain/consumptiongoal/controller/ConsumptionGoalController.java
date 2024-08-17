@@ -27,13 +27,13 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/consumption-goal")
+@RequestMapping("/consumption-goals")
 public class ConsumptionGoalController implements ConsumptionGoalApi {
 
 	private final ConsumptionGoalService consumptionGoalService;
 
 	@Override
-	@GetMapping("/top-categories/top-goal/4")
+	@GetMapping("/categories/top-goals/top-4")
 	public ApiResponse<List<TopGoalCategoryResponseDto>> getTopConsumptionGoalCategories(
 		@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
@@ -44,7 +44,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ApiResponse.onSuccess(response);
 	}
 
-	@GetMapping("/top-categories/top-goal")
+	@GetMapping("/categories/top-goals")
 	public ApiResponse<List<AllConsumptionCategoryResponseDto>> getAllConsumptionGoalCategories(
 		@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
@@ -84,7 +84,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 			.body(consumptionGoalService.updateConsumptionGoals(userId, consumptionGoalListRequestDto));
 	}
 
-	@GetMapping("/top-categories/top-consumption/3")
+	@GetMapping("/categories/top-consumptions/top-3")
 	public ApiResponse<List<TopCategoryConsumptionDto>> getTopConsumptionCategories(
 		@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
@@ -95,7 +95,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ApiResponse.onSuccess(response);
 	}
 
-	@GetMapping("/top-categories/top-consumption")
+	@GetMapping("/categories/top-consumptions")
 	public ApiResponse<List<AllConsumptionCategoryResponseDto>> getAllConsumptionCategories(
 		@RequestParam(name = "userId") Long userId,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
@@ -106,8 +106,9 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ApiResponse.onSuccess(response);
 	}
 
-	@GetMapping("/top-categories/top-consumption/{userId}")
-	public ApiResponse<ConsumptionAnalysisResponseDto> getTopCategoryAndConsumptionAmount(@PathVariable Long userId) {
+	@GetMapping("/category/top-goals")
+	public ApiResponse<ConsumptionAnalysisResponseDto> getTopCategoryAndConsumptionAmount(
+		@RequestParam(name = "userId") Long userId) {
 		ConsumptionAnalysisResponseDto response = consumptionGoalService.getTopCategoryAndConsumptionAmount(userId);
 		return ApiResponse.onSuccess(response);
 	}
