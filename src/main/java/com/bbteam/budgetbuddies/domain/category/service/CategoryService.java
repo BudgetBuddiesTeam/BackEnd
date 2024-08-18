@@ -15,5 +15,7 @@ public interface CategoryService {
 	List<CategoryResponseDTO> getUserCategories(Long userId);
 
 	Category handleCategoryChange(Expense expense, ExpenseUpdateRequestDto request, User user);
+
+	void deleteCategory(Long id, Long userId);
 }
 

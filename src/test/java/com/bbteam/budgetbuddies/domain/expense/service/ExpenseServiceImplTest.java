@@ -6,8 +6,8 @@ import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +19,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
@@ -58,73 +54,67 @@ class ExpenseServiceImplTest {
 	}
 
 	@Test
-	@DisplayName("getMonthlyExpense : 성공")
+	@DisplayName("월별 소비 조회 소비를 d일 N요일로 묶어서 반환")
 	void getMonthlyExpense_Success() {
 		// given
-		final int pageSize = 5;
-
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
 		Category userCategory = Mockito.spy(Category.builder().build());
 		given(userCategory.getId()).willReturn(-1L);
 
-		LocalDate requestMonth = LocalDate.of(2024, 07, 8);
-		Pageable requestPage = PageRequest.of(0, pageSize);
+		LocalDate requestMonth = LocalDate.of(2024, 7, 8);
 
-		List<Expense> expenses = generateExpenseList(requestMonth, user, userCategory, pageSize);
+		List<Expense> expenses = generateExpenseList(requestMonth, user, userCategory);
 
-		Slice<Expense> expenseSlice = new SliceImpl<>(expenses, requestPage, false);
-		given(expenseRepository.findAllByUserIdForPeriod(any(Pageable.class), any(User.class), any(LocalDateTime.class),
-			any(LocalDateTime.class))).willReturn(expenseSlice);
+		given(expenseRepository.findAllByUserIdForPeriod(any(User.class), any(LocalDateTime.class),
+			any(LocalDateTime.class))).willReturn(expenses);
 
-		MonthlyExpenseCompactResponseDto expected = generateExpectation(requestMonth, pageSize);
+		MonthlyExpenseCompactResponseDto expected =
+			MonthlyExpenseCompactResponseDto.builder()
+				.expenseMonth(LocalDate.of(2024, 07, 01))
+				.totalConsumptionAmount(300_000L)
+				.expenses(Map.of(
+					"2일 화요일", List.of(CompactExpenseResponseDto.builder()
+						.amount(200_000L)
+						.description("User 소비")
+						.expenseId(-2L)
+						.categoryId(userCategory.getId())
+						.build()),
+					"1일 월요일", List.of(CompactExpenseResponseDto.builder()
+						.amount(100_000L)
+						.description("User 소비")
+						.expenseId(-1L)
+						.categoryId(userCategory.getId())
+						.build())))
+				.build();
 
 		// when
-		MonthlyExpenseCompactResponseDto result = expenseService.getMonthlyExpense(requestPage, user.getId(),
-			requestMonth);
+		MonthlyExpenseCompactResponseDto result = expenseService.getMonthlyExpense(user.getId(), requestMonth);
 
 		// then
 		assertThat(result).usingRecursiveComparison().isEqualTo(expected);
 	}
 
-	private List<Expense> generateExpenseList(LocalDate month, User user, Category userCategory, int repeat) {
-		List<Expense> expenses = new ArrayList<>();
-		for (int i = repeat; i > 0; i--) {
-			Expense expense = Mockito.spy(Expense.builder()
-				.amount(i * 100000L)
-				.description("User 소비" + i)
-				.expenseDate(month.withDayOfMonth(i).atStartOfDay())
-				.user(user)
-				.category(userCategory)
-				.build());
-			given(expense.getId()).willReturn((long)-i);
+	private List<Expense> generateExpenseList(LocalDate month, User user, Category userCategory) {
+		Expense e1 = Mockito.spy(Expense.builder()
+			.amount(100_000L)
+			.description("User 소비")
+			.expenseDate(month.withDayOfMonth(1).atStartOfDay())
+			.user(user)
+			.category(userCategory)
+			.build());
+		given(e1.getId()).willReturn((-1L));
 
-			expenses.add(expense);
-		}
-		return expenses;
-	}
+		Expense e2 = Mockito.spy(Expense.builder()
+			.amount(200_000L)
+			.description("User 소비")
+			.expenseDate(month.withDayOfMonth(2).atStartOfDay())
+			.user(user)
+			.category(userCategory)
+			.build());
+		given(e2.getId()).willReturn((-2L));
 
-	private MonthlyExpenseCompactResponseDto generateExpectation(LocalDate month, int count) {
-		return MonthlyExpenseCompactResponseDto.builder()
-			.expenseMonth(month.withDayOfMonth(1))
-			.hasNext(false)
-			.currentPage(0)
-			.expenseList(generateCompactExpenseResponseList(month, count))
-			.build();
-	}
-
-	private List<CompactExpenseResponseDto> generateCompactExpenseResponseList(LocalDate month, int count) {
-		List<CompactExpenseResponseDto> compactExpenses = new ArrayList<>();
-		for (int i = count; i > 0; i--) {
-			compactExpenses.add(CompactExpenseResponseDto.builder()
-				.description("User 소비" + i)
-				.expenseId((long)-i)
-				.expenseDate(month.withDayOfMonth(i).atStartOfDay())
-				.amount(i * 100000L)
-				.categoryId(-1L)
-				.build());
-		}
-		return compactExpenses;
+		return List.of(e1, e2);
 	}
 
 	@Test

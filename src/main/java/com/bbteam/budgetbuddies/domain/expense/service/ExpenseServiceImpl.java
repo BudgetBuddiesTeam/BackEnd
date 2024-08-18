@@ -1,16 +1,14 @@
 package com.bbteam.budgetbuddies.domain.expense.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.category.service.CategoryService;
-
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
 import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
@@ -38,16 +36,17 @@ public class ExpenseServiceImpl implements ExpenseService {
 	@Override
 	public ExpenseResponseDto createExpense(ExpenseRequestDto expenseRequestDto) {
 		User user = userRepository.findById(expenseRequestDto.getUserId())
-				.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+			.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 		Category category = categoryRepository.findById(expenseRequestDto.getCategoryId())
-				.orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+			.orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
 
         /*
         case 1)
          - 카테고리 ID가 1~10 사이 && default => DB의 immutable 필드인 default category
          - DB 관리 이슈로 category에 default 카테고리의 중복이 발생할 경우, 이를 대비하기 위해 1<= id <= 10 조건도 추가
          */
-		if (expenseRequestDto.getCategoryId() >= 1 && expenseRequestDto.getCategoryId() <= 10 && category.getIsDefault()) {
+		if (expenseRequestDto.getCategoryId() >= 1 && expenseRequestDto.getCategoryId() <= 10
+			&& category.getIsDefault()) {
 			//  category.setUser(user);
 			// default category
 		}
@@ -57,8 +56,7 @@ public class ExpenseServiceImpl implements ExpenseService {
          */
 		else if (!category.getIsDefault() && category.getUser().getId().equals(expenseRequestDto.getUserId())) {
 			// custom category
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("User and category are not matched properly.");
 		}
 
@@ -96,11 +94,10 @@ public class ExpenseServiceImpl implements ExpenseService {
          */
 	}
 
-
 	@Override
 	public void deleteExpense(Long expenseId) {
 		Expense expense = expenseRepository.findById(expenseId)
-				.orElseThrow(() -> new IllegalArgumentException("Not found Expense"));
+			.orElseThrow(() -> new IllegalArgumentException("Not found Expense"));
 
 		Long userId = expense.getUser().getId();
 		Long categoryId = expense.getCategory().getId();
@@ -115,15 +112,14 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public MonthlyExpenseCompactResponseDto getMonthlyExpense(Pageable pageable, Long userId, LocalDate localDate) {
+	public MonthlyExpenseCompactResponseDto getMonthlyExpense(Long userId, LocalDate localDate) {
 		LocalDate startOfMonth = localDate.withDayOfMonth(1);
 		LocalDate endOfMonth = localDate.withDayOfMonth(startOfMonth.lengthOfMonth());
 
-
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
-		Slice<Expense> expenseSlice = expenseRepository.findAllByUserIdForPeriod(pageable, user,
-				startOfMonth.atStartOfDay(), endOfMonth.atStartOfDay());
+		List<Expense> expenseSlice = expenseRepository.findAllByUserIdForPeriod(user,
+			startOfMonth.atStartOfDay(), endOfMonth.atStartOfDay());
 
 		return expenseConverter.toMonthlyExpenseCompactResponseDto(expenseSlice, startOfMonth);
 	}
