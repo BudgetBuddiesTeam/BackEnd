@@ -8,7 +8,7 @@ import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
 
 public interface ExpenseService {
-	ExpenseResponseDto createExpense(ExpenseRequestDto expenseRequestDto);
+	ExpenseResponseDto createExpense(Long userId, ExpenseRequestDto expenseRequestDto);
 
 	MonthlyExpenseCompactResponseDto getMonthlyExpense(Long userId, LocalDate localDate);
 

@@ -34,8 +34,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 	private final ConsumptionGoalService consumptionGoalService;
 
 	@Override
-	public ExpenseResponseDto createExpense(ExpenseRequestDto expenseRequestDto) {
-		User user = userRepository.findById(expenseRequestDto.getUserId())
+	public ExpenseResponseDto createExpense(Long userId, ExpenseRequestDto expenseRequestDto) {
+		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 		Category category = categoryRepository.findById(expenseRequestDto.getCategoryId())
 			.orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
@@ -54,27 +54,7 @@ public class ExpenseServiceImpl implements ExpenseService {
          Case 2)
          !default && 키테고리 테이블의 UserId 컬럼의 값이 나와 맞으면 (= custom category)
          */
-		else if (!category.getIsDefault() && category.getUser().getId().equals(expenseRequestDto.getUserId())) {
-			// custom category
-		} else {
-			throw new IllegalArgumentException("User and category are not matched properly.");
-		}
-
-        /*
-        case 1)
-         - 카테고리 ID가 1~10 사이 && default => DB의 immutable 필드인 default category
-         - DB 관리 이슈로 category에 default 카테고리의 중복이 발생할 경우, 이를 대비하기 위해 1<= id <= 10 조건도 추가
-         */
-		if (expenseRequestDto.getCategoryId() >= 1 && expenseRequestDto.getCategoryId() <= 10
-			&& category.getIsDefault()) {
-			//  category.setUser(user);
-			// default category
-		}
-        /*
-         Case 2)
-         !default && 키테고리 테이블의 UserId 컬럼의 값이 나와 맞으면 (= custom cateogory)
-         */
-		else if (!category.getIsDefault() && category.getUser().getId().equals(expenseRequestDto.getUserId())) {
+		else if (!category.getIsDefault() && category.getUser().getId().equals(userId)) {
 			// custom category
 		} else {
 			throw new IllegalArgumentException("User and category are not matched properly.");
@@ -84,7 +64,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		expenseRepository.save(expense);
 
 		// 소비 목표 업데이트
-		consumptionGoalService.updateConsumeAmount(expenseRequestDto.getUserId(), expenseRequestDto.getCategoryId(),
+		consumptionGoalService.updateConsumeAmount(userId, expenseRequestDto.getCategoryId(),
 			expenseRequestDto.getAmount());
 
 		return expenseConverter.toExpenseResponseDto(expense);
