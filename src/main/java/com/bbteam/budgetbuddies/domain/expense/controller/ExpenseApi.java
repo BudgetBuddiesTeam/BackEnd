@@ -32,7 +32,9 @@ public interface ExpenseApi {
 		@ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
 		@ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))})
 	ResponseEntity<ExpenseResponseDto> createExpense(
-		@Parameter(description = "user_id, category_id, amount, description, expenseDate") ExpenseRequestDto expenseRequestDto);
+			@Parameter(description = "user_id") @PathVariable Long userId,
+			@Parameter(description = "category_id, amount, description, expenseDate") @RequestBody ExpenseRequestDto expenseRequestDto
+	);
 
 	@Operation(summary = "월별 소비 조회", description = "무한 스크롤을 통한 조회로 예상하여 Slice를 통해서 조회")
 	@ApiResponses({

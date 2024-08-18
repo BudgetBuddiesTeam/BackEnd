@@ -30,11 +30,11 @@ public class ExpenseController implements ExpenseApi {
 	private final ExpenseService expenseService;
 
 	@Override
-	@PostMapping("/add")
+	@PostMapping("/add/{userId}")
 	public ResponseEntity<ExpenseResponseDto> createExpense(
-		@Parameter(description = "user_id, category_id, amount, description, expenseDate")
-		@RequestBody ExpenseRequestDto expenseRequestDto) {
-		ExpenseResponseDto response = expenseService.createExpense(expenseRequestDto);
+			@Parameter(description = "user_id") @PathVariable Long userId,
+			@Parameter(description = "category_id, amount, description, expenseDate") @RequestBody ExpenseRequestDto expenseRequestDto) {
+		ExpenseResponseDto response = expenseService.createExpense(userId, expenseRequestDto);
 		return ResponseEntity.ok(response);
 	}
 
