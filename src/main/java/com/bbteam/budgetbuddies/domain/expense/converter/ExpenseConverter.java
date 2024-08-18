@@ -1,9 +1,13 @@
 package com.bbteam.budgetbuddies.domain.expense.converter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
@@ -39,18 +43,24 @@ public class ExpenseConverter {
 			.build();
 	}
 
-	public MonthlyExpenseCompactResponseDto toMonthlyExpenseCompactResponseDto(Slice<Expense> expenseSlice,
+	public MonthlyExpenseCompactResponseDto toMonthlyExpenseCompactResponseDto(List<Expense> expenseList,
 		LocalDate startOfMonth) {
-		List<CompactExpenseResponseDto> compactResponseList = expenseSlice.getContent().stream()
-			.map(this::toExpenseCompactResponseDto).toList();
+		Long totalConsumptionAmount = expenseList.stream().mapToLong(Expense::getAmount).sum();
 
-		return MonthlyExpenseCompactResponseDto
-			.builder()
+		Map<String, List<CompactExpenseResponseDto>> expenses = expenseList.stream().collect(
+			Collectors.groupingBy(e -> this.convertDayToKorean(e.getExpenseDate()),
+				Collectors.mapping(this::toExpenseCompactResponseDto, Collectors.toList())));
+
+		return MonthlyExpenseCompactResponseDto.builder()
 			.expenseMonth(startOfMonth)
-			.currentPage(expenseSlice.getPageable().getPageNumber())
-			.hasNext(expenseSlice.hasNext())
-			.expenseList(compactResponseList)
+			.totalConsumptionAmount(totalConsumptionAmount)
+			.expenses(expenses)
 			.build();
+	}
+
+	private String convertDayToKorean(LocalDateTime localDateTime) {
+		return localDateTime.getDayOfMonth() + "일 " + localDateTime.getDayOfWeek()
+			.getDisplayName(TextStyle.FULL, Locale.KOREAN);
 	}
 
 	private CompactExpenseResponseDto toExpenseCompactResponseDto(Expense expense) {
@@ -58,7 +68,6 @@ public class ExpenseConverter {
 			.expenseId(expense.getId())
 			.description(expense.getDescription())
 			.amount(expense.getAmount())
-			.expenseDate(expense.getExpenseDate())
 			.categoryId(expense.getCategory().getId())
 			.build();
 	}
