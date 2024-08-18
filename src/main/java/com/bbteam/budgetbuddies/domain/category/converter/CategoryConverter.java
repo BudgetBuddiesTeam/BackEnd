@@ -14,6 +14,7 @@ public class CategoryConverter {
                 .name(categoryRequestDTO.getName())
                 .isDefault(categoryRequestDTO.getIsDefault())
                 .user(user)
+                .deleted(false)
                 .build();
     }
 
