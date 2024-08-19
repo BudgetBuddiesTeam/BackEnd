@@ -10,11 +10,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -90,7 +90,7 @@ public interface CommentControllerApi {
     @Parameters({
             @Parameter(name = "commentId", description = "조회할 댓글 id 입니다. pathVariable")
     })
-    ApiResponse<CommentResponseDto.SupportInfoCommentResponseDto> findSupportOne(@RequestParam("commentId")Long commentId);
+    ApiResponse<CommentResponseDto.SupportInfoCommentResponseDto> findSupportOne(@PathVariable("commentId") @ExistComment Long commentId);
 
     @Operation(summary = "[User] SupportInfo의 댓글 변경 API", description = "특정 댓글을 변경하는 API입니다.")
     @ApiResponses({
@@ -102,7 +102,7 @@ public interface CommentControllerApi {
 
     })
     ApiResponse<CommentResponseDto.SupportInfoCommentResponseDto> modifySupportOne(
-            @RequestBody CommentRequestDto.CommentModifyRequestDto dto);
+            @RequestBody @Valid CommentRequestDto.CommentModifyRequestDto dto);
 
 
     @Operation(summary = "[User] DiscountInfo의 특정 댓글 요청 API", description = "특정 댓글을 요청하는 API입니다.")
@@ -112,7 +112,7 @@ public interface CommentControllerApi {
     @Parameters({
             @Parameter(name = "commentId", description = "조회할 댓글 id 입니다. pathVariable")
     })
-    ApiResponse<CommentResponseDto.DiscountInfoCommentResponseDto> findDiscountOne(@RequestParam("commentId")Long commentId);
+    ApiResponse<CommentResponseDto.DiscountInfoCommentResponseDto> findDiscountOne(@PathVariable("commentId") @ExistComment Long commentId);
 
     @Operation(summary = "[User] DiscountInfo의 댓글 변경 API", description = "특정 댓글을 변경하는 API입니다.")
     @ApiResponses({
@@ -124,6 +124,6 @@ public interface CommentControllerApi {
 
     })
     ApiResponse<CommentResponseDto.DiscountInfoCommentResponseDto> modifyDiscountOne(
-            @RequestBody CommentRequestDto.CommentModifyRequestDto dto);
+            @RequestBody @Valid CommentRequestDto.CommentModifyRequestDto dto);
 
 }

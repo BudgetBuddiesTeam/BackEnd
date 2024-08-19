@@ -6,6 +6,7 @@ import com.bbteam.budgetbuddies.domain.comment.dto.CommentResponseDto;
 import com.bbteam.budgetbuddies.domain.comment.service.CommentService;
 import com.bbteam.budgetbuddies.domain.comment.validation.ExistComment;
 import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -75,27 +76,27 @@ public class CommentController implements CommentControllerApi {
     }
 
     @GetMapping("/supports/comments/getOne/{commentId}")
-    public ApiResponse<CommentResponseDto.SupportInfoCommentResponseDto> findSupportOne(@PathVariable("commentId")Long commentId) {
+    public ApiResponse<CommentResponseDto.SupportInfoCommentResponseDto> findSupportOne(@PathVariable("commentId") @ExistComment Long commentId) {
         CommentResponseDto.SupportInfoCommentResponseDto result = supportCommentService.findCommentOne(commentId);
         return ApiResponse.onSuccess(result);
     }
 
     @PutMapping("/supports/comments/modify")
     public ApiResponse<CommentResponseDto.SupportInfoCommentResponseDto> modifySupportOne(
-            @RequestBody CommentRequestDto.CommentModifyRequestDto dto) {
+            @RequestBody @Valid CommentRequestDto.CommentModifyRequestDto dto) {
         CommentResponseDto.SupportInfoCommentResponseDto result = supportCommentService.modifyComment(dto);
         return ApiResponse.onSuccess(result);
     }
 
     @GetMapping("/discounts/comments/getOne/{commentId}")
-    public ApiResponse<CommentResponseDto.DiscountInfoCommentResponseDto> findDiscountOne(@PathVariable("commentId")Long commentId) {
+    public ApiResponse<CommentResponseDto.DiscountInfoCommentResponseDto> findDiscountOne(@PathVariable("commentId") @ExistComment Long commentId) {
         CommentResponseDto.DiscountInfoCommentResponseDto result = discountCommentService.findCommentOne(commentId);
         return ApiResponse.onSuccess(result);
     }
 
     @PutMapping("/discounts/comments/modify")
     public ApiResponse<CommentResponseDto.DiscountInfoCommentResponseDto> modifyDiscountOne(
-            @RequestBody CommentRequestDto.CommentModifyRequestDto dto) {
+            @RequestBody @Valid CommentRequestDto.CommentModifyRequestDto dto) {
         CommentResponseDto.DiscountInfoCommentResponseDto result = discountCommentService.modifyComment(dto);
         return ApiResponse.onSuccess(result);
     }
