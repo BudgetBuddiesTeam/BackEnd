@@ -1,5 +1,6 @@
 package com.bbteam.budgetbuddies.domain.comment.dto;
 
+import com.bbteam.budgetbuddies.domain.comment.validation.ExistComment;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -23,6 +24,8 @@ public class CommentRequestDto {
     @Builder
     public static class CommentModifyRequestDto {
         private String content;
+
+        @ExistComment
         private Long commentId;
     }
 }

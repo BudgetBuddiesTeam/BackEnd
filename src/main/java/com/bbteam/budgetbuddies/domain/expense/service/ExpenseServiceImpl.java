@@ -14,7 +14,7 @@ import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
@@ -92,7 +92,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public MonthlyExpenseCompactResponseDto getMonthlyExpense(Long userId, LocalDate localDate) {
+	public MonthlyExpenseResponseDto getMonthlyExpense(Long userId, LocalDate localDate) {
 		LocalDate startOfMonth = localDate.withDayOfMonth(1);
 		LocalDate endOfMonth = localDate.withDayOfMonth(startOfMonth.lengthOfMonth());
 
@@ -101,7 +101,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		List<Expense> expenseSlice = expenseRepository.findAllByUserIdForPeriod(user,
 			startOfMonth.atStartOfDay(), endOfMonth.atStartOfDay());
 
-		return expenseConverter.toMonthlyExpenseCompactResponseDto(expenseSlice, startOfMonth);
+		return expenseConverter.toMonthlyExpenseResponseDto(expenseSlice, startOfMonth);
 	}
 
 	@Override

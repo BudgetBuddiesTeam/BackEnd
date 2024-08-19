@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.service.ExpenseService;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -40,7 +40,7 @@ public class ExpenseController implements ExpenseApi {
 
 	@Override
 	@GetMapping("/{userId}")
-	public ResponseEntity<MonthlyExpenseCompactResponseDto> findExpensesForMonth(
+	public ResponseEntity<MonthlyExpenseResponseDto> findExpensesForMonth(
 		@PathVariable @Param("userId") Long userId,
 		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 

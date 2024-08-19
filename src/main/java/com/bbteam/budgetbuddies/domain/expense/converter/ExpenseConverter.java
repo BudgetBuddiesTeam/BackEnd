@@ -1,7 +1,6 @@
 package com.bbteam.budgetbuddies.domain.expense.converter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -12,9 +11,10 @@ import org.springframework.stereotype.Component;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.expense.dto.CompactExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.DailyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 
@@ -43,24 +43,33 @@ public class ExpenseConverter {
 			.build();
 	}
 
-	public MonthlyExpenseCompactResponseDto toMonthlyExpenseCompactResponseDto(List<Expense> expenseList,
-		LocalDate startOfMonth) {
+	public MonthlyExpenseResponseDto toMonthlyExpenseResponseDto(List<Expense> expenseList, LocalDate startOfMonth) {
 		Long totalConsumptionAmount = expenseList.stream().mapToLong(Expense::getAmount).sum();
 
-		Map<String, List<CompactExpenseResponseDto>> expenses = expenseList.stream().collect(
-			Collectors.groupingBy(e -> this.convertDayToKorean(e.getExpenseDate()),
-				Collectors.mapping(this::toExpenseCompactResponseDto, Collectors.toList())));
+		List<DailyExpenseResponseDto> dailyExpenses = toDailyExpenseResponseDto(expenseList);
 
-		return MonthlyExpenseCompactResponseDto.builder()
+		return MonthlyExpenseResponseDto.builder()
 			.expenseMonth(startOfMonth)
 			.totalConsumptionAmount(totalConsumptionAmount)
-			.expenses(expenses)
+			.dailyExpenses(dailyExpenses)
 			.build();
 	}
 
-	private String convertDayToKorean(LocalDateTime localDateTime) {
-		return localDateTime.getDayOfMonth() + "일 " + localDateTime.getDayOfWeek()
-			.getDisplayName(TextStyle.FULL, Locale.KOREAN);
+	private List<DailyExpenseResponseDto> toDailyExpenseResponseDto(List<Expense> expenseList) {
+		Map<LocalDate, List<CompactExpenseResponseDto>> expenses = expenseList.stream()
+			.collect(Collectors.groupingBy(e -> e.getExpenseDate().toLocalDate(),
+				Collectors.mapping(this::toExpenseCompactResponseDto, Collectors.toList())));
+
+		return expenses.keySet().stream().map(k -> this.generateDailyExpenseResponseDto(k, expenses.get(k))).toList();
+	}
+
+	private DailyExpenseResponseDto generateDailyExpenseResponseDto(LocalDate date,
+		List<CompactExpenseResponseDto> expenses) {
+		return DailyExpenseResponseDto.builder()
+			.daysOfMonth(date.getDayOfMonth())
+			.daysOfTheWeek(date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.KOREAN))
+			.expenses(expenses)
+			.build();
 	}
 
 	private CompactExpenseResponseDto toExpenseCompactResponseDto(Expense expense) {
