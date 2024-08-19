@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +23,7 @@ import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
 import com.bbteam.budgetbuddies.domain.expense.dto.CompactExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.DailyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
@@ -54,7 +54,7 @@ class ExpenseServiceImplTest {
 	}
 
 	@Test
-	@DisplayName("월별 소비 조회 소비를 d일 N요일로 묶어서 반환")
+	@DisplayName("월별 소비 조회 소비를 DailyExpenseResponseDto로 반환")
 	void getMonthlyExpense_Success() {
 		// given
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
@@ -69,24 +69,29 @@ class ExpenseServiceImplTest {
 		given(expenseRepository.findAllByUserIdForPeriod(any(User.class), any(LocalDateTime.class),
 			any(LocalDateTime.class))).willReturn(expenses);
 
-		MonthlyExpenseResponseDto expected =
-			MonthlyExpenseResponseDto.builder()
-				.expenseMonth(LocalDate.of(2024, 07, 01))
-				.totalConsumptionAmount(300_000L)
-				.expenses(Map.of(
-					"2일 화요일", List.of(CompactExpenseResponseDto.builder()
-						.amount(200_000L)
-						.description("User 소비")
-						.expenseId(-2L)
-						.categoryId(userCategory.getId())
-						.build()),
-					"1일 월요일", List.of(CompactExpenseResponseDto.builder()
-						.amount(100_000L)
-						.description("User 소비")
-						.expenseId(-1L)
-						.categoryId(userCategory.getId())
-						.build())))
-				.build();
+		MonthlyExpenseResponseDto expected = MonthlyExpenseResponseDto.builder()
+			.expenseMonth(LocalDate.of(2024, 07, 01))
+			.totalConsumptionAmount(300_000L)
+			.dailyExpenses(List.of(DailyExpenseResponseDto.builder()
+				.daysOfMonth(2)
+				.daysOfTheWeek("화요일")
+				.expenses(List.of(CompactExpenseResponseDto.builder()
+					.amount(200_000L)
+					.description("User 소비")
+					.expenseId(-2L)
+					.categoryId(userCategory.getId())
+					.build()))
+				.build(), DailyExpenseResponseDto.builder()
+				.daysOfMonth(1)
+				.daysOfTheWeek("월요일")
+				.expenses(List.of(CompactExpenseResponseDto.builder()
+					.amount(100_000L)
+					.description("User 소비")
+					.expenseId(-1L)
+					.categoryId(userCategory.getId())
+					.build()))
+				.build()))
+			.build();
 
 		// when
 		MonthlyExpenseResponseDto result = expenseService.getMonthlyExpense(user.getId(), requestMonth);
