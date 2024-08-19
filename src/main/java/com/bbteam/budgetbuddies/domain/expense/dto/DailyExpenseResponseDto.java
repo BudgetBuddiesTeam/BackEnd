@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class DailyExpenseResponseDto {
-	private String daysOfMonth;
+	private Integer daysOfMonth;
 	private String daysOfTheWeek;
 	private List<CompactExpenseResponseDto> expenses;
 }
