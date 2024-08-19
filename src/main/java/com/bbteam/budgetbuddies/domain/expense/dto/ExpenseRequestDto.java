@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExpenseRequestDto {
-	private Long userId;
 	private Long categoryId;
 	private Long amount;
 	private String description;
