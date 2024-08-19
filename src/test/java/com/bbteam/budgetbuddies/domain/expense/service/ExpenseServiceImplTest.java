@@ -25,7 +25,7 @@ import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
 import com.bbteam.budgetbuddies.domain.expense.dto.CompactExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
@@ -69,8 +69,8 @@ class ExpenseServiceImplTest {
 		given(expenseRepository.findAllByUserIdForPeriod(any(User.class), any(LocalDateTime.class),
 			any(LocalDateTime.class))).willReturn(expenses);
 
-		MonthlyExpenseCompactResponseDto expected =
-			MonthlyExpenseCompactResponseDto.builder()
+		MonthlyExpenseResponseDto expected =
+			MonthlyExpenseResponseDto.builder()
 				.expenseMonth(LocalDate.of(2024, 07, 01))
 				.totalConsumptionAmount(300_000L)
 				.expenses(Map.of(
@@ -89,7 +89,7 @@ class ExpenseServiceImplTest {
 				.build();
 
 		// when
-		MonthlyExpenseCompactResponseDto result = expenseService.getMonthlyExpense(user.getId(), requestMonth);
+		MonthlyExpenseResponseDto result = expenseService.getMonthlyExpense(user.getId(), requestMonth);
 
 		// then
 		assertThat(result).usingRecursiveComparison().isEqualTo(expected);

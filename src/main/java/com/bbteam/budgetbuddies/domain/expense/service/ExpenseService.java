@@ -5,12 +5,12 @@ import java.time.LocalDate;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseCompactResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 
 public interface ExpenseService {
 	ExpenseResponseDto createExpense(Long userId, ExpenseRequestDto expenseRequestDto);
 
-	MonthlyExpenseCompactResponseDto getMonthlyExpense(Long userId, LocalDate localDate);
+	MonthlyExpenseResponseDto getMonthlyExpense(Long userId, LocalDate localDate);
 
 	ExpenseResponseDto findExpenseResponseFromUserIdAndExpenseId(Long userId, Long expenseId);
 
