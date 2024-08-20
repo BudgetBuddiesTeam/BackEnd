@@ -89,27 +89,28 @@ public class CategoryServiceImpl implements CategoryService {
 				throw new IllegalArgumentException("Default categories cannot be deleted.");
 			}
 
+			// 삭제되지 않은 Expense 조회
 			List<Expense> expenses = expenseRepository.findByCategoryIdAndUserId(categoryId, userId);
-			long totalAmount = expenses.stream().mapToLong(Expense::getAmount).sum();
+			long totalAmount = expenses.stream()
+					.mapToLong(Expense::getAmount)
+					.sum();
 
-			Category etcCategory = categoryRepository.findById(10L)
-					.orElseThrow(() -> new IllegalArgumentException("etc category not found"));
-
-			expenses.forEach(expense -> {
-				expense.setCategory(etcCategory);
-				expenseRepository.save(expense);
-			});
-
+			// category_id = 10(기타 카테고리)의 소비 목표 업데이트 (custom 카테고리 삭제로 인한 소비 내역은 삭제되지 않고 기타 카테고리로..)
 			ConsumptionGoal goal = consumptionGoalRepository.findByCategoryIdAndUserId(10L, userId)
 					.orElseThrow(() -> new IllegalArgumentException("No consumption goal found for category_id 10."));
 			goal.setConsumeAmount(goal.getConsumeAmount() + totalAmount);
 			consumptionGoalRepository.save(goal);
 
-			consumptionGoalRepository.findByCategoryIdAndUserId(categoryId, userId).ifPresent(consumptionGoal -> {
-				consumptionGoal.setDeleted(true);
-				consumptionGoalRepository.save(consumptionGoal);
+			// 해당 카테고리에 부합하는 Expense들을 etc 카테고리로 이동
+			expenses.forEach(expense -> {
+				expense.setCategory(goal.getCategory());
+				expenseRepository.save(expense);
 			});
 
+			// 해당 카테고리의 ConsumptionGoal 삭제
+			consumptionGoalRepository.softDeleteByCategoryIdAndUserId(categoryId, userId);
+
+			// 카테고리 삭제
 			category.setDeleted(true);
 			categoryRepository.save(category);
 		});
