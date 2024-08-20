@@ -16,10 +16,10 @@ public interface SupportInfoService {
 
     SupportResponseDto toggleLike(Long userId, Long supportInfoId);
 
-    SupportResponseDto updateSupportInfo(Long userId, SupportRequest.UpdateSupportDto supportRequestDto);
+    SupportResponseDto updateSupportInfo(SupportRequest.UpdateSupportDto supportRequestDto);
 
-    String deleteSupportInfo(Long userId, Long supportInfoId);
+    String deleteSupportInfo(Long supportInfoId);
 
-    SupportResponseDto getSupportInfoById(Long userId, Long supportInfoId);
+    SupportResponseDto getSupportInfoById(Long supportInfoId);
 
 }

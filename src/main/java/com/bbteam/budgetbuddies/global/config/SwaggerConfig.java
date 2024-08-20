@@ -13,6 +13,7 @@ public class SwaggerConfig {
 	@Bean
 	public OpenAPI openAPI() {
 		return new OpenAPI()
+			.openapi("3.0.0")
 			.components(new Components())
 			.info(apiInfo());
 	}

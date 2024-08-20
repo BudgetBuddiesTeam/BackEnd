@@ -117,17 +117,13 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
     @Transactional
     @Override
-    public SupportResponseDto updateSupportInfo(Long userId, SupportRequest.UpdateSupportDto supportRequestDto) {
+    public SupportResponseDto updateSupportInfo(SupportRequest.UpdateSupportDto supportRequestDto) {
         /**
-         * 1. 사용자 조회 -> 없으면 에러
-         * 2. 지원정보 조회 -> 없으면 에러
-         * 3. 변경사항 업데이트
-         * 4. 변경사항 저장
-         * 5. Entity -> ResponseDto로 변환 후 리턴
+         * 1. 지원정보 조회 -> 없으면 에러
+         * 2. 변경사항 업데이트
+         * 3. 변경사항 저장
+         * 4. Entity -> ResponseDto로 변환 후 리턴
          */
-
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         SupportInfo supportInfo = supportInfoRepository.findById(supportRequestDto.getId())
             .orElseThrow(() -> new IllegalArgumentException("SupportInfo not found"));
@@ -141,16 +137,12 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
     @Transactional
     @Override
-    public String deleteSupportInfo(Long userId, Long supportInfoId) {
+    public String deleteSupportInfo(Long supportInfoId) {
         /**
-         * 1. 사용자 조회 -> 없으면 에러
-         * 2. 지원정보 조회 -> 없으면 에러
-         * 3. Entity 삭제
-         * 4. 성공여부 반환
+         * 1. 지원정보 조회 -> 없으면 에러
+         * 2. Entity 삭제
+         * 3. 성공여부 반환
          */
-
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         SupportInfo supportInfo = supportInfoRepository.findById(supportInfoId)
             .orElseThrow(() -> new IllegalArgumentException("SupportInfo not found"));
@@ -163,16 +155,12 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
     @Transactional
     @Override
-    public SupportResponseDto getSupportInfoById(Long userId, Long supportInfoId) {
+    public SupportResponseDto getSupportInfoById(Long supportInfoId) {
         /**
-         * 1. 사용자 조회 -> 없으면 에러
-         * 2. 지원정보 조회 -> 없으면 에러
-         * 3. Entity 조회
-         * 4. Entity -> ResponseDto로 변환 후 리턴
+         * 1. 지원정보 조회 -> 없으면 에러
+         * 2. Entity 조회
+         * 3. Entity -> ResponseDto로 변환 후 리턴
          */
-
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         SupportInfo supportInfo = supportInfoRepository.findById(supportInfoId)
             .orElseThrow(() -> new IllegalArgumentException("SupportInfo not found"));
