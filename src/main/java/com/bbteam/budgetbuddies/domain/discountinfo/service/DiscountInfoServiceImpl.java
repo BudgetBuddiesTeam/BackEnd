@@ -117,17 +117,14 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
 
     @Transactional
     @Override
-    public DiscountResponseDto updateDiscountInfo(Long userId, DiscountRequest.UpdateDiscountDto discountRequestDto) {
+    public DiscountResponseDto updateDiscountInfo(DiscountRequest.UpdateDiscountDto discountRequestDto) {
         /**
-         * 1. 사용자 조회 -> 없으면 에러
-         * 2. 할인정보 조회 -> 없으면 에러
-         * 3. 변경사항 업데이트
-         * 4. 변경사항 저장
-         * 5. Entity -> ResponseDto로 변환 후 리턴
+         * 1. 할인정보 조회 -> 없으면 에러
+         * 2. 변경사항 업데이트
+         * 3. 변경사항 저장
+         * 4. Entity -> ResponseDto로 변환 후 리턴
          */
 
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         DiscountInfo discountInfo = discountInfoRepository.findById(discountRequestDto.getId())
             .orElseThrow(() -> new IllegalArgumentException("DiscountInfo not found"));
@@ -141,16 +138,12 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
 
     @Transactional
     @Override
-    public String deleteDiscountInfo(Long userId, Long discountInfoId) {
+    public String deleteDiscountInfo(Long discountInfoId) {
         /**
-         * 1. 사용자 조회 -> 없으면 에러
-         * 2. 할인정보 조회 -> 없으면 에러
-         * 3. Entity 삭제
-         * 4. 성공여부 반환
+         * 1. 할인정보 조회 -> 없으면 에러
+         * 2. Entity 삭제
+         * 3. 성공여부 반환
          */
-
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         DiscountInfo discountInfo = discountInfoRepository.findById(discountInfoId)
             .orElseThrow(() -> new IllegalArgumentException("DiscountInfo not found"));
@@ -163,16 +156,12 @@ public class DiscountInfoServiceImpl implements DiscountInfoService {
 
     @Transactional
     @Override
-    public DiscountResponseDto getDiscountInfoById(Long userId, Long discountInfoId) {
+    public DiscountResponseDto getDiscountInfoById(Long discountInfoId) {
         /**
-         * 1. 사용자 조회 -> 없으면 에러
-         * 2. 할인정보 조회 -> 없으면 에러
-         * 3. Entity 조회
-         * 4. Entity -> ResponseDto로 변환 후 리턴
+         * 1. 할인정보 조회 -> 없으면 에러
+         * 2. Entity 조회
+         * 3. Entity -> ResponseDto로 변환 후 리턴
          */
-
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         DiscountInfo discountInfo = discountInfoRepository.findById(discountInfoId)
             .orElseThrow(() -> new IllegalArgumentException("DiscountInfo not found"));
