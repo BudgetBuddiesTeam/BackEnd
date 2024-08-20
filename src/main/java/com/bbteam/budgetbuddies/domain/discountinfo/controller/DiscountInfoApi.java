@@ -3,6 +3,7 @@ package com.bbteam.budgetbuddies.domain.discountinfo.controller;
 import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequest;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
+import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -60,11 +61,11 @@ public interface DiscountInfoApi {
         @Parameter(name = "discountInfoId", description = "좋아요를 누를 할인정보의 id입니다."),
     })
     ApiResponse<DiscountResponseDto> likeDiscountInfo(
-        @RequestParam Long userId,
+        @RequestParam @ExistUser Long userId,
         @PathVariable Long discountInfoId
     );
 
-    @Operation(summary = "[ADMIN] 특정 할인정보 수정하기 API", description = "특정 할인정보를 수정하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @Operation(summary = "[ADMIN] 특정 할인정보 수정하기 API", description = "특정 할인정보를 수정하는 API입니다.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -72,15 +73,12 @@ public interface DiscountInfoApi {
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
-        @Parameter(name = "userId", description = "수정할 사용자의 id입니다."),
-//        @Parameter(name = "discountRequestDto", description = "수정할 할인 정보의 전체 내용입니다."),
     })
     ApiResponse<DiscountResponseDto> updateDiscountInfo(
-        @RequestParam Long userId,
         @RequestBody DiscountRequest.UpdateDiscountDto discountRequestDto
     );
 
-    @Operation(summary = "[ADMIN] 특정 할인정보 삭제하기 API", description = "특정 할인정보를 삭제하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @Operation(summary = "[ADMIN] 특정 할인정보 삭제하기 API", description = "ID를 통해 특정 할인정보를 삭제하는 API입니다.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -88,15 +86,13 @@ public interface DiscountInfoApi {
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
-        @Parameter(name = "userId", description = "삭제할 사용자의 id입니다."),
         @Parameter(name = "discountInfoId", description = "삭제할 할인 정보의 id입니다."),
     })
     ApiResponse<String> deleteDiscountInfo(
-        @RequestParam Long userId,
         @PathVariable Long discountInfoId
     );
 
-    @Operation(summary = "[ADMIN] 특정 할인정보 가져오기 API", description = "ID를 통해 특정 할인정보를 가져오는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @Operation(summary = "[ADMIN] 특정 할인정보 가져오기 API", description = "ID를 통해 특정 할인정보를 가져오는 API입니다.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -104,11 +100,9 @@ public interface DiscountInfoApi {
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
-        @Parameter(name = "userId", description = "조회할 사용자의 id입니다."),
         @Parameter(name = "discountInfoId", description = "조회할 할인 정보의 id입니다."),
     })
     ApiResponse<DiscountResponseDto> getDiscountInfo(
-        @RequestParam Long userId,
         @PathVariable Long discountInfoId
     );
 

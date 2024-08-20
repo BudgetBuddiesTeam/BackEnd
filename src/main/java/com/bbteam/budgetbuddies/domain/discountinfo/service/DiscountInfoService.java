@@ -16,10 +16,10 @@ public interface DiscountInfoService {
 
     DiscountResponseDto toggleLike(Long userId, Long discountInfoId);
 
-    DiscountResponseDto updateDiscountInfo(Long userId, DiscountRequest.UpdateDiscountDto discountRequestDto);
+    DiscountResponseDto updateDiscountInfo(DiscountRequest.UpdateDiscountDto discountRequestDto);
 
-    String deleteDiscountInfo(Long userId, Long discountInfoId);
+    String deleteDiscountInfo(Long discountInfoId);
 
-    DiscountResponseDto getDiscountInfoById(Long userId, Long discountInfoId);
+    DiscountResponseDto getDiscountInfoById(Long discountInfoId);
 
 }

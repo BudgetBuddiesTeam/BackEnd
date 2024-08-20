@@ -3,6 +3,7 @@ package com.bbteam.budgetbuddies.domain.supportinfo.controller;
 import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
+import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -57,11 +58,11 @@ public interface SupportInfoApi {
         @Parameter(name = "supportInfoId", description = "좋아요를 누를 지원정보의 id입니다."),
     })
     ApiResponse<SupportResponseDto> likeSupportInfo(
-        @RequestParam Long userId,
+        @RequestParam @ExistUser Long userId,
         @PathVariable Long supportInfoId
     );
 
-    @Operation(summary = "[ADMIN] 특정 지원정보 수정하기 API", description = "특정 지원정보를 수정하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @Operation(summary = "[ADMIN] 특정 지원정보 수정하기 API", description = "ID를 통해 특정 지원정보를 수정하는 API입니다.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -69,14 +70,12 @@ public interface SupportInfoApi {
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
-        @Parameter(name = "userId", description = "수정할 사용자의 id입니다."),
     })
     ApiResponse<SupportResponseDto> updateSupportInfo(
-        @RequestParam Long userId,
         @RequestBody SupportRequest.UpdateSupportDto supportRequestDto
     );
 
-    @Operation(summary = "[ADMIN] 특정 지원정보 삭제하기 API", description = "특정 지원정보를 삭제하는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @Operation(summary = "[ADMIN] 특정 지원정보 삭제하기 API", description = "ID를 통해 특정 지원정보를 삭제하는 API입니다.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -84,15 +83,13 @@ public interface SupportInfoApi {
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
-        @Parameter(name = "userId", description = "삭제할 사용자의 id입니다."),
         @Parameter(name = "supportInfoId", description = "삭제할 지원 정보의 id입니다."),
     })
     ApiResponse<String> deleteSupportInfo(
-        @RequestParam Long userId,
         @PathVariable Long supportInfoId
     );
 
-    @Operation(summary = "[ADMIN] 특정 지원정보 가져오기 API", description = "ID를 통해 특정 지원정보를 가져오는 API이며, 일단은 사용자 ID를 입력하여 사용합니다. (추후 토큰으로 검증)")
+    @Operation(summary = "[ADMIN] 특정 지원정보 가져오기 API", description = "ID를 통해 특정 지원정보를 가져오는 API입니다.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -100,11 +97,9 @@ public interface SupportInfoApi {
 //        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     @Parameters({
-        @Parameter(name = "userId", description = "조회할 사용자의 id입니다."),
         @Parameter(name = "supportInfoId", description = "조회할 지원 정보의 id입니다."),
     })
     ApiResponse<SupportResponseDto> getSupportInfo(
-        @RequestParam Long userId,
         @PathVariable Long supportInfoId
     );
 }
