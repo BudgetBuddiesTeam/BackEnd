@@ -53,10 +53,9 @@ public class SupportInfoController implements SupportInfoApi {
     @Override
     @PutMapping("")
     public ApiResponse<SupportResponseDto> updateSupportInfo(
-        @RequestParam @ExistUser Long userId,
         @RequestBody SupportRequest.UpdateSupportDto supportRequestDto
     ) {
-        SupportResponseDto supportResponseDto = supportInfoService.updateSupportInfo(userId, supportRequestDto);
+        SupportResponseDto supportResponseDto = supportInfoService.updateSupportInfo(supportRequestDto);
 
         return ApiResponse.onSuccess(supportResponseDto);
     }
@@ -64,10 +63,9 @@ public class SupportInfoController implements SupportInfoApi {
     @Override
     @DeleteMapping("/{supportInfoId}")
     public ApiResponse<String> deleteSupportInfo(
-        @RequestParam @ExistUser Long userId,
         @PathVariable Long supportInfoId
     ) {
-        String message = supportInfoService.deleteSupportInfo(userId, supportInfoId);
+        String message = supportInfoService.deleteSupportInfo(supportInfoId);
 
         return ApiResponse.onSuccess(message);
     }
@@ -75,10 +73,9 @@ public class SupportInfoController implements SupportInfoApi {
     @Override
     @GetMapping("/{supportInfoId}")
     public ApiResponse<SupportResponseDto> getSupportInfo(
-        @RequestParam @ExistUser Long userId,
         @PathVariable Long supportInfoId
     ) {
-        SupportResponseDto supportResponseDto = supportInfoService.getSupportInfoById(userId, supportInfoId);
+        SupportResponseDto supportResponseDto = supportInfoService.getSupportInfoById(supportInfoId);
 
         return ApiResponse.onSuccess(supportResponseDto);
     }
