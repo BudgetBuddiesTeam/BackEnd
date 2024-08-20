@@ -53,10 +53,9 @@ public class DiscountInfoController implements DiscountInfoApi {
     @Override
     @PutMapping("")
     public ApiResponse<DiscountResponseDto> updateDiscountInfo(
-        @RequestParam @ExistUser Long userId,
         @RequestBody DiscountRequest.UpdateDiscountDto discountRequestDto
     ) {
-        DiscountResponseDto discountResponseDto = discountInfoService.updateDiscountInfo(userId, discountRequestDto);
+        DiscountResponseDto discountResponseDto = discountInfoService.updateDiscountInfo(discountRequestDto);
 
         return ApiResponse.onSuccess(discountResponseDto);
     }
@@ -64,10 +63,9 @@ public class DiscountInfoController implements DiscountInfoApi {
     @Override
     @DeleteMapping("/{discountInfoId}")
     public ApiResponse<String> deleteDiscountInfo(
-        @RequestParam @ExistUser Long userId,
         @PathVariable Long discountInfoId
     ) {
-        String message = discountInfoService.deleteDiscountInfo(userId, discountInfoId);
+        String message = discountInfoService.deleteDiscountInfo(discountInfoId);
 
         return ApiResponse.onSuccess(message);
     }
@@ -76,10 +74,9 @@ public class DiscountInfoController implements DiscountInfoApi {
     @Override
     @GetMapping("/{discountInfoId}")
     public ApiResponse<DiscountResponseDto> getDiscountInfo(
-        @RequestParam @ExistUser Long userId,
         @PathVariable Long discountInfoId
     ) {
-        DiscountResponseDto discountResponseDto = discountInfoService.getDiscountInfoById(userId, discountInfoId);
+        DiscountResponseDto discountResponseDto = discountInfoService.getDiscountInfoById(discountInfoId);
 
         return ApiResponse.onSuccess(discountResponseDto);
     }
