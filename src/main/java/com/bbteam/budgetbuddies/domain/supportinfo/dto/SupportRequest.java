@@ -26,6 +26,9 @@ public class SupportRequest {
 
         private String thumbnailUrl;
 
+        private Boolean isInCalendar;
+
+
     }
 
     @Getter
@@ -45,6 +48,9 @@ public class SupportRequest {
         private String siteUrl;
 
         private String thumbnailUrl;
+
+        private Boolean isInCalendar;
+
 
     }
 

@@ -37,6 +37,10 @@ public class DiscountInfo extends BaseEntity {
     @Column(length = 1000)
     private String thumbnailUrl; // 카드 썸네일 이미지
 
+    @Column(nullable = false)
+    private Boolean isInCalendar;
+
+
     public void addLikeCount() {
         this.likeCount++;
     }
@@ -57,6 +61,7 @@ public class DiscountInfo extends BaseEntity {
         this.discountRate = discountRequestDto.getDiscountRate();
         this.siteUrl = discountRequestDto.getSiteUrl();
         this.thumbnailUrl = discountRequestDto.getThumbnailUrl();
+        this.isInCalendar = discountRequestDto.getIsInCalendar();
     }
 
 }

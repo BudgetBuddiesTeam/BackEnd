@@ -23,6 +23,9 @@ public class DiscountRequest {
         private String siteUrl;
 
         private String thumbnailUrl;
+
+        private Boolean isInCalendar;
+
     }
 
     @Getter
@@ -44,6 +47,8 @@ public class DiscountRequest {
         private String siteUrl;
 
         private String thumbnailUrl;
+
+        private Boolean isInCalendar;
     }
 
 
