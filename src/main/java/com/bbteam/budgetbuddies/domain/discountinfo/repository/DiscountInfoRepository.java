@@ -17,10 +17,12 @@ public interface DiscountInfoRepository extends JpaRepository<DiscountInfo, Long
     Page<DiscountInfo> findByDateRange(LocalDate startDate, LocalDate endDate, Pageable pageable);
 
     @Query("SELECT i FROM DiscountInfo i WHERE (i.startDate <= :endDate AND i.endDate >= :startDate)" +
+            " AND i.isInCalendar = TRUE " +
             " ORDER BY i.likeCount DESC")
     List<DiscountInfo> findByMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
     @Query("SELECT i FROM DiscountInfo i WHERE (i.startDate <= :endDate AND i.endDate >= :startDate)" +
+            " AND i.isInCalendar = TRUE " +
             " ORDER BY i.likeCount DESC" +
             " LIMIT 2")
     List<DiscountInfo> findRecommendInfoByMonth(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
