@@ -35,6 +35,10 @@ public class SupportInfo extends BaseEntity {
     @Column(length = 1000)
     private String thumbnailUrl; // 카드 썸네일 이미지
 
+    @Column(nullable = false)
+    private Boolean isInCalendar;
+
+
     public void addLikeCount() {
         this.likeCount++;
     }
@@ -54,6 +58,7 @@ public class SupportInfo extends BaseEntity {
         this.endDate = supportRequestDto.getEndDate();
         this.siteUrl = supportRequestDto.getSiteUrl();
         this.thumbnailUrl = supportRequestDto.getThumbnailUrl();
+        this.isInCalendar = supportRequestDto.getIsInCalendar();
     }
 
 }

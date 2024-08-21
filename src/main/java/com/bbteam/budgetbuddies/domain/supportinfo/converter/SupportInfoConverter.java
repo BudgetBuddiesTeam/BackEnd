@@ -40,6 +40,7 @@ public class SupportInfoConverter {
             .likeCount(0)
             .siteUrl(requestDto.getSiteUrl())
             .thumbnailUrl(requestDto.getThumbnailUrl())
+                .isInCalendar(requestDto.getIsInCalendar())
             .build();
     }
 }
