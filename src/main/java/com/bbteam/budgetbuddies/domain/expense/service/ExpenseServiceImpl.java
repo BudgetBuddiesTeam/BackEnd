@@ -39,23 +39,26 @@ public class ExpenseServiceImpl implements ExpenseService {
 			.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 		Category category = categoryRepository.findById(expenseRequestDto.getCategoryId())
 			.orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+		if (Boolean.TRUE.equals(category.getDeleted())) {
+			throw new IllegalArgumentException("Cannot add expense to a deleted category.");
+		}
 
         /*
         case 1)
          - 카테고리 ID가 1~10 사이 && default => DB의 immutable 필드인 default category
          - DB 관리 이슈로 category에 default 카테고리의 중복이 발생할 경우, 이를 대비하기 위해 1<= id <= 10 조건도 추가
          */
+		// default category
 		if (expenseRequestDto.getCategoryId() >= 1 && expenseRequestDto.getCategoryId() <= 10
 			&& category.getIsDefault()) {
-			//  category.setUser(user);
-			// default category
 		}
+
         /*
          Case 2)
          !default && 키테고리 테이블의 UserId 컬럼의 값이 나와 맞으면 (= custom category)
          */
+		// custom category
 		else if (!category.getIsDefault() && category.getUser().getId().equals(userId)) {
-			// custom category
 		} else {
 			throw new IllegalArgumentException("User and category are not matched properly.");
 		}
@@ -69,8 +72,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 		return expenseConverter.toExpenseResponseDto(expense);
         /*
-         결과 Case 1) 해당 유저의 user_id + immutable 필드 중 하나의 조합으로 Expense 테이블에 저장
-         결과 Case 2) 내가 직접 생성한 카테고리 중 하나로 카테고리를 설정하여 Expense 테이블에 저장
+         Case 1 결과) 해당 유저의 user_id + immutable 필드 중 하나의 조합으로 Expense 테이블에 저장
+         Case 2 결과) 내가 직접 생성한 카테고리 중 하나로 카테고리를 설정하여 Expense 테이블에 저장
          */
 	}
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -102,5 +103,9 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 			@Param("peerGender") Gender peerGender,
 			@Param("currentMonth") LocalDate currentMonth);
 
-	Optional<ConsumptionGoal> findByCategoryIdAndUserId(Long categoryId, Long userId);
-}
+	@Modifying
+	@Query("UPDATE ConsumptionGoal cg SET cg.deleted = TRUE WHERE cg.category.id = :categoryId AND cg.user.id = :userId")
+	void softDeleteByCategoryIdAndUserId(@Param("categoryId") Long categoryId, @Param("userId") Long userId);
+
+	@Query("SELECT cg FROM ConsumptionGoal cg WHERE cg.category.id = :categoryId AND cg.user.id = :userId AND cg.deleted = FALSE")
+	Optional<ConsumptionGoal> findByCategoryIdAndUserId(@Param("categoryId") Long categoryId, @Param("userId") Long userId);}
