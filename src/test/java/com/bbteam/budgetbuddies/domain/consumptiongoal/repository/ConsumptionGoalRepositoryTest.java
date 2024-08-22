@@ -3,7 +3,6 @@ package com.bbteam.budgetbuddies.domain.consumptiongoal.repository;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +18,6 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryConsumptionCountDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
-import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
-import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import com.bbteam.budgetbuddies.enums.Gender;
@@ -35,15 +32,12 @@ class ConsumptionGoalRepositoryTest {
 	UserRepository userRepository;
 	@Autowired
 	CategoryRepository categoryRepository;
-	@Autowired
-	ExpenseRepository expenseRepository;
 
 	private User peerUser1;
 	private User peerUser2;
 	private Category defaultCategory1;
 	private Category defaultCategory2;
 	private LocalDate currentMonth;
-	private LocalDateTime now = LocalDateTime.now();
 
 	@BeforeEach
 	void setUp() {
@@ -98,30 +92,6 @@ class ConsumptionGoalRepositoryTest {
 				.user(peerUser2)
 				.category(defaultCategory2)
 				.goalMonth(currentMonth)
-				.build());
-
-		expenseRepository.save(
-			Expense.builder()
-				.amount(1L)
-				.category(defaultCategory1)
-				.user(peerUser1)
-				.expenseDate(now)
-				.build());
-
-		expenseRepository.save(
-			Expense.builder()
-				.amount(1L)
-				.category(defaultCategory1)
-				.user(peerUser1)
-				.expenseDate(now)
-				.build());
-
-		expenseRepository.save(
-			Expense.builder()
-				.amount(1L)
-				.category(defaultCategory2)
-				.user(peerUser1)
-				.expenseDate(now)
 				.build());
 	}
 
@@ -302,7 +272,7 @@ class ConsumptionGoalRepositoryTest {
 		LocalDate currentMonth = LocalDate.now();
 
 		List<CategoryConsumptionCountDto> result = consumptionGoalRepository.findTopCategoriesByConsumptionCount(
-			peerAgeStart, peerAgeEnd, peerGender, currentMonth.atStartOfDay());
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
 
 		// then
 		assertThat(result).isNotEmpty();
@@ -317,7 +287,7 @@ class ConsumptionGoalRepositoryTest {
 			.findFirst()
 			.orElseThrow(() -> new AssertionError("Category ID " + defaultCategory2.getId() + " not found"));
 
-		assertThat(firstResult.getConsumptionCount()).isEqualTo(2);
-		assertThat(secondResult.getConsumptionCount()).isEqualTo(1);
+		assertThat(firstResult.getConsumptionCount()).isEqualTo(1);
+		assertThat(secondResult.getConsumptionCount()).isEqualTo(2);
 	}
 }
