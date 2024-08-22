@@ -87,19 +87,25 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteExpense(Long expenseId) {
 		Expense expense = expenseRepository.findById(expenseId)
-			.orElseThrow(() -> new IllegalArgumentException("Not found Expense"));
+				.orElseThrow(() -> new IllegalArgumentException("Not found Expense"));
 
 		Long userId = expense.getUser().getId();
 		Long categoryId = expense.getCategory().getId();
 		Long amount = expense.getAmount();
 		LocalDate expenseDate = expense.getExpenseDate().toLocalDate();
+		LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
 
-		expenseRepository.delete(expense);
-
-		// 소비 금액 차감 로직
-		consumptionGoalService.decreaseConsumeAmount(userId, categoryId, amount, expenseDate);
+		if (expenseDate.withDayOfMonth(1).equals(currentMonth)) {
+			// 현재 달에 해당하는 소비 내역인 경우, 소비 금액 차감 로직 실행
+			expenseRepository.delete(expense);
+			consumptionGoalService.decreaseConsumeAmount(userId, categoryId, amount, expenseDate);
+		} else {
+			// 과거 달의 소비 내역인 경우, soft delete 처리
+			expenseRepository.softDeleteById(expenseId);
+		}
 	}
 
 	@Override
