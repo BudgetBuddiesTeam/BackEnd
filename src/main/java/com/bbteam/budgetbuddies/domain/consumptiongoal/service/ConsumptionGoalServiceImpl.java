@@ -1,5 +1,7 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -103,22 +105,23 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 				Long avgConsumeAmount = avgDto.getAverageAmount();
 				Long myConsumeAmount = myConsumptionAmountDto.getMyAmount();
+				Long roundedAvgConsumeAmount = roundToNearest100(avgConsumeAmount);
+
 				long consumeAmountDifference;
 
-				if (avgConsumeAmount == 0L) {
+				if (roundedAvgConsumeAmount == 0L) {
 					consumeAmountDifference = -myConsumeAmount;
 				} else {
-					consumeAmountDifference = myConsumeAmount - avgConsumeAmount;
+					consumeAmountDifference = myConsumeAmount - roundedAvgConsumeAmount;
 				}
 
 				return AllConsumptionCategoryResponseDto.builder()
 					.categoryName(category.getName())
-					.avgAmount(avgConsumeAmount)
+					.avgAmount(roundedAvgConsumeAmount)
 					.amountDifference(consumeAmountDifference)
 					.build();
 			})
 			.collect(Collectors.toList());
-
 	}
 
 	@Override
@@ -199,17 +202,18 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 				Long avgConsumeAmount = avgDto.getAverageAmount();
 				Long myConsumeAmount = myConsumptionAmountDto.getMyAmount();
-				long consumeAmountDifference;
+				Long roundedAvgConsumeAmount = roundToNearest100(avgConsumeAmount);
 
-				if (avgConsumeAmount == 0L) {
+				long consumeAmountDifference;
+				if (roundedAvgConsumeAmount == 0L) {
 					consumeAmountDifference = -myConsumeAmount;
 				} else {
-					consumeAmountDifference = myConsumeAmount - avgConsumeAmount;
+					consumeAmountDifference = myConsumeAmount - roundedAvgConsumeAmount;
 				}
 
 				return AllConsumptionCategoryResponseDto.builder()
 					.categoryName(category.getName())
-					.avgAmount(avgConsumeAmount)
+					.avgAmount(roundedAvgConsumeAmount)
 					.amountDifference(consumeAmountDifference)
 					.build();
 			})
@@ -345,6 +349,16 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		Category category = categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new RuntimeException("카테고리 " + categoryId + "를 찾을 수 없습니다.: "));
 		return category.getName();
+	}
+
+	private Long roundToNearest100(Long amount) {
+		if (amount == null) {
+			return 0L;
+		}
+		BigDecimal decimalAmount = BigDecimal.valueOf(amount);
+		BigDecimal roundedAmount = decimalAmount.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP)
+			.multiply(BigDecimal.valueOf(100));
+		return roundedAmount.longValue();
 	}
 
 	@Override
