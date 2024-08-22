@@ -105,7 +105,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 				Long avgConsumeAmount = avgDto.getAverageAmount();
 				Long myConsumeAmount = myConsumptionAmountDto.getMyAmount();
-				Long roundedAvgConsumeAmount = roundToNearest100(avgConsumeAmount);
+				Long roundedAvgConsumeAmount = roundToNearest10(avgConsumeAmount);
 
 				long consumeAmountDifference;
 
@@ -202,7 +202,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 				Long avgConsumeAmount = avgDto.getAverageAmount();
 				Long myConsumeAmount = myConsumptionAmountDto.getMyAmount();
-				Long roundedAvgConsumeAmount = roundToNearest100(avgConsumeAmount);
+				Long roundedAvgConsumeAmount = roundToNearest10(avgConsumeAmount);
 
 				long consumeAmountDifference;
 				if (roundedAvgConsumeAmount == 0L) {
@@ -351,13 +351,13 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		return category.getName();
 	}
 
-	private Long roundToNearest100(Long amount) {
+	private Long roundToNearest10(Long amount) {
 		if (amount == null) {
 			return 0L;
 		}
 		BigDecimal decimalAmount = BigDecimal.valueOf(amount);
-		BigDecimal roundedAmount = decimalAmount.divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP)
-			.multiply(BigDecimal.valueOf(100));
+		BigDecimal roundedAmount = decimalAmount.divide(BigDecimal.valueOf(10), RoundingMode.HALF_UP)
+			.multiply(BigDecimal.valueOf(10));
 		return roundedAmount.longValue();
 	}
 
