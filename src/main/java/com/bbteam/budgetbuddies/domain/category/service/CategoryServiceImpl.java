@@ -89,9 +89,15 @@ public class CategoryServiceImpl implements CategoryService {
 				throw new IllegalArgumentException("Default categories cannot be deleted.");
 			}
 
-			// 삭제되지 않은 Expense 조회
-			List<Expense> expenses = expenseRepository.findByCategoryIdAndUserId(categoryId, userId);
-			long totalAmount = expenses.stream()
+			// 현재 날짜를 기준으로 해당 월의 시작과 끝 날짜 계산
+			LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
+			LocalDate endOfMonth = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
+
+			// 현재 월에 해당하는 삭제되지 않은 Expense 조회 (deleted = false)
+			List<Expense> currentMonthExpenses = expenseRepository.findByCategoryIdAndUserIdAndExpenseDateBetweenAndDeletedFalse(
+					categoryId, userId, startOfMonth.atStartOfDay(), endOfMonth.atTime(23, 59, 59));
+
+			long totalAmount = currentMonthExpenses.stream()
 					.mapToLong(Expense::getAmount)
 					.sum();
 
@@ -101,8 +107,11 @@ public class CategoryServiceImpl implements CategoryService {
 			goal.setConsumeAmount(goal.getConsumeAmount() + totalAmount);
 			consumptionGoalRepository.save(goal);
 
-			// 해당 카테고리에 부합하는 Expense들을 etc 카테고리로 이동
-			expenses.forEach(expense -> {
+			// 삭제되지 않은 모든 기간의 Expense 조회 (deleted = false)
+			List<Expense> allExpenses = expenseRepository.findByCategoryIdAndUserIdAndDeletedFalse(categoryId, userId);
+
+			// 해당 카테고리에 부합하는 모든 기간의 Expense들을 etc 카테고리로 이동
+			allExpenses.forEach(expense -> {
 				expense.setCategory(goal.getCategory());
 				expenseRepository.save(expense);
 			});
@@ -115,4 +124,5 @@ public class CategoryServiceImpl implements CategoryService {
 			categoryRepository.save(category);
 		});
 	}
+
 }
