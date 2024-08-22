@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -15,5 +16,11 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 	List<Expense> findAllByUserIdForPeriod(@Param("user") User user, @Param("startDate") LocalDateTime startDate,
 		@Param("endDate") LocalDateTime endDate);
 
-	@Query("SELECT e FROM Expense e WHERE e.category.id = :categoryId AND e.user.id = :userId AND e.deleted = FALSE")
-	List<Expense> findByCategoryIdAndUserId(@Param("categoryId") Long categoryId, @Param("userId") Long userId);}
+	List<Expense> findByCategoryIdAndUserIdAndExpenseDateBetweenAndDeletedFalse(Long categoryId, Long userId, LocalDateTime startDate, LocalDateTime endDate);
+
+	List<Expense> findByCategoryIdAndUserIdAndDeletedFalse(Long categoryId, Long userId);
+
+	@Modifying
+	@Query("UPDATE Expense e SET e.deleted = TRUE WHERE e.id = :expenseId")
+	void softDeleteById(@Param("expenseId") Long expenseId);
+}
