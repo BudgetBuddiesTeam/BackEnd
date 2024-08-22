@@ -96,21 +96,21 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	List<MyConsumptionGoalDto> findAllGoalAmountByUserId(@Param("userId") Long userId);
 
 	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryConsumptionCountDto(" +
-		"e.category.id, COUNT(e)) " +
-		"FROM Expense e " +
-		"WHERE e.category.isDefault = true " +
-		"AND e.deleted = false " +
-		"AND e.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
-		"AND e.user.gender = :peerGender " +
-		"AND e.expenseDate >= :currentMonth " +
-		"AND e.amount > 0 " +
-		"GROUP BY e.category.id " +
-		"ORDER BY COUNT(e) DESC")
+		"cg.category.id, COUNT(cg)) " +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender " +
+		"AND cg.goalMonth >= :currentMonth " +
+		"AND cg.consumeAmount > 0 " +
+		"GROUP BY cg.category.id " +
+		"ORDER BY COUNT(cg) DESC")
 	List<CategoryConsumptionCountDto> findTopCategoriesByConsumptionCount(
 		@Param("peerAgeStart") int peerAgeStart,
 		@Param("peerAgeEnd") int peerAgeEnd,
 		@Param("peerGender") Gender peerGender,
-		@Param("currentMonth") LocalDateTime currentMonth);
+		@Param("currentMonth") LocalDate currentMonth);
 
 	@Modifying
 	@Query("UPDATE ConsumptionGoal cg SET cg.deleted = TRUE WHERE cg.category.id = :categoryId AND cg.user.id = :userId")
