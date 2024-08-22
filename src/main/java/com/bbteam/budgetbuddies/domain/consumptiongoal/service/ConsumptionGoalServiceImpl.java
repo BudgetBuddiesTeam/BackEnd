@@ -172,7 +172,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
 		List<CategoryConsumptionCountDto> categoryConsumptionCountDto = consumptionGoalRepository
-			.findTopCategoriesByConsumptionCount(peerAgeStart, peerAgeEnd, peerGender, currentMonth);
+			.findTopCategoriesByConsumptionCount(peerAgeStart, peerAgeEnd, peerGender, currentMonth.atStartOfDay());
 
 		return categoryConsumptionCountDto.stream()
 			.limit(3)
