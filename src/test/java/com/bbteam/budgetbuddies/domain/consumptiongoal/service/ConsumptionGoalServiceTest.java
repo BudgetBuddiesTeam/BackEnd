@@ -6,6 +6,8 @@ import static org.mockito.BDDMockito.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -308,6 +310,9 @@ class ConsumptionGoalServiceTest {
 		LocalDate startOfWeek = goalMonthRandomDay.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate endOfWeek = goalMonthRandomDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
+		LocalDateTime startOfWeekDateTime = startOfWeek.atStartOfDay();
+		LocalDateTime endOfWeekDateTime = endOfWeek.atTime(LocalTime.MAX);
+
 		ConsumptionGoal topConsumptionGoal = ConsumptionGoal.builder()
 			.goalAmount(5000L)
 			.consumeAmount(3000L)
@@ -338,7 +343,7 @@ class ConsumptionGoalServiceTest {
 			.willReturn(avgConsumptionGoalList);
 
 		given(consumptionGoalRepository.findAvgConsumptionByCategoryIdAndCurrentWeek(
-			defaultCategory.getId(), startOfWeek, endOfWeek,
+			defaultCategory.getId(), startOfWeekDateTime, endOfWeekDateTime,
 			peerAgeStart, peerAgeEnd, peerGender))
 			.willReturn(Optional.of(currentWeekConsumptionGoal.getConsumeAmount()));
 
