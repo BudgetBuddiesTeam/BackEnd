@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -145,10 +147,16 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		Long topConsumptionGoalCategoryId = avgConsumptionGoalList.get(0).getCategoryId();
 
+		LocalDateTime startOfWeekDateTime = startOfWeek.atStartOfDay();
+		LocalDateTime endOfWeekDateTime = endOfWeek.atTime(LocalTime.MAX);
+
 		Long currentWeekConsumptionAmount = consumptionGoalRepository
-			.findAvgConsumptionByCategoryIdAndCurrentWeek(topConsumptionGoalCategoryId, startOfWeek, endOfWeek,
+			.findAvgConsumptionByCategoryIdAndCurrentWeek(topConsumptionGoalCategoryId, startOfWeekDateTime,
+				endOfWeekDateTime,
 				peerAgeStart, peerAgeEnd, peerGender)
 			.orElse(0L);
+
+		currentWeekConsumptionAmount = roundToNearest10(currentWeekConsumptionAmount);
 
 		String topGoalCategory = getCategoryNameById(topConsumptionGoalCategoryId);
 
