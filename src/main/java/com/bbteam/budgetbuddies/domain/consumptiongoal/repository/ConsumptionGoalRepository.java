@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,13 +32,13 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		"JOIN cg.category c " +
 		"WHERE c.id = :categoryId " +
 		"AND cg.deleted = false " +
-		"AND cg.goalMonth BETWEEN :startOfWeek AND :endOfWeek " +
+		"AND cg.createdAt BETWEEN :startOfWeek AND :endOfWeek " +
 		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
 		"AND cg.user.gender = :peerGender")
 	Optional<Long> findAvgConsumptionByCategoryIdAndCurrentWeek(
 		@Param("categoryId") Long categoryId,
-		@Param("startOfWeek") LocalDate startOfWeek,
-		@Param("endOfWeek") LocalDate endOfWeek,
+		@Param("startOfWeek") LocalDateTime startOfWeek,
+		@Param("endOfWeek") LocalDateTime endOfWeek,
 		@Param("peerAgeStart") int peerAgeStart,
 		@Param("peerAgeEnd") int peerAgeEnd,
 		@Param("peerGender") Gender peerGender);
