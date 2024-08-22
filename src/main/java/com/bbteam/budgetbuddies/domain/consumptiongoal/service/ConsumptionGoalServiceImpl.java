@@ -539,4 +539,34 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		consumptionGoal.decreaseConsumeAmount(amount);
 		consumptionGoalRepository.save(consumptionGoal);
 	}
+
+	// 현재 월이 아닌 이전 소비 내역에 대해서 소비 목표를 생성해야되는 경우 updateOrCreateDeletedConsumptionGoal 사용
+	@Override
+	@Transactional
+	public void updateOrCreateDeletedConsumptionGoal(Long userId, Long categoryId, LocalDate goalMonth, Long amount) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+		Category category = categoryRepository.findById(categoryId)
+				.orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+
+		// 해당 월의 ConsumptionGoal이 존재하는지 확인
+		Optional<ConsumptionGoal> existingGoal = consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, category, goalMonth);
+
+		if (existingGoal.isPresent()) {	// 존재하는 경우, consumeAmount 업데이트
+			ConsumptionGoal consumptionGoal = existingGoal.get();
+			consumptionGoal.updateConsumeAmount(amount);
+			consumptionGoalRepository.save(consumptionGoal);
+		} else {	// 존재하지 않는 경우, 새로운 ConsumptionGoal을 생성 (이 때 목표 금액은 0)
+			ConsumptionGoal newGoal = ConsumptionGoal.builder()
+					.user(user)
+					.category(category)
+					.goalMonth(goalMonth)
+					.consumeAmount(amount)
+					.goalAmount(0L)
+					.build();
+
+			newGoal.updateConsumeAmount(amount); // 신규 생성된 목표에 소비 금액 추가
+			consumptionGoalRepository.save(newGoal);
+		}
+	}
 }

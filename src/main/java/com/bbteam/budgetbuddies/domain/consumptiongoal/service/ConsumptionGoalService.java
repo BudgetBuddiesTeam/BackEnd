@@ -20,17 +20,17 @@ import com.bbteam.budgetbuddies.domain.user.entity.User;
 public interface ConsumptionGoalService {
 
 	List<TopGoalCategoryResponseDto> getTopConsumptionGoalCategories(Long userId, int peerAgeStart, int peerAgeEnd,
-		String peerGender);
+																	 String peerGender);
 
 	List<AllConsumptionCategoryResponseDto> getAllConsumptionGoalCategories(Long userId, int peerAgeS, int peerAgeE,
-		String peerG);
+																			String peerG);
 
 	ConsumptionGoalResponseListDto findUserConsumptionGoalList(Long userId, LocalDate date);
 
 	PeerInfoResponseDto getPeerInfo(Long userId, int peerAgeStart, int peerAgeEnd, String peerGender);
 
 	ConsumptionGoalResponseListDto updateConsumptionGoals(Long userId,
-		ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
+														  ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
 
 	ConsumptionAnalysisResponseDto getTopCategoryAndConsumptionAmount(Long userId);
 
@@ -41,8 +41,10 @@ public interface ConsumptionGoalService {
 	void decreaseConsumeAmount(Long userId, Long categoryId, Long amount, LocalDate expenseDate);
 
 	List<TopCategoryConsumptionDto> getTopConsumptionCategories(Long userId, int peerAgeStart, int peerAgeEnd,
-		String peerGender);
+																String peerGender);
 
 	List<AllConsumptionCategoryResponseDto> getAllConsumptionCategories(Long userId, int peerAgeS, int peerAgeE,
-		String peerG);
+																		String peerG);
+
+	void updateOrCreateDeletedConsumptionGoal(Long userId, Long categoryId, LocalDate goalMonth, Long amount);
 }
