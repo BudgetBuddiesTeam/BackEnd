@@ -24,88 +24,92 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	@Query(value = "SELECT cg FROM ConsumptionGoal AS cg WHERE cg.user.id = :userId AND cg.goalMonth = :goalMonth")
 	List<ConsumptionGoal> findConsumptionGoalByUserIdAndGoalMonth(Long userId, LocalDate goalMonth);
 
-	Optional<ConsumptionGoal> findConsumptionGoalByUserAndCategoryAndGoalMonth(User user, Category category, LocalDate goalMonth);
+	Optional<ConsumptionGoal> findConsumptionGoalByUserAndCategoryAndGoalMonth(User user, Category category,
+		LocalDate goalMonth);
 
 	@Query("SELECT AVG(cg.consumeAmount) FROM ConsumptionGoal cg " +
-			"JOIN cg.category c " +
-			"WHERE c.id = :categoryId " +
-			"AND cg.goalMonth BETWEEN :startOfWeek AND :endOfWeek " +
-			"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
-			"AND cg.user.gender = :peerGender")
+		"JOIN cg.category c " +
+		"WHERE c.id = :categoryId " +
+		"AND cg.goalMonth BETWEEN :startOfWeek AND :endOfWeek " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender")
 	Optional<Long> findAvgConsumptionByCategoryIdAndCurrentWeek(
-			@Param("categoryId") Long categoryId,
-			@Param("startOfWeek") LocalDate startOfWeek,
-			@Param("endOfWeek") LocalDate endOfWeek,
-			@Param("peerAgeStart") int peerAgeStart,
-			@Param("peerAgeEnd") int peerAgeEnd,
-			@Param("peerGender") Gender peerGender);
+		@Param("categoryId") Long categoryId,
+		@Param("startOfWeek") LocalDate startOfWeek,
+		@Param("endOfWeek") LocalDate endOfWeek,
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender);
 
 	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto(" +
-			"cg.category.id, AVG(cg.consumeAmount))" +
-			"FROM ConsumptionGoal cg " +
-			"WHERE cg.category.isDefault = true " +
-			"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
-			"AND cg.user.gender = :peerGender " +
-			"AND cg.goalMonth >= :currentMonth " +
-			"GROUP BY cg.category.id " +
-			"ORDER BY AVG(cg.consumeAmount) DESC")
+		"cg.category.id, AVG(cg.consumeAmount))" +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender " +
+		"AND cg.goalMonth >= :currentMonth " +
+		"GROUP BY cg.category.id " +
+		"ORDER BY AVG(cg.consumeAmount) DESC")
 	List<AvgConsumptionGoalDto> findAvgConsumptionAmountByCategory(
-			@Param("peerAgeStart") int peerAgeStart,
-			@Param("peerAgeEnd") int peerAgeEnd,
-			@Param("peerGender") Gender peerGender,
-			@Param("currentMonth") LocalDate currentMonth);
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth);
 
 	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto(" +
-			"cg.category.id, SUM(cg.consumeAmount)) " +
-			"FROM ConsumptionGoal cg " +
-			"WHERE cg.category.isDefault = true " +
-			"AND cg.user.id = :userId " +
-			"GROUP BY cg.category.id " +
-			"ORDER BY cg.category.id")
+		"cg.category.id, SUM(cg.consumeAmount)) " +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.user.id = :userId " +
+		"GROUP BY cg.category.id " +
+		"ORDER BY cg.category.id")
 	List<MyConsumptionGoalDto> findAllConsumptionAmountByUserId(@Param("userId") Long userId);
 
 	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto(" +
-			"cg.category.id, AVG(cg.goalAmount))" +
-			"FROM ConsumptionGoal cg " +
-			"WHERE cg.category.isDefault = true " +
-			"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
-			"AND cg.user.gender = :peerGender " +
-			"AND cg.goalMonth >= :currentMonth " +
-			"GROUP BY cg.category.id " +
-			"ORDER BY AVG(cg.goalAmount) DESC")
+		"cg.category.id, AVG(cg.goalAmount))" +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender " +
+		"AND cg.goalMonth >= :currentMonth " +
+		"GROUP BY cg.category.id " +
+		"ORDER BY AVG(cg.goalAmount) DESC")
 	List<AvgConsumptionGoalDto> findAvgGoalAmountByCategory(
-			@Param("peerAgeStart") int peerAgeStart,
-			@Param("peerAgeEnd") int peerAgeEnd,
-			@Param("peerGender") Gender peerGender,
-			@Param("currentMonth") LocalDate currentMonth);
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth);
 
 	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto(" +
-			"cg.category.id, SUM(cg.goalAmount)) " +
-			"FROM ConsumptionGoal cg " +
-			"WHERE cg.category.isDefault = true " +
-			"AND cg.user.id = :userId " +
-			"GROUP BY cg.category.id " +
-			"ORDER BY cg.category.id")
+		"cg.category.id, SUM(cg.goalAmount)) " +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.user.id = :userId " +
+		"GROUP BY cg.category.id " +
+		"ORDER BY cg.category.id")
 	List<MyConsumptionGoalDto> findAllGoalAmountByUserId(@Param("userId") Long userId);
 
 	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryConsumptionCountDto(" +
-			"cg.category.id, COUNT(cg)) " +
-			"FROM ConsumptionGoal cg " +
-			"WHERE cg.category.isDefault = true " +
-			"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
-			"AND cg.user.gender = :peerGender " +
-			"AND cg.goalMonth >= :currentMonth " +
-			"GROUP BY cg.category.id " +
-			"ORDER BY COUNT(cg) DESC")
+		"cg.category.id, COUNT(cg)) " +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender " +
+		"AND cg.goalMonth >= :currentMonth " +
+		"AND cg.consumeAmount > 0 " +
+		"GROUP BY cg.category.id " +
+		"ORDER BY COUNT(cg) DESC")
 	List<CategoryConsumptionCountDto> findTopCategoriesByConsumptionCount(
-			@Param("peerAgeStart") int peerAgeStart,
-			@Param("peerAgeEnd") int peerAgeEnd,
-			@Param("peerGender") Gender peerGender,
-			@Param("currentMonth") LocalDate currentMonth);
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth);
 
 	@Modifying
 	@Query("UPDATE ConsumptionGoal cg SET cg.deleted = TRUE WHERE cg.category.id = :categoryId AND cg.user.id = :userId")
 	void softDeleteByCategoryIdAndUserId(@Param("categoryId") Long categoryId, @Param("userId") Long userId);
 
 	@Query("SELECT cg FROM ConsumptionGoal cg WHERE cg.category.id = :categoryId AND cg.user.id = :userId AND cg.deleted = FALSE")
-	Optional<ConsumptionGoal> findByCategoryIdAndUserId(@Param("categoryId") Long categoryId, @Param("userId") Long userId);}
+	Optional<ConsumptionGoal> findByCategoryIdAndUserId(@Param("categoryId") Long categoryId,
+		@Param("userId") Long userId);
+}
