@@ -66,9 +66,18 @@ public class ExpenseServiceImpl implements ExpenseService {
 		Expense expense = expenseConverter.toExpenseEntity(expenseRequestDto, user, category);
 		expenseRepository.save(expense);
 
-		// 소비 목표 업데이트
-		consumptionGoalService.updateConsumeAmount(userId, expenseRequestDto.getCategoryId(),
-			expenseRequestDto.getAmount());
+		// expenseDate가 현재 월인지 확인
+		LocalDate expenseDateMonth = expenseRequestDto.getExpenseDate().toLocalDate().withDayOfMonth(1);
+		LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
+
+		if (expenseDateMonth.equals(currentMonth)) {
+			// 현재 월의 소비 내역일 경우 ConsumptionGoal을 업데이트
+			consumptionGoalService.updateConsumeAmount(userId, expenseRequestDto.getCategoryId(), expenseRequestDto.getAmount());
+		}
+//		else {
+//			// 과거 월의 소비 내역일 경우 해당 월의 ConsumptionGoal을 업데이트 또는 삭제 상태로 생성
+//			consumptionGoalService.updateOrCreateDeletedConsumptionGoal(userId, expenseRequestDto.getCategoryId(), expenseDateMonth, expenseRequestDto.getAmount());
+//		}
 
 		return expenseConverter.toExpenseResponseDto(expense);
         /*
