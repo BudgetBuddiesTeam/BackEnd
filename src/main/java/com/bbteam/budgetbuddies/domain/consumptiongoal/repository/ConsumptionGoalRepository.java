@@ -30,6 +30,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	@Query("SELECT AVG(cg.consumeAmount) FROM ConsumptionGoal cg " +
 		"JOIN cg.category c " +
 		"WHERE c.id = :categoryId " +
+		"AND cg.deleted = false " +
 		"AND cg.goalMonth BETWEEN :startOfWeek AND :endOfWeek " +
 		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
 		"AND cg.user.gender = :peerGender")
@@ -45,6 +46,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		"cg.category.id, AVG(cg.consumeAmount))" +
 		"FROM ConsumptionGoal cg " +
 		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
 		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
 		"AND cg.user.gender = :peerGender " +
 		"AND cg.goalMonth >= :currentMonth " +
@@ -60,6 +62,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		"cg.category.id, SUM(cg.consumeAmount)) " +
 		"FROM ConsumptionGoal cg " +
 		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
 		"AND cg.user.id = :userId " +
 		"GROUP BY cg.category.id " +
 		"ORDER BY cg.category.id")
@@ -69,6 +72,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		"cg.category.id, AVG(cg.goalAmount))" +
 		"FROM ConsumptionGoal cg " +
 		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
 		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
 		"AND cg.user.gender = :peerGender " +
 		"AND cg.goalMonth >= :currentMonth " +
@@ -84,6 +88,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		"cg.category.id, SUM(cg.goalAmount)) " +
 		"FROM ConsumptionGoal cg " +
 		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
 		"AND cg.user.id = :userId " +
 		"GROUP BY cg.category.id " +
 		"ORDER BY cg.category.id")
@@ -93,6 +98,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		"cg.category.id, COUNT(cg)) " +
 		"FROM ConsumptionGoal cg " +
 		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
 		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
 		"AND cg.user.gender = :peerGender " +
 		"AND cg.goalMonth >= :currentMonth " +
