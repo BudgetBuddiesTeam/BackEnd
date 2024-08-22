@@ -384,7 +384,7 @@ class ConsumptionGoalServiceTest {
 
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 		given(consumptionGoalRepository.findTopCategoriesByConsumptionCount(peerAgeStart, peerAgeEnd,
-			Gender.valueOf(peerGender), currentMonth))
+			Gender.valueOf(peerGender), currentMonth.atStartOfDay()))
 			.willReturn(List.of(topConsumption1, topConsumption2, topConsumption3));
 
 		given(categoryRepository.findById(defaultCategory1.getId())).willReturn(Optional.of(defaultCategory1));
