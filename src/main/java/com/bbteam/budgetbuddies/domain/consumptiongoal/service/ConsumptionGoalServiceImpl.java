@@ -172,7 +172,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
 		List<CategoryConsumptionCountDto> categoryConsumptionCountDto = consumptionGoalRepository
-			.findTopCategoriesByConsumptionCount(peerAgeStart, peerAgeEnd, peerGender, currentMonth);
+			.findTopCategoriesByConsumptionCount(peerAgeStart, peerAgeEnd, peerGender, currentMonth.atStartOfDay());
 
 		return categoryConsumptionCountDto.stream()
 			.limit(3)
@@ -545,25 +545,26 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	@Transactional
 	public void updateOrCreateDeletedConsumptionGoal(Long userId, Long categoryId, LocalDate goalMonth, Long amount) {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+			.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 		Category category = categoryRepository.findById(categoryId)
-				.orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+			.orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
 
 		// 해당 월의 ConsumptionGoal이 존재하는지 확인
-		Optional<ConsumptionGoal> existingGoal = consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, category, goalMonth);
+		Optional<ConsumptionGoal> existingGoal = consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(
+			user, category, goalMonth);
 
-		if (existingGoal.isPresent()) {	// 존재하는 경우, consumeAmount 업데이트
+		if (existingGoal.isPresent()) {    // 존재하는 경우, consumeAmount 업데이트
 			ConsumptionGoal consumptionGoal = existingGoal.get();
 			consumptionGoal.updateConsumeAmount(amount);
 			consumptionGoalRepository.save(consumptionGoal);
-		} else {	// 존재하지 않는 경우, 새로운 ConsumptionGoal을 생성 (이 때 목표 금액은 0)
+		} else {    // 존재하지 않는 경우, 새로운 ConsumptionGoal을 생성 (이 때 목표 금액은 0)
 			ConsumptionGoal newGoal = ConsumptionGoal.builder()
-					.user(user)
-					.category(category)
-					.goalMonth(goalMonth)
-					.consumeAmount(amount)
-					.goalAmount(0L)
-					.build();
+				.user(user)
+				.category(category)
+				.goalMonth(goalMonth)
+				.consumeAmount(amount)
+				.goalAmount(0L)
+				.build();
 
 			newGoal.updateConsumeAmount(amount); // 신규 생성된 목표에 소비 금액 추가
 			consumptionGoalRepository.save(newGoal);
