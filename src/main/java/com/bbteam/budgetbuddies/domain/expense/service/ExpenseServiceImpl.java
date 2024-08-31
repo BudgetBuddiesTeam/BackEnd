@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.expense.service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -117,7 +118,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
 		List<Expense> expenseSlice = expenseRepository.findAllByUserIdForPeriod(user,
-			startOfMonth.atStartOfDay(), endOfMonth.atStartOfDay());
+			startOfMonth.atStartOfDay(), endOfMonth.atTime(LocalTime.MAX));
 
 		return expenseConverter.toMonthlyExpenseResponseDto(expenseSlice, startOfMonth);
 	}
