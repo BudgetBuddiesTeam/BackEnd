@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CategoryRequestDTO {
+public class CategoryRequestDto {
     private String name;
     private Boolean isDefault;
 }
