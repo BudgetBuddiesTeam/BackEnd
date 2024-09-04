@@ -2,6 +2,7 @@ package com.bbteam.budgetbuddies.domain.category.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
@@ -9,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bbteam.budgetbuddies.domain.category.converter.CategoryConverter;
-import com.bbteam.budgetbuddies.domain.category.dto.CategoryRequestDTO;
-import com.bbteam.budgetbuddies.domain.category.dto.CategoryResponseDTO;
+import com.bbteam.budgetbuddies.domain.category.dto.CategoryRequestDto;
+import com.bbteam.budgetbuddies.domain.category.dto.CategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
@@ -36,38 +37,73 @@ public class CategoryServiceImpl implements CategoryService {
 	private final ExpenseRepository expenseRepository;
 
 	@Override
-	public CategoryResponseDTO createCategory(Long userId, CategoryRequestDTO categoryRequestDTO) {
+	@Transactional
+	public CategoryResponseDto createCategory(Long userId, CategoryRequestDto categoryRequestDto) {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new IllegalArgumentException("cannot find user"));
+				.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
-		if (categoryRepository.existsByUserIdAndName(userId, categoryRequestDTO.getName())) {
-			throw new IllegalArgumentException("User already has a category with the same name");
+		// 동일한 이름의 삭제된 카테고리가 존재하는지 확인
+		Optional<Category> existingCategory = categoryRepository.findByNameAndUserIdAndDeletedTrue(
+				categoryRequestDto.getName(), userId);
+
+		if (existingCategory.isPresent()) {
+			// 삭제된 카테고리가 존재하면 복구 (deleted = false)
+			Category categoryToRestore = existingCategory.get();
+			categoryToRestore.setDeleted(false); // 카테고리 복구
+			categoryRepository.save(categoryToRestore);
+
+			// 해당 카테고리의 삭제된 ConsumptionGoal도 복구
+			Optional<ConsumptionGoal> existingConsumptionGoal = consumptionGoalRepository.findByUserAndCategoryAndDeletedTrue(
+					user, categoryToRestore);
+
+			if (existingConsumptionGoal.isPresent()) {
+				ConsumptionGoal consumptionGoalToRestore = existingConsumptionGoal.get();
+				consumptionGoalToRestore.setDeleted(false); // ConsumptionGoal 복구
+				consumptionGoalToRestore.setConsumeAmount(0L); // consumeAmount 0으로 초기화
+				consumptionGoalToRestore.setGoalAmount(0L); // goalAmount 0으로 초기화
+				consumptionGoalRepository.save(consumptionGoalToRestore);
+			} else {
+				// ConsumptionGoal이 존재하지 않으면 새로 생성
+				ConsumptionGoal newConsumptionGoal = ConsumptionGoal.builder()
+						.user(user)
+						.category(categoryToRestore)
+						.goalMonth(LocalDate.now().withDayOfMonth(1)) // 현재 달로 목표 설정
+						.consumeAmount(0L)
+						.goalAmount(0L)
+						.deleted(false) // 생성할 때 삭제 상태가 아니도록
+						.build();
+				consumptionGoalRepository.save(newConsumptionGoal);
+			}
+
+			return categoryConverter.toCategoryResponseDto(categoryToRestore);
+		} else {
+			// 새로운 카테고리 생성
+			Category newCategory = categoryConverter.toCategoryEntity(categoryRequestDto, user);
+			categoryRepository.save(newCategory);
+
+			// 새로운 카테고리에 대한 ConsumptionGoal도 생성
+			ConsumptionGoal newConsumptionGoal = ConsumptionGoal.builder()
+					.user(user)
+					.category(newCategory)
+					.goalMonth(LocalDate.now().withDayOfMonth(1)) // 현재 달로 목표 설정
+					.consumeAmount(0L)
+					.goalAmount(0L)
+					.deleted(false) // 생성할 때 삭제 상태가 아니도록
+					.build();
+			consumptionGoalRepository.save(newConsumptionGoal);
+
+			return categoryConverter.toCategoryResponseDto(newCategory);
 		}
-
-		Category category = categoryConverter.toCategoryEntity(categoryRequestDTO, user);
-		Category savedCategory = categoryRepository.save(category);
-
-		// custom 카테고리 생성 -> 소비 목표 테이블에 초기 값 추가
-		ConsumptionGoal consumptionGoal = ConsumptionGoal.builder()
-				.user(user)
-				.category(savedCategory)
-				.goalMonth(LocalDate.now().withDayOfMonth(1)) // custom 카테고리를 생성한 현재 달(지금)로 설정
-				.goalAmount(0L)
-				.consumeAmount(0L)
-				.build();
-
-		consumptionGoalRepository.save(consumptionGoal);
-		return categoryConverter.toCategoryResponseDTO(savedCategory);
 	}
 
 	@Override
-	public List<CategoryResponseDTO> getUserCategories(Long userId) {
+	public List<CategoryResponseDto> getUserCategories(Long userId) {
 
 		userRepository.findById(userId)
 				.orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
 		List<Category> categories = categoryRepository.findUserCategoryByUserId(userId);
-		return categories.stream().map(categoryConverter::toCategoryResponseDTO).collect(Collectors.toList());
+		return categories.stream().map(categoryConverter::toCategoryResponseDto).collect(Collectors.toList());
 	}
 
 	@Override
