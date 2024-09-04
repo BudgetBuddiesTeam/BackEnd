@@ -2,11 +2,10 @@ package com.bbteam.budgetbuddies.domain.category.controller;
 
 import java.util.List;
 
+import com.bbteam.budgetbuddies.domain.category.dto.CategoryRequestDto;
+import com.bbteam.budgetbuddies.domain.category.dto.CategoryResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import com.bbteam.budgetbuddies.domain.category.dto.CategoryRequestDTO;
-import com.bbteam.budgetbuddies.domain.category.dto.CategoryResponseDTO;
 import com.bbteam.budgetbuddies.domain.category.service.CategoryService;
 
 import lombok.RequiredArgsConstructor;
@@ -20,17 +19,17 @@ public class CategoryController implements CategoryApi {
 
 	@Override
 	@PostMapping("/add/{userId}")
-	public ResponseEntity<CategoryResponseDTO> createCategory(
+	public ResponseEntity<CategoryResponseDto> createCategory(
 		@PathVariable Long userId,
-		@RequestBody CategoryRequestDTO categoryRequestDTO) {
-		CategoryResponseDTO response = categoryService.createCategory(userId, categoryRequestDTO);
+		@RequestBody CategoryRequestDto categoryRequestDTO) {
+		CategoryResponseDto response = categoryService.createCategory(userId, categoryRequestDTO);
 		return ResponseEntity.ok(response);
 	}
 
     @Override
     @GetMapping("/get/{userId}")
-    public ResponseEntity<List<CategoryResponseDTO>> getUserCategories(@PathVariable Long userId) {
-        List<CategoryResponseDTO> response = categoryService.getUserCategories(userId);
+    public ResponseEntity<List<CategoryResponseDto>> getUserCategories(@PathVariable Long userId) {
+        List<CategoryResponseDto> response = categoryService.getUserCategories(userId);
         return ResponseEntity.ok(response);
     }
 
