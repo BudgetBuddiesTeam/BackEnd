@@ -24,7 +24,7 @@ public class Category {
     private Boolean isDefault;
 
     @Column(nullable = false)
-    @ColumnDefault("false")
+    @Builder.Default
     private Boolean deleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
