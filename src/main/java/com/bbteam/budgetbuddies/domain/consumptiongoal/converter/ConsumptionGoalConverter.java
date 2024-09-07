@@ -34,6 +34,16 @@ public class ConsumptionGoalConverter {
 			.build();
 	}
 
+	public ConsumptionGoalResponseDto toConsumptionGoalResponseDtoFromPreviousGoal(ConsumptionGoal consumptionGoal) {
+		return ConsumptionGoalResponseDto.builder()
+			.categoryName(consumptionGoal.getCategory().getName())
+			.categoryId(consumptionGoal.getCategory().getId())
+			.goalAmount(consumptionGoal.getGoalAmount())
+			.consumeAmount(0L)
+			.build();
+
+	}
+
 	public ConsumptionGoalResponseListDto toConsumptionGoalResponseListDto(
 		List<ConsumptionGoalResponseDto> consumptionGoalList, LocalDate goalMonth) {
 		Long totalGoalAmount = sumTotalGoalAmount(consumptionGoalList);

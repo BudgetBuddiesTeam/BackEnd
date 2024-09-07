@@ -78,7 +78,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 				.categoryName(getCategoryNameById(avgGoal.getCategoryId()))
 				.goalAmount(avgGoal.getAverageAmount())
 				.build())
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 					.amountDifference(consumeAmountDifference)
 					.build();
 			})
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Override
@@ -180,7 +180,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 				.categoryName(getCategoryNameById(category.getCategoryId()))
 				.consumptionCount(category.getConsumptionCount())
 				.build())
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	@Override
@@ -225,7 +225,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 					.amountDifference(consumeAmountDifference)
 					.build();
 			})
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private User findUserById(Long userId) {
@@ -422,7 +422,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		LocalDate goalMonth = date.withDayOfMonth(1);
 		Map<Long, ConsumptionGoalResponseDto> goalMap = initializeGoalMap(userId);
 
-		updateGoalMapWithPreviousMonth(userId, goalMonth, goalMap);
+		updateGoalMapWithPrevious(userId, goalMonth, goalMap);
 		updateGoalMapWithCurrentMonth(userId, goalMonth, goalMap);
 
 		List<ConsumptionGoalResponseDto> consumptionGoalList = new ArrayList<>(goalMap.values());
@@ -437,18 +437,19 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			.collect(Collectors.toMap(Category::getId, consumptionGoalConverter::toConsumptionGoalResponseDto));
 	}
 
-	private void updateGoalMapWithPreviousMonth(Long userId, LocalDate goalMonth,
+	private void updateGoalMapWithPrevious(Long userId, LocalDate goalMonth,
 		Map<Long, ConsumptionGoalResponseDto> goalMap) {
-		updateGoalMap(userId, goalMonth.minusMonths(1), goalMap);
+		goalMap.keySet().stream().map(categoryId ->
+			consumptionGoalRepository.findLatelyGoal(userId, categoryId, goalMonth.minusMonths(1)))
+			.filter(Optional::isPresent)
+			.map(Optional::get)
+			.map(consumptionGoalConverter::toConsumptionGoalResponseDtoFromPreviousGoal)
+			.forEach(goal -> goalMap.put(goal.getCategoryId(), goal));
 	}
 
 	private void updateGoalMapWithCurrentMonth(Long userId, LocalDate goalMonth,
 		Map<Long, ConsumptionGoalResponseDto> goalMap) {
-		updateGoalMap(userId, goalMonth, goalMap);
-	}
-
-	private void updateGoalMap(Long userId, LocalDate month, Map<Long, ConsumptionGoalResponseDto> goalMap) {
-		consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(userId, month)
+		consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(userId, goalMonth)
 			.stream()
 			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
 			.forEach(goal -> goalMap.put(goal.getCategoryId(), goal));
