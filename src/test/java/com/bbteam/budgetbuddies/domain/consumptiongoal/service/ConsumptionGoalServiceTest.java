@@ -438,7 +438,7 @@ class ConsumptionGoalServiceTest {
 		given(categoryRepository.findAllByIsDefaultTrue()).willReturn(defaultCategories);
 		given(consumptionGoalRepository.findAvgGoalAmountByCategory(
 			anyInt(), anyInt(), any(), any())).willReturn(categoryAvgList);
-		given(consumptionGoalRepository.findAllGoalAmountByUserId(user.getId()))
+		given(consumptionGoalRepository.findAllGoalAmountByUserId(user.getId(), currentMonth))
 			.willReturn(myConsumptionAmountList);
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
 
