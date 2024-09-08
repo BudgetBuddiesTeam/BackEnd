@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.repository;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -319,5 +320,67 @@ class ConsumptionGoalRepositoryTest {
 
 		assertThat(firstResult.getConsumptionCount()).isEqualTo(2);
 		assertThat(secondResult.getConsumptionCount()).isEqualTo(1);
+	}
+
+	@Test
+	@DisplayName("특정 카테고리에 대해 특정 달 이전 가장 최근 소비목표 조회")
+	void findLatelyGoal_Success() {
+		// given
+		LocalDate targetMonth = LocalDate.of(2024, 7, 1);
+		User user = userRepository.save(
+			User.builder().email("email").age(24).name("name").phoneNumber("010-1234-5678").build());
+
+		Category category = categoryRepository.save(
+			Category.builder().name("유저 카테고리").user(user).isDefault(false).build());
+
+		consumptionGoalRepository.save(ConsumptionGoal.builder()
+			.goalAmount(1L)
+			.consumeAmount(1L)
+			.user(user)
+			.goalMonth(targetMonth)
+			.category(category)
+			.build());
+
+		LocalDate searchDate = LocalDate.of(2024, 9, 1);
+
+		// when
+		ConsumptionGoal result = consumptionGoalRepository.findLatelyGoal(user.getId(), category.getId(), searchDate).get();
+
+		// then
+		assertEquals(result.getGoalMonth(), targetMonth);
+	}
+
+	@Test
+	@DisplayName("소비목표가 여러 개 있을 경우, 특정 카테고리에 대해 특정 달 이전 가장 최근 소비목표 조회")
+	void findLatelyGoal_Success2() {
+		// given
+		LocalDate targetMonth = LocalDate.of(2024, 7, 1);
+		User user = userRepository.save(
+			User.builder().email("email").age(24).name("name").phoneNumber("010-1234-5678").build());
+
+		Category category = categoryRepository.save(
+			Category.builder().name("유저 카테고리").user(user).isDefault(false).build());
+
+		consumptionGoalRepository.save(ConsumptionGoal.builder()
+			.goalAmount(1L)
+			.consumeAmount(1L)
+			.user(user)
+			.goalMonth(targetMonth)
+			.category(category)
+			.build());
+
+		consumptionGoalRepository.save(ConsumptionGoal.builder()
+			.goalAmount(1L)
+			.consumeAmount(1L)
+			.user(user)
+			.goalMonth(targetMonth.minusMonths(1))
+			.category(category)
+			.build());
+
+		// when
+		ConsumptionGoal result = consumptionGoalRepository.findLatelyGoal(user.getId(), category.getId(), targetMonth).get();
+
+		// then
+		assertEquals(result.getGoalMonth(), targetMonth);
 	}
 }
