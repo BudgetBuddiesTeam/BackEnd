@@ -470,8 +470,8 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	}
 
 	private void restorePreviousGoalConsumptionAmount(Expense expense, User user) {
-		ConsumptionGoal previousConsumptionGoal = consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(
-				user, expense.getCategory(), expense.getExpenseDate().toLocalDate().withDayOfMonth(1))
+		ConsumptionGoal previousConsumptionGoal = consumptionGoalRepository.findLatelyGoal(
+				user.getId(), expense.getCategory().getId(), expense.getExpenseDate().toLocalDate().withDayOfMonth(1))
 			.orElseThrow(() -> new IllegalArgumentException("Not found consumptionGoal"));
 
 		previousConsumptionGoal.restoreConsumeAmount(expense.getAmount());
