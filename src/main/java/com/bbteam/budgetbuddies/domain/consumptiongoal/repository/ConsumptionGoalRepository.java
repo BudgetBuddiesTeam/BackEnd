@@ -65,9 +65,11 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		"WHERE cg.category.isDefault = true " +
 		"AND cg.deleted = false " +
 		"AND cg.user.id = :userId " +
+		"AND cg.goalMonth >= :currentMonth " +
 		"GROUP BY cg.category.id " +
 		"ORDER BY cg.category.id")
-	List<MyConsumptionGoalDto> findAllConsumptionAmountByUserId(@Param("userId") Long userId);
+	List<MyConsumptionGoalDto> findAllConsumptionAmountByUserId(@Param("userId") Long userId,
+		@Param("currentMonth") LocalDate currentMonth);
 
 	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto(" +
 		"cg.category.id, AVG(cg.goalAmount))" +
@@ -91,9 +93,11 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		"WHERE cg.category.isDefault = true " +
 		"AND cg.deleted = false " +
 		"AND cg.user.id = :userId " +
+		"AND cg.goalMonth >= :currentMonth " +
 		"GROUP BY cg.category.id " +
 		"ORDER BY cg.category.id")
-	List<MyConsumptionGoalDto> findAllGoalAmountByUserId(@Param("userId") Long userId);
+	List<MyConsumptionGoalDto> findAllGoalAmountByUserId(@Param("userId") Long userId,
+		@Param("currentMonth") LocalDate currentMonth);
 
 	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryConsumptionCountDto(" +
 		"e.category.id, COUNT(e)) " +
@@ -121,5 +125,6 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		@Param("userId") Long userId);
 
 	@Query("SELECT cg FROM ConsumptionGoal cg WHERE cg.user = :user AND cg.category = :category AND cg.deleted = true")
-	Optional<ConsumptionGoal> findByUserAndCategoryAndDeletedTrue(@Param("user") User user, @Param("category") Category category);
+	Optional<ConsumptionGoal> findByUserAndCategoryAndDeletedTrue(@Param("user") User user,
+		@Param("category") Category category);
 }

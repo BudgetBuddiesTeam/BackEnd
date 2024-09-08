@@ -299,7 +299,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		List<MyConsumptionGoalDto> myConsumptionAmountList = new ArrayList<>();
 
 		List<MyConsumptionGoalDto> myConsumptionGoalDto = consumptionGoalRepository.findAllConsumptionAmountByUserId(
-			userId);
+			userId, currentMonth);
 
 		Map<Long, MyConsumptionGoalDto> myConsumptionMap = myConsumptionGoalDto.stream()
 			.collect(Collectors.toMap(MyConsumptionGoalDto::getCategoryId, Function.identity()));
@@ -339,7 +339,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		List<MyConsumptionGoalDto> myConsumptionAmountList = new ArrayList<>();
 
 		List<MyConsumptionGoalDto> myConsumptionGoalDto = consumptionGoalRepository.findAllGoalAmountByUserId(
-			userId);
+			userId, currentMonth);
 
 		Map<Long, MyConsumptionGoalDto> myConsumptionMap = myConsumptionGoalDto.stream()
 			.collect(Collectors.toMap(MyConsumptionGoalDto::getCategoryId, Function.identity()));
