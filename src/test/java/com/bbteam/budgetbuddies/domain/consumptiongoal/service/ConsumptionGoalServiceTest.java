@@ -43,6 +43,7 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
+import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import com.bbteam.budgetbuddies.enums.Gender;
@@ -62,6 +63,8 @@ class ConsumptionGoalServiceTest {
 	private CategoryRepository categoryRepository;
 	@Mock
 	private UserRepository userRepository;
+	@Mock
+	private ExpenseRepository expenseRepository;
 	@Spy
 	private ConsumptionGoalConverter consumptionGoalConverter;
 
@@ -383,7 +386,7 @@ class ConsumptionGoalServiceTest {
 		String peerGender = "MALE";
 
 		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-		given(consumptionGoalRepository.findTopCategoriesByConsumptionCount(peerAgeStart, peerAgeEnd,
+		given(expenseRepository.findTopCategoriesByConsumptionCount(peerAgeStart, peerAgeEnd,
 			Gender.valueOf(peerGender), currentMonth.atStartOfDay()))
 			.willReturn(List.of(topConsumption1, topConsumption2, topConsumption3));
 

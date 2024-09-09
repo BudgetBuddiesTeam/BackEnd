@@ -302,7 +302,7 @@ class ConsumptionGoalRepositoryTest {
 		Gender peerGender = Gender.MALE;
 		LocalDate currentMonth = LocalDate.now();
 
-		List<CategoryConsumptionCountDto> result = consumptionGoalRepository.findTopCategoriesByConsumptionCount(
+		List<CategoryConsumptionCountDto> result = expenseRepository.findTopCategoriesByConsumptionCount(
 			peerAgeStart, peerAgeEnd, peerGender, currentMonth.atStartOfDay());
 
 		// then
