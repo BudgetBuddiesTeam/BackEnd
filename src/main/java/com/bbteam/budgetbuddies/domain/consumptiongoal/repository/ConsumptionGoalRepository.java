@@ -99,6 +99,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	List<MyConsumptionGoalDto> findAllGoalAmountByUserId(@Param("userId") Long userId,
 		@Param("currentMonth") LocalDate currentMonth);
 
+	// TODO  expenseRepository로 옮기기
 	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryConsumptionCountDto(" +
 		"e.category.id, COUNT(e)) " +
 		"FROM Expense e " +
@@ -127,4 +128,34 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	@Query("SELECT cg FROM ConsumptionGoal cg WHERE cg.user = :user AND cg.category = :category AND cg.deleted = true")
 	Optional<ConsumptionGoal> findByUserAndCategoryAndDeletedTrue(@Param("user") User user,
 		@Param("category") Category category);
+
+	@Query("SELECT cg.goalAmount " +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender " +
+		"AND cg.goalMonth >= :currentMonth " +
+		"AND cg.category.id = :categoryId ")
+	List<Double> findGoalAmountsByCategory(
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth,
+		@Param("categoryId") Long categoryId);
+
+	@Query("SELECT cg.consumeAmount " +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender " +
+		"AND cg.goalMonth >= :currentMonth " +
+		"AND cg.category.id = :categoryId ")
+	List<Double> findConsumeAmountsByCategory(
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth,
+		@Param("categoryId") Long categoryId);
 }
