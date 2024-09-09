@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryConsumptionCountDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
@@ -99,24 +98,6 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	List<MyConsumptionGoalDto> findAllGoalAmountByUserId(@Param("userId") Long userId,
 		@Param("currentMonth") LocalDate currentMonth);
 
-	// TODO  expenseRepository로 옮기기
-	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.CategoryConsumptionCountDto(" +
-		"e.category.id, COUNT(e)) " +
-		"FROM Expense e " +
-		"WHERE e.category.isDefault = true " +
-		"AND e.deleted = false " +
-		"AND e.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
-		"AND e.user.gender = :peerGender " +
-		"AND e.expenseDate >= :currentMonth " +
-		"AND e.amount > 0 " +
-		"GROUP BY e.category.id " +
-		"ORDER BY COUNT(e) DESC")
-	List<CategoryConsumptionCountDto> findTopCategoriesByConsumptionCount(
-		@Param("peerAgeStart") int peerAgeStart,
-		@Param("peerAgeEnd") int peerAgeEnd,
-		@Param("peerGender") Gender peerGender,
-		@Param("currentMonth") LocalDateTime currentMonth);
-
 	@Modifying
 	@Query("UPDATE ConsumptionGoal cg SET cg.deleted = TRUE WHERE cg.category.id = :categoryId AND cg.user.id = :userId")
 	void softDeleteByCategoryIdAndUserId(@Param("categoryId") Long categoryId, @Param("userId") Long userId);
@@ -137,7 +118,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		"AND cg.user.gender = :peerGender " +
 		"AND cg.goalMonth >= :currentMonth " +
 		"AND cg.category.id = :categoryId ")
-	List<Double> findGoalAmountsByCategory(
+	List<Double> findGoalAmountsByCategories(
 		@Param("peerAgeStart") int peerAgeStart,
 		@Param("peerAgeEnd") int peerAgeEnd,
 		@Param("peerGender") Gender peerGender,
@@ -152,7 +133,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		"AND cg.user.gender = :peerGender " +
 		"AND cg.goalMonth >= :currentMonth " +
 		"AND cg.category.id = :categoryId ")
-	List<Double> findConsumeAmountsByCategory(
+	List<Double> findConsumeAmountsByCategories(
 		@Param("peerAgeStart") int peerAgeStart,
 		@Param("peerAgeEnd") int peerAgeEnd,
 		@Param("peerGender") Gender peerGender,
