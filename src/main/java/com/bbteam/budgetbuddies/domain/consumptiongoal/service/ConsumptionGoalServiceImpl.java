@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
+import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import com.bbteam.budgetbuddies.enums.Gender;
@@ -58,6 +60,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	private final LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
 	private final LocalDate startOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 	private final LocalDate endOfWeek = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+	private final ExpenseRepository expenseRepository;
 	private int peerAgeStart;
 	private int peerAgeEnd;
 	private Gender peerGender;
@@ -88,7 +91,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		List<AvgConsumptionGoalDto> categoryAvgList = getAvgGoalAmount();
+		List<AvgConsumptionGoalDto> categoryAvgList = getMedianGoalAmount();
 
 		List<MyConsumptionGoalDto> myConsumptionAmountList = getMyGoalAmount(userId);
 
@@ -171,7 +174,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		List<CategoryConsumptionCountDto> categoryConsumptionCountDto = consumptionGoalRepository
+		List<CategoryConsumptionCountDto> categoryConsumptionCountDto = expenseRepository
 			.findTopCategoriesByConsumptionCount(peerAgeStart, peerAgeEnd, peerGender, currentMonth.atStartOfDay());
 
 		return categoryConsumptionCountDto.stream()
@@ -190,7 +193,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		List<AvgConsumptionGoalDto> categoryAvgList = getAvgConsumptionAmount();
+		List<AvgConsumptionGoalDto> categoryAvgList = getMedianConsumeAmount();
 
 		List<MyConsumptionGoalDto> myConsumptionAmountList = getMyConsumptionAmount(userId);
 
@@ -272,26 +275,26 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			peerAgeEnd = 19;
 		}
 	}
-
-	private List<AvgConsumptionGoalDto> getAvgConsumptionAmount() {
-
-		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
-		List<AvgConsumptionGoalDto> categoryAvgList = new ArrayList<>();
-
-		List<AvgConsumptionGoalDto> avgConsumptionGoalDto = consumptionGoalRepository
-			.findAvgConsumptionAmountByCategory(peerAgeStart, peerAgeEnd, peerGender, currentMonth);
-
-		Map<Long, AvgConsumptionGoalDto> categoryAvgMap = avgConsumptionGoalDto.stream()
-			.collect(Collectors.toMap(AvgConsumptionGoalDto::getCategoryId, Function.identity()));
-
-		for (Category category : defaultCategories) {
-			AvgConsumptionGoalDto avgDto = categoryAvgMap.getOrDefault(category.getId(),
-				new AvgConsumptionGoalDto(category.getId(), 0.0));
-
-			categoryAvgList.add(avgDto);
-		}
-		return categoryAvgList;
-	}
+	// 평균소비목표금액을 가져오는 메서드
+	// private List<AvgConsumptionGoalDto> getAvgConsumptionAmount() {
+	//
+	// 	List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
+	// 	List<AvgConsumptionGoalDto> categoryAvgList = new ArrayList<>();
+	//
+	// 	List<AvgConsumptionGoalDto> avgConsumptionGoalDto = consumptionGoalRepository
+	// 		.findAvgConsumptionAmountByCategory(peerAgeStart, peerAgeEnd, peerGender, currentMonth);
+	//
+	// 	Map<Long, AvgConsumptionGoalDto> categoryAvgMap = avgConsumptionGoalDto.stream()
+	// 		.collect(Collectors.toMap(AvgConsumptionGoalDto::getCategoryId, Function.identity()));
+	//
+	// 	for (Category category : defaultCategories) {
+	// 		AvgConsumptionGoalDto avgDto = categoryAvgMap.getOrDefault(category.getId(),
+	// 			new AvgConsumptionGoalDto(category.getId(), 0.0));
+	//
+	// 		categoryAvgList.add(avgDto);
+	// 	}
+	// 	return categoryAvgList;
+	// }
 
 	private List<MyConsumptionGoalDto> getMyConsumptionAmount(Long userId) {
 
@@ -367,6 +370,72 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		BigDecimal roundedAmount = decimalAmount.divide(BigDecimal.valueOf(10), RoundingMode.HALF_UP)
 			.multiply(BigDecimal.valueOf(10));
 		return roundedAmount.longValue();
+	}
+
+	private List<AvgConsumptionGoalDto> getMedianGoalAmount() {
+
+		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
+
+		List<AvgConsumptionGoalDto> categoryMedianList = new ArrayList<>();
+
+		for (Category category : defaultCategories) {
+
+			List<Double> goalAmounts = consumptionGoalRepository.findGoalAmountsByCategories(
+				peerAgeStart, peerAgeEnd, peerGender, currentMonth, category.getId());
+
+			if (goalAmounts != null && !goalAmounts.isEmpty()) {
+
+				double median = calculateMedian(goalAmounts);
+				categoryMedianList.add(new AvgConsumptionGoalDto(category.getId(), median));
+			} else {
+				// 데이터가 없는 경우 기본 값으로
+				categoryMedianList.add(new AvgConsumptionGoalDto(category.getId(), 0.0));
+			}
+		}
+		return categoryMedianList;
+	}
+
+	private List<AvgConsumptionGoalDto> getMedianConsumeAmount() {
+
+		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
+
+		List<AvgConsumptionGoalDto> categoryMedianList = new ArrayList<>();
+
+		for (Category category : defaultCategories) {
+
+			List<Double> goalAmounts = consumptionGoalRepository.findConsumeAmountsByCategories(
+				peerAgeStart, peerAgeEnd, peerGender, currentMonth, category.getId());
+
+			if (goalAmounts != null && !goalAmounts.isEmpty()) {
+				double median = calculateMedian(goalAmounts);
+				categoryMedianList.add(new AvgConsumptionGoalDto(category.getId(), median));
+			} else {
+				// 데이터가 없는 경우 기본 값으로
+				categoryMedianList.add(new AvgConsumptionGoalDto(category.getId(), 0.0));
+			}
+		}
+		return categoryMedianList;
+	}
+
+	private double calculateMedian(List<Double> values) {
+
+		// 0 보다 큰(소비 금액이 존재하는) 값만 계산
+		List<Double> filteredValues = values.stream()
+			.filter(value -> value > 0)
+			.collect(Collectors.toList());
+
+		int size = filteredValues.size();
+
+		if (size == 0) {
+			return 0.0;
+		}
+		Collections.sort(filteredValues);
+
+		if (size % 2 == 0) {
+			return (filteredValues.get(size / 2 - 1) + filteredValues.get(size / 2)) / 2.0;
+		} else {
+			return filteredValues.get(size / 2);
+		}
 	}
 
 	@Override
