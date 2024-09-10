@@ -271,7 +271,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			peerAgeStart = 29;
 			peerAgeEnd = 99;
 		} else {
-			peerAgeStart = 0;
+			peerAgeStart = 1;
 			peerAgeEnd = 19;
 		}
 	}
