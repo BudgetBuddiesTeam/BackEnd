@@ -110,6 +110,12 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	Optional<ConsumptionGoal> findByUserAndCategoryAndDeletedTrue(@Param("user") User user,
 		@Param("category") Category category);
 
+	@Query("SELECT cg FROM ConsumptionGoal cg "
+		+ "WHERE cg.user.id = :userId AND cg.category.id = :categoryId AND cg.goalMonth <= :localDate "
+		+ "ORDER BY cg.goalMonth DESC LIMIT 1")
+	Optional<ConsumptionGoal> findLatelyGoal(@Param("userId") Long userId, @Param("categoryId") Long categoryId,
+		@Param("localDate") LocalDate localDate);
+
 	@Query("SELECT cg.goalAmount " +
 		"FROM ConsumptionGoal cg " +
 		"WHERE cg.category.isDefault = true " +
