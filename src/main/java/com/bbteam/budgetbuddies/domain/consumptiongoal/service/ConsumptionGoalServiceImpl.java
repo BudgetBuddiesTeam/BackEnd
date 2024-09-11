@@ -374,6 +374,14 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	private List<AvgConsumptionGoalDto> getMedianGoalAmount() {
 
+		/**
+		 기본 카테고리만 가져와서 리스트에 저장
+		 기본 카테고리 id 별로 소비 목표 데이터를 가져와 리스트로 저장
+		 데이터가 존재하는 경우 리스트의 중앙값 계산
+		 리스트가 비어 있으면 기본 값 0으로 설정
+		 카테고리 별 중앙값 리스트 반환
+		 **/
+
 		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
 
 		List<AvgConsumptionGoalDto> categoryMedianList = new ArrayList<>();
@@ -397,6 +405,14 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	private List<AvgConsumptionGoalDto> getMedianConsumeAmount() {
 
+		/**
+		 기본 카테고리만 가져와서 리스트에 저장
+		 기본 카테고리 id 별로 소비 금액 데이터를 가져와 리스트로 저장
+		 데이터가 존재하는 경우 리스트의 중앙값 계산
+		 리스트가 비어 있으면 기본 값 0으로 설정
+		 카테고리 별 중앙값 리스트 반환
+		 **/
+
 		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
 
 		List<AvgConsumptionGoalDto> categoryMedianList = new ArrayList<>();
@@ -419,7 +435,13 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	private double calculateMedian(List<Double> values) {
 
-		// 0 보다 큰(소비 금액이 존재하는) 값만 계산
+		/**
+		 values 리스트에서 0 보다 큰(소비 금액이 존재하는) 값만 필터링
+		 size에 필터링한 값의 개수를 저장
+		 홀수일 경우 size / 2 (가운데) 인덱스에 해당하는 값 반환
+		 짝수일 경우 와 size/ 2 -1 인덱스 데이터와 size / 2의 인덱스 데이터의 평균을 처리
+		 **/
+
 		List<Double> filteredValues = values.stream()
 			.filter(value -> value > 0)
 			.collect(Collectors.toList());
@@ -509,7 +531,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	private void updateGoalMapWithPrevious(Long userId, LocalDate goalMonth,
 		Map<Long, ConsumptionGoalResponseDto> goalMap) {
 		goalMap.keySet().stream().map(categoryId ->
-			consumptionGoalRepository.findLatelyGoal(userId, categoryId, goalMonth.minusMonths(1)))
+				consumptionGoalRepository.findLatelyGoal(userId, categoryId, goalMonth.minusMonths(1)))
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 			.map(consumptionGoalConverter::toConsumptionGoalResponseDtoFromPreviousGoal)
