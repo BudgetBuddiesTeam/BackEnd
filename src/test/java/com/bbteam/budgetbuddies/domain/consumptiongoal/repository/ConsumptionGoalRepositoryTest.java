@@ -202,7 +202,7 @@ class ConsumptionGoalRepositoryTest {
 	void findAllConsumptionAmountByUserId_Success() {
 		// when
 		List<MyConsumptionGoalDto> result = consumptionGoalRepository.findAllConsumptionAmountByUserId(
-			peerUser1.getId());
+			peerUser1.getId(), currentMonth);
 
 		// then
 		assertThat(result).isNotEmpty();
@@ -274,7 +274,8 @@ class ConsumptionGoalRepositoryTest {
 	@DisplayName("또래 나이와 성별 정보를 통해 카테고리와 평균 목표 금액 조회 성공")
 	void findAllGoalAmountByUserId_Success() {
 		// when
-		List<MyConsumptionGoalDto> result = consumptionGoalRepository.findAllGoalAmountByUserId(peerUser1.getId());
+		List<MyConsumptionGoalDto> result = consumptionGoalRepository.findAllGoalAmountByUserId(peerUser1.getId(),
+			currentMonth);
 
 		// then
 		assertThat(result).isNotEmpty();
@@ -302,7 +303,7 @@ class ConsumptionGoalRepositoryTest {
 		Gender peerGender = Gender.MALE;
 		LocalDate currentMonth = LocalDate.now();
 
-		List<CategoryConsumptionCountDto> result = consumptionGoalRepository.findTopCategoriesByConsumptionCount(
+		List<CategoryConsumptionCountDto> result = expenseRepository.findTopCategoriesByConsumptionCount(
 			peerAgeStart, peerAgeEnd, peerGender, currentMonth.atStartOfDay());
 
 		// then
