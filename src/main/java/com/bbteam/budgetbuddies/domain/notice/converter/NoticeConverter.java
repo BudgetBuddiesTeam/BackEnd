@@ -21,7 +21,7 @@ public class NoticeConverter {
                 .title(notice.getTitle())
                 .body(notice.getBody())
                 .userName(notice.getUser().getName())
-                .updatedAt(notice.getUpdatedAt())
+                .createdAt(notice.getCreatedAt())
                 .build();
     }
 }
