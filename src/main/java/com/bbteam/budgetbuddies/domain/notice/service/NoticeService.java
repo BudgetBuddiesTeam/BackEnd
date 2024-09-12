@@ -2,6 +2,7 @@ package com.bbteam.budgetbuddies.domain.notice.service;
 
 import com.bbteam.budgetbuddies.domain.notice.dto.NoticeRequestDto;
 import com.bbteam.budgetbuddies.domain.notice.dto.NoticeResponseDto;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public interface NoticeService {
 
     NoticeResponseDto findOne(Long noticeId);
 
-    List<NoticeResponseDto> findAll(Pageable pageable);
+    Page<NoticeResponseDto> findAll(Pageable pageable);
 
     NoticeResponseDto update(Long noticeId, NoticeRequestDto dto);
 

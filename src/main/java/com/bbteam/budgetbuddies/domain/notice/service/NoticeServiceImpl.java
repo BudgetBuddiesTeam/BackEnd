@@ -8,6 +8,7 @@ import com.bbteam.budgetbuddies.domain.notice.repository.NoticeRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,10 +40,9 @@ public class NoticeServiceImpl implements NoticeService{
     }
 
     @Override
-    public List<NoticeResponseDto> findAll(Pageable pageable) {
-        return noticeRepository.findAll(pageable).stream()
-                .map(NoticeConverter::toDto)
-                .toList();
+    public Page<NoticeResponseDto> findAll(Pageable pageable) {
+        return noticeRepository.findAll(pageable)
+                .map(NoticeConverter::toDto);
     }
 
     @Override
