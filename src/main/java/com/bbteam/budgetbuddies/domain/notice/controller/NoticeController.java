@@ -4,29 +4,32 @@ package com.bbteam.budgetbuddies.domain.notice.controller;
 import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.notice.dto.NoticeRequestDto;
 import com.bbteam.budgetbuddies.domain.notice.service.NoticeService;
+import com.bbteam.budgetbuddies.domain.notice.validation.ExistNotice;
 import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @Validated
+@RequestMapping("/notices")
 public class NoticeController implements NoticeApi{
 
     private final NoticeService noticeService;
 
     @Override
-    public ApiResponse<?> saveNotice(@ExistUser Long userId, NoticeRequestDto dto) {
+    @PostMapping
+    public ApiResponse<?> saveNotice(@ExistUser @RequestParam Long userId, @RequestBody NoticeRequestDto dto) {
         return ApiResponse.onSuccess(noticeService.save(dto, userId));
     }
 
     @Override
+    @GetMapping("/all")
     public ApiResponse<?> findAllWithPaging(
             @ParameterObject @PageableDefault(page = 0, size = 20,
                     sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -34,17 +37,20 @@ public class NoticeController implements NoticeApi{
     }
 
     @Override
-    public ApiResponse<?> findOne(Long noticeId) {
+    @GetMapping("/{noticeId}")
+    public ApiResponse<?> findOne(@ExistNotice @PathVariable Long noticeId) {
         return ApiResponse.onSuccess(noticeService.findOne(noticeId));
     }
 
     @Override
-    public ApiResponse<?> modifyNotice(Long noticeId, NoticeRequestDto noticeRequestDto) {
+    @PutMapping("/{noticeId}")
+    public ApiResponse<?> modifyNotice(@ExistNotice @PathVariable Long noticeId, @RequestBody NoticeRequestDto noticeRequestDto) {
         return ApiResponse.onSuccess(noticeService.update(noticeId, noticeRequestDto));
     }
 
     @Override
-    public ApiResponse<?> deleteNotice(Long noticeId) {
+    @DeleteMapping("/{noticeId}")
+    public ApiResponse<?> deleteNotice(@ExistNotice @PathVariable Long noticeId) {
         noticeService.delete(noticeId);
         return ApiResponse.onSuccess("ok");
     }
