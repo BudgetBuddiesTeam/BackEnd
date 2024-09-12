@@ -14,5 +14,5 @@ public class NoticeResponseDto {
     private String title;
     private String body;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-    private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
 }
