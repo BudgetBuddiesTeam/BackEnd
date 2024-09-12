@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface NoticeApi {
 
-    ApiResponse<?> saveNotice(NoticeRequestDto dto);
+    ApiResponse<?> saveNotice(Long userId, NoticeRequestDto dto);
     ApiResponse<?> findAllWithPaging(Pageable pageable);
 
     ApiResponse<?> findOne(Long noticeId);
