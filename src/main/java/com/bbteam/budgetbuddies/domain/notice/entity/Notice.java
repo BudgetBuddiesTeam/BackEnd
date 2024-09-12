@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.notice.entity;
 
 import com.bbteam.budgetbuddies.common.BaseEntity;
+import com.bbteam.budgetbuddies.domain.notice.dto.NoticeRequestDto;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,5 +21,10 @@ public class Notice extends BaseEntity {
     private String title;
 
     private String body;
+
+    public void update(NoticeRequestDto dto) {
+        title = dto.getTitle();
+        body = dto.getBody();
+    }
 
 }
