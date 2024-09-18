@@ -3,12 +3,10 @@ package com.bbteam.budgetbuddies.domain.user.entity;
 import com.bbteam.budgetbuddies.common.BaseEntity;
 import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
 import com.bbteam.budgetbuddies.enums.Gender;
+import com.bbteam.budgetbuddies.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
@@ -20,6 +18,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 public class User extends BaseEntity {
+
+    @Builder.Default
+    private Role role = Role.USER; // 기본값 User 권한
 
     @Column(nullable = false, unique = true)
     private String phoneNumber;
@@ -36,6 +37,9 @@ public class User extends BaseEntity {
 
     @Column(nullable = false, length = 50, unique = true)
     private String email;
+
+    @Column(nullable = false)
+    private String mobileCarrier; // 통신사
 
     @Column(length = 1000)
     private String photoUrl;
