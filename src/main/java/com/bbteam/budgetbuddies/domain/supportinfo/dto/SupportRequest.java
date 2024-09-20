@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 public class SupportRequest {
@@ -28,6 +29,7 @@ public class SupportRequest {
 
         private Boolean isInCalendar;
 
+        private List<Long> hashtagIds;
 
     }
 
@@ -51,6 +53,7 @@ public class SupportRequest {
 
         private Boolean isInCalendar;
 
+        private List<Long> hashtagIds;
 
     }
 

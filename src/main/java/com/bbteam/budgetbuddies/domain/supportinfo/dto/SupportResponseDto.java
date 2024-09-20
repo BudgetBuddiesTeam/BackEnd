@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Builder
@@ -28,5 +29,7 @@ public class SupportResponseDto {
     private String siteUrl;
 
     private String thumbnailUrl;
+
+    private List<String> hashtags;
 
 }
