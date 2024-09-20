@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumeAmountAndGoalAmountDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
@@ -145,4 +146,14 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		@Param("peerGender") Gender peerGender,
 		@Param("currentMonth") LocalDate currentMonth,
 		@Param("categoryId") Long categoryId);
+
+	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumeAmountAndGoalAmountDto("
+		+ "cg.category.id, cg.consumeAmount, cg.goalAmount) "
+		+ "FROM ConsumptionGoal cg "
+		+ "WHERE cg.category.isDefault = true "
+		+ "AND cg.user = :user "
+		+ "AND cg.goalMonth >= :currentMonth")
+	List<ConsumeAmountAndGoalAmountDto> findConsumeAmountAndGoalAmount(
+		@Param("user") User user,
+		@Param("currentMonth") LocalDate currentMonth);
 }
