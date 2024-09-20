@@ -19,7 +19,7 @@ public class NoticeExistValidation implements ConstraintValidator<ExistNotice, L
 
         if(notice.isEmpty()) {
             constraintValidatorContext.disableDefaultConstraintViolation();
-            constraintValidatorContext.buildConstraintViolationWithTemplate(ErrorStatus.NOTICE_NOT_FOUND.toString()).addConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate(ErrorStatus._NOTICE_NOT_FOUND.toString()).addConstraintViolation();
             return false;
         }
 
