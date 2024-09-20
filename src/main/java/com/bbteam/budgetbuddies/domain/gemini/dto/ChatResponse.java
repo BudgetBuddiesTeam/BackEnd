@@ -1,4 +1,4 @@
-package com.bbteam.budgetbuddies.domain.openai.dto;
+package com.bbteam.budgetbuddies.domain.gemini.dto;
 
 import java.util.List;
 

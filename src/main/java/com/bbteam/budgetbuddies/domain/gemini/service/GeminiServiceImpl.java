@@ -1,4 +1,4 @@
-package com.bbteam.budgetbuddies.domain.openai.service;
+package com.bbteam.budgetbuddies.domain.gemini.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -6,14 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.bbteam.budgetbuddies.domain.openai.dto.ChatRequest;
-import com.bbteam.budgetbuddies.domain.openai.dto.ChatResponse;
+import com.bbteam.budgetbuddies.domain.gemini.dto.ChatRequest;
+import com.bbteam.budgetbuddies.domain.gemini.dto.ChatResponse;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class GeminiService {
+public class GeminiServiceImpl implements GeminiService {
 
 	@Qualifier("geminiRestTemplate")
 	@Autowired
@@ -36,4 +36,5 @@ public class GeminiService {
 
 		return message;
 	}
+
 }
