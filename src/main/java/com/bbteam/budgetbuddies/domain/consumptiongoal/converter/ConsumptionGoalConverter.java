@@ -9,6 +9,7 @@ import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MonthReportResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.UserConsumptionGoalResponse;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
@@ -90,6 +91,14 @@ public class ConsumptionGoalConverter {
 			.peerAgeStart(peerAgeStart)
 			.peerAgeEnd(peerAgeEnd)
 			.peerGender(peerGender.name())
+			.build();
+	}
+
+	public MonthReportResponseDto toMonthReportResponseDto(String facialExpression, String comment) {
+
+		return MonthReportResponseDto.builder()
+			.facialExpression(facialExpression)
+			.comment(comment)
 			.build();
 	}
 }
