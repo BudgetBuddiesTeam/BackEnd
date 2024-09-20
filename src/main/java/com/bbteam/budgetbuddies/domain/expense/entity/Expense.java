@@ -15,6 +15,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Getter
@@ -33,10 +35,12 @@ public class Expense extends BaseEntity {
 	private LocalDateTime expenseDate;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "user_id")
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "category_id")
 	private Category category;
 
