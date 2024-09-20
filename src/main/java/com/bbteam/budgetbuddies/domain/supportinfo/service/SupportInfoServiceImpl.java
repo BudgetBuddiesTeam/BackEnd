@@ -1,5 +1,9 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.service;
 
+import com.bbteam.budgetbuddies.domain.connectedinfo.entity.ConnectedInfo;
+import com.bbteam.budgetbuddies.domain.connectedinfo.repository.ConnectedInfoRepository;
+import com.bbteam.budgetbuddies.domain.hashtag.entity.Hashtag;
+import com.bbteam.budgetbuddies.domain.hashtag.repository.HashtagRepository;
 import com.bbteam.budgetbuddies.domain.supportinfo.converter.SupportInfoConverter;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
@@ -17,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,6 +36,9 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
     private final UserRepository userRepository;
 
+    private final HashtagRepository hashtagRepository;
+
+    private final ConnectedInfoRepository connectedInfoRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -48,22 +56,37 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
         Page<SupportInfo> supportInfoPage = supportInfoRepository.findByDateRange(startDate, endDate, pageable);
 
-        return supportInfoPage.map(supportInfoConverter::toDto);
+        return supportInfoPage.map(
+            supportInfo -> {
+                List<ConnectedInfo> connectedInfos = connectedInfoRepository.findAllBySupportInfo(supportInfo);
+                return supportInfoConverter.toDto(supportInfo, connectedInfos);
+            }
+        );
     }
 
     @Transactional
     @Override
-    public SupportResponseDto registerSupportInfo(SupportRequest.RegisterSupportDto supportRequest) {
+    public SupportResponseDto registerSupportInfo(SupportRequest.RegisterSupportDto supportRequestDto) {
         /**
          * 1. RequestDto -> Entity로 변환
          * 2. Entity 저장
          * 3. Entity -> ResponseDto로 변환 후 리턴
          */
-        SupportInfo entity = supportInfoConverter.toEntity(supportRequest);
+        SupportInfo entity = supportInfoConverter.toEntity(supportRequestDto);
 
         supportInfoRepository.save(entity);
 
-        return supportInfoConverter.toDto(entity);
+        List<Hashtag> hashtags = hashtagRepository.findByIdIn(supportRequestDto.getHashtagIds());
+        hashtags.forEach(hashtag -> {
+            ConnectedInfo connectedInfo = ConnectedInfo.builder()
+                .supportInfo(entity)
+                .hashtag(hashtag)
+                .build();
+            connectedInfoRepository.save(connectedInfo);
+        });
+
+        List<ConnectedInfo> connectedInfos = connectedInfoRepository.findAllBySupportInfo(entity);
+        return supportInfoConverter.toDto(entity, connectedInfos);
     }
 
     @Transactional
@@ -112,7 +135,9 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
         SupportInfo savedEntity = supportInfoRepository.save(supportInfo);
 
-        return supportInfoConverter.toDto(savedEntity);
+        List<ConnectedInfo> connectedInfos = connectedInfoRepository.findAllBySupportInfo(supportInfo);
+
+        return supportInfoConverter.toDto(savedEntity, connectedInfos);
     }
 
     @Transactional
@@ -132,7 +157,9 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
         supportInfoRepository.save(supportInfo); // 변경사항 저장
 
-        return supportInfoConverter.toDto(supportInfo);
+        List<ConnectedInfo> connectedInfos = connectedInfoRepository.findAllBySupportInfo(supportInfo);
+
+        return supportInfoConverter.toDto(supportInfo, connectedInfos);
     }
 
     @Transactional
@@ -146,6 +173,9 @@ public class SupportInfoServiceImpl implements SupportInfoService {
 
         SupportInfo supportInfo = supportInfoRepository.findById(supportInfoId)
             .orElseThrow(() -> new IllegalArgumentException("SupportInfo not found"));
+
+        // 연결된 ConnectedInfo 삭제 (일단 삭제되지 않도록 주석 처리)
+//        connectedInfoRepository.deleteAllBySupportInfo(supportInfo);
 
         supportInfoRepository.deleteById(supportInfoId);
 
@@ -165,6 +195,8 @@ public class SupportInfoServiceImpl implements SupportInfoService {
         SupportInfo supportInfo = supportInfoRepository.findById(supportInfoId)
             .orElseThrow(() -> new IllegalArgumentException("SupportInfo not found"));
 
-        return supportInfoConverter.toDto(supportInfo);
+        List<ConnectedInfo> connectedInfos = connectedInfoRepository.findAllBySupportInfo(supportInfo);
+
+        return supportInfoConverter.toDto(supportInfo, connectedInfos);
     }
 }
