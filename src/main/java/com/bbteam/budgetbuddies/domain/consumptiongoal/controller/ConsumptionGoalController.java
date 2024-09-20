@@ -18,6 +18,7 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AllConsumptionCategor
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MonthReportResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopCategoryConsumptionDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
@@ -110,6 +111,12 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 	public ApiResponse<ConsumptionAnalysisResponseDto> getTopCategoryAndConsumptionAmount(
 		@RequestParam(name = "userId") Long userId) {
 		ConsumptionAnalysisResponseDto response = consumptionGoalService.getTopCategoryAndConsumptionAmount(userId);
+		return ApiResponse.onSuccess(response);
+	}
+
+	@GetMapping("/facialExpressions")
+	public ApiResponse<MonthReportResponseDto> getMonthReport(@RequestParam(name = "userId") Long userId) {
+		MonthReportResponseDto response = consumptionGoalService.getMonthReport(userId);
 		return ApiResponse.onSuccess(response);
 	}
 
