@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Target( { ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExistNotice {
-    String message() default "해당 user가 존재하지 않습니다.";
+    String message() default "해당 Notice가 존재하지 않습니다.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
