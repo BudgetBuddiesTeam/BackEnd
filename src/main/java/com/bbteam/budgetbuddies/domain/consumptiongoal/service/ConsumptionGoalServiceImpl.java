@@ -2,6 +2,7 @@ package com.bbteam.budgetbuddies.domain.consumptiongoal.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -153,10 +155,8 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		LocalDateTime startOfWeekDateTime = startOfWeek.atStartOfDay();
 		LocalDateTime endOfWeekDateTime = endOfWeek.atTime(LocalTime.MAX);
 
-		Long currentWeekConsumptionAmount = consumptionGoalRepository
-			.findAvgConsumptionByCategoryIdAndCurrentWeek(
-				topConsumptionGoalCategoryId, startOfWeekDateTime, endOfWeekDateTime,
-				peerAgeStart, peerAgeEnd, peerGender)
+		Long currentWeekConsumptionAmount = consumptionGoalRepository.findAvgConsumptionByCategoryIdAndCurrentWeek(
+				topConsumptionGoalCategoryId, startOfWeekDateTime, endOfWeekDateTime, peerAgeStart, peerAgeEnd, peerGender)
 			.orElse(0L);
 
 		currentWeekConsumptionAmount = roundToNearest10(currentWeekConsumptionAmount);
@@ -174,9 +174,8 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		checkPeerInfo(userId, peerAgeS, peerAgeE, peerG);
 
-		List<CategoryConsumptionCountDto> categoryConsumptionCountDto =
-			expenseRepository.findTopCategoriesByConsumptionCount(
-				peerAgeStart, peerAgeEnd, peerGender, currentMonth.atStartOfDay());
+		List<CategoryConsumptionCountDto> categoryConsumptionCountDto = expenseRepository.findTopCategoriesByConsumptionCount(
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth.atStartOfDay());
 
 		return categoryConsumptionCountDto.stream()
 			.limit(3)
@@ -374,12 +373,12 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	private List<AvgConsumptionGoalDto> getMedianGoalAmount() {
 
 		/**
-		 기본 카테고리만 가져와서 리스트에 저장
-		 기본 카테고리 id 별로 소비 목표 데이터를 가져와 리스트로 저장
-		 데이터가 존재하는 경우 리스트의 중앙값 계산
-		 리스트가 비어 있으면 기본 값 0으로 설정
-		 카테고리 별 중앙값 리스트 반환
-		 **/
+		 * 기본 카테고리만 가져와서 리스트에 저장
+		 * 기본 카테고리 id 별로 소비 목표 데이터를 가져와 리스트로 저장
+		 * 데이터가 존재하는 경우 리스트의 중앙값 계산
+		 * 리스트가 비어 있으면 기본 값 0으로 설정
+		 * 카테고리 별 중앙값 리스트 반환
+		 */
 
 		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
 
@@ -404,13 +403,13 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	private List<AvgConsumptionGoalDto> getMedianConsumeAmount() {
 
-		/**
-		 기본 카테고리만 가져와서 리스트에 저장
-		 기본 카테고리 id 별로 소비 금액 데이터를 가져와 리스트로 저장
-		 데이터가 존재하는 경우 리스트의 중앙값 계산
-		 리스트가 비어 있으면 기본 값 0으로 설정
-		 카테고리 별 중앙값 리스트 반환
-		 **/
+		/*
+		 * 기본 카테고리만 가져와서 리스트에 저장
+		 * 기본 카테고리 id 별로 소비 금액 데이터를 가져와 리스트로 저장
+		 * 데이터가 존재하는 경우 리스트의 중앙값 계산
+		 * 리스트가 비어 있으면 기본 값 0으로 설정
+		 * 카테고리 별 중앙값 리스트 반환
+		 */
 
 		List<Category> defaultCategories = categoryRepository.findAllByIsDefaultTrue();
 
@@ -434,12 +433,12 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	private double calculateMedian(List<Double> values) {
 
-		/**
-		 values 리스트에서 0 보다 큰(소비 금액이 존재하는) 값만 필터링
-		 size 에 필터링한 값의 개수를 저장
-		 홀수일 경우 size / 2 (가운데) 인덱스에 해당하는 값 반환
-		 짝수일 경우 와 size/ 2 -1 인덱스 데이터와 size / 2의 인덱스 데이터의 평균을 처리
-		 **/
+		/*
+		 * values 리스트에서 0 보다 큰(소비 금액이 존재하는) 값만 필터링
+		 * size 에 필터링한 값의 개수를 저장
+		 * 홀수일 경우 size / 2 (가운데) 인덱스에 해당하는 값 반환
+		 * 짝수일 경우 와 size/ 2 -1 인덱스 데이터와 size / 2의 인덱스 데이터의 평균을 처리
+		 */
 
 		List<Double> filteredValues = values.stream().filter(value -> value > 0).collect(Collectors.toList());
 
@@ -719,7 +718,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		 • 아슬아슬함: 소비 비율이 남은 시간 비율보다 10~20% 높음 (조금 더 신경 써야 함)
 		 • 위기: 소비 비율이 남은 시간 비율보다 20~30% 높음 (위험한 수준)
 		 • 실패: 소비 비율이 남은 시간 비율보다 30% 이상 높음 (예산 초과 가능성 큼)
-		 **/
+		 */
 		for (Long key : consumeRatioByCategories.keySet()) {
 			long ratioDifference = consumeRatioByCategories.get(key) - remainDaysRatio;
 
@@ -786,10 +785,18 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		long todayAvailableConsumptionAmount = minDifference / remainDays;
 		long weekAvailableConsumptionAmount = todayAvailableConsumptionAmount * 7;
 
-		if (minDifference < 0) {
+		log.info(String.valueOf(weekAvailableConsumptionAmount));
+
+		NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);  // 한국 단위로 locale
+
+		if (weekAvailableConsumptionAmount < 0) {
 			return "이번 달에는 " + minCategoryName + "에 " + Math.abs(minDifference) / 10000 + "만원 이상 초과했어요!";
+		} else if (weekAvailableConsumptionAmount <= 10000) {
+			return "이번 달에는 " + minCategoryName + "에 " + nf.format(weekAvailableConsumptionAmount / 1000 * 1000)
+				+ "원 이상 쓰시면 안 돼요!";
 		} else {
-			return "이번 주에는 " + minCategoryName + "에 " + (weekAvailableConsumptionAmount / 10000) + "만원 이상 쓰시면 안 돼요!";
+			return "이번 주에는 " + minCategoryName + "에 " + Math.abs(Math.abs(weekAvailableConsumptionAmount) / 10000)
+				+ "만원 이상 쓰시면 안 돼요!";
 		}
 	}
 }
