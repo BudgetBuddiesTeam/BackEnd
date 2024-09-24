@@ -3,6 +3,7 @@ package com.bbteam.budgetbuddies.domain.discountinfo.dto;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class DiscountRequest {
 
@@ -25,6 +26,8 @@ public class DiscountRequest {
         private String thumbnailUrl;
 
         private Boolean isInCalendar;
+
+        private List<Long> hashtagIds;
 
     }
 
@@ -49,6 +52,9 @@ public class DiscountRequest {
         private String thumbnailUrl;
 
         private Boolean isInCalendar;
+
+        private List<Long> hashtagIds;
+
     }
 
 
