@@ -24,8 +24,8 @@ public class FaqController implements FaqApi{
 
     @Override
     @PostMapping("")
-    public ApiResponse<FaqResponseDto.FaqPostResponse> postFaq(@ExistUser Long userId,
-                                                               @Valid FaqRequestDto.FaqPostRequest dto) {
+    public ApiResponse<FaqResponseDto.FaqPostResponse> postFaq(@ExistUser @RequestParam Long userId,
+                                                               @Valid @RequestBody FaqRequestDto.FaqPostRequest dto) {
         return ApiResponse.onSuccess(faqService.postFaq(dto, userId));
     }
 
@@ -44,7 +44,7 @@ public class FaqController implements FaqApi{
     @Override
     @PutMapping("/{faqId}")
     public ApiResponse<FaqResponseDto.FaqModifyResponse> modifyFaq(@PathVariable @ExistFaq Long faqId,
-                                                                   @Valid FaqRequestDto.FaqModifyRequest dto) {
+                                                                   @Valid @RequestBody FaqRequestDto.FaqModifyRequest dto) {
         return ApiResponse.onSuccess(faqService.modifyFaq(dto, faqId));
     }
 
