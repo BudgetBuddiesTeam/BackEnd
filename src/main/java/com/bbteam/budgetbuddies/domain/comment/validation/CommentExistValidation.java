@@ -8,7 +8,6 @@ import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.annotation.Annotation;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -22,7 +21,7 @@ public class CommentExistValidation implements ConstraintValidator<ExistComment,
 
         if(comment.isEmpty()) {
             constraintValidatorContext.disableDefaultConstraintViolation();
-            constraintValidatorContext.buildConstraintViolationWithTemplate(ErrorStatus.COMMENT_NOT_FOUND.toString()).addConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate(ErrorStatus._COMMENT_NOT_FOUND.toString()).addConstraintViolation();
             return false;
         }
         return true;
