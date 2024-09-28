@@ -45,6 +45,8 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoa
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
+import com.bbteam.budgetbuddies.domain.gemini.service.GeminiService;
+import com.bbteam.budgetbuddies.domain.openai.service.OpenAiService;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import com.bbteam.budgetbuddies.enums.Gender;
@@ -60,6 +62,8 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	private final ConsumptionGoalRepository consumptionGoalRepository;
 	private final CategoryRepository categoryRepository;
 	private final UserRepository userRepository;
+	private final GeminiService geminiService;
+	private final OpenAiService openAiService;
 
 	private final ConsumptionGoalConverter consumptionGoalConverter;
 	private final LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
@@ -799,4 +803,22 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 				+ "만원 이상 쓰시면 안 돼요!";
 		}
 	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public String getConsumptionMention(Long userId) {
+
+		String username = findUserById(userId).getName();
+		String categoryName = "패션";
+		String consumption = "20000";
+
+		String prompt =
+			username + "님 또래는  으로 시작하고 " + categoryName + "," + consumption
+				+ "을 포함해 카테고리 관련 내용(ex. 패션-밥보다 옷을 더 많이 사요, 유흥-술자리에 N만원 써요)같은 멘트나" +
+				" 카테고리 목표 금액(ex. 패션에 N만원 소비를 계획해요) 트렌드 한 멘트 사용, 인터넷상 바이럴 문구 참고하여 35자 이내 한 문장 만들어줘";
+
+		return openAiService.chat(prompt);
+		// 	return geminiService.getContents(prompt);
+	}
+
 }
