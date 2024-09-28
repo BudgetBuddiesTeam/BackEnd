@@ -50,4 +50,6 @@ public interface ConsumptionGoalService {
 	void updateOrCreateDeletedConsumptionGoal(Long userId, Long categoryId, LocalDate goalMonth, Long amount);
 
 	MonthReportResponseDto getMonthReport(Long userId);
+
+	String getConsumptionMention(Long userId);
 }
