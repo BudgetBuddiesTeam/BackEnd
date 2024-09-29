@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.controller;
 
 import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
+import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.service.SupportInfoService;
@@ -80,4 +81,15 @@ public class SupportInfoController implements SupportInfoApi {
         return ApiResponse.onSuccess(supportResponseDto);
     }
 
+    @Override
+    @GetMapping("/liked-all")
+    public ApiResponse<Page<SupportResponseDto>> getLikedSupportInfo(
+        @RequestParam @ExistUser Long userId,
+        @RequestParam(defaultValue = "0") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+        Page<SupportResponseDto> likedSupportInfoPage = supportInfoService.getLikedSupportInfo(userId, page, size);
+
+        return ApiResponse.onSuccess(likedSupportInfoPage);
+    }
 }
