@@ -18,6 +18,7 @@ public enum ErrorStatus implements BaseErrorCode {
     _COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "COMMENT4001", "해당 댓글이 없습니다.") ,
     _NOTICE_NOT_FOUND(HttpStatus.BAD_REQUEST, "NOTICE4001", "해당 공지가 없습니다."),
     _PAGE_LOWER_ZERO(HttpStatus.BAD_REQUEST, "PAGE4001", "요청된 페이지가 0보다 작습니다."),
+    _TOKEN_NOT_VALID(HttpStatus.BAD_REQUEST, "TOKEN401", "토큰이 유효하지 않습니다."),
     _FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ4004", "해당 FAQ가 존재하지 않습니다.");
 
 

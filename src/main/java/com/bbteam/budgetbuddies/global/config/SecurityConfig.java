@@ -1,6 +1,9 @@
 package com.bbteam.budgetbuddies.global.config;
 
+import com.bbteam.budgetbuddies.global.security.OtpService;
+import com.bbteam.budgetbuddies.global.security.PhoneNumberAuthenticationProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -20,6 +23,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @Slf4j
 public class SecurityConfig {
+
+    @Autowired
+    private final PhoneNumberAuthenticationProvider phoneNumberOtpAuthenticationProvider;
+
+    @Autowired
+    private final OtpService otpService;
 
     private final Environment env;
 
