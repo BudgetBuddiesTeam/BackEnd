@@ -2,6 +2,8 @@ package com.bbteam.budgetbuddies.domain.supportinfo.service;
 
 import com.bbteam.budgetbuddies.domain.connectedinfo.entity.ConnectedInfo;
 import com.bbteam.budgetbuddies.domain.connectedinfo.repository.ConnectedInfoRepository;
+import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
+import com.bbteam.budgetbuddies.domain.discountinfolike.entity.DiscountInfoLike;
 import com.bbteam.budgetbuddies.domain.hashtag.entity.Hashtag;
 import com.bbteam.budgetbuddies.domain.hashtag.repository.HashtagRepository;
 import com.bbteam.budgetbuddies.domain.supportinfo.converter.SupportInfoConverter;
@@ -198,5 +200,25 @@ public class SupportInfoServiceImpl implements SupportInfoService {
         List<ConnectedInfo> connectedInfos = connectedInfoRepository.findAllBySupportInfo(supportInfo);
 
         return supportInfoConverter.toDto(supportInfo, connectedInfos);
+    }
+
+    @Transactional
+    @Override
+    public Page<SupportResponseDto> getLikedSupportInfo(Long userId, Integer page, Integer size) {
+        /**
+         * 1. 페이징 설정: 주어진 page와 size를 사용하여 Pageable 객체를 생성합니다.
+         * 2. 사용자 조회: userId로 User 엔티티를 조회하며, 존재하지 않을 경우 IllegalArgumentException을 발생시킵니다.
+         * 3. 좋아요 정보 조회: 조회된 User에 대한 SupportInfoLike 리스트를 업데이트 시간 기준으로 내림차순 정렬하여 가져옵니다.
+         * 4. ResponseDto로 변환: SupportInfoLike 리스트를 SupportResponseDto 페이지로 변환하여 반환합니다.
+         */
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Page<SupportInfoLike> likes = supportInfoLikeRepository.findAllByUserOrderByUpdatedAtDesc(user, pageable);
+
+        return supportInfoConverter.toEntityPage(likes);
     }
 }
