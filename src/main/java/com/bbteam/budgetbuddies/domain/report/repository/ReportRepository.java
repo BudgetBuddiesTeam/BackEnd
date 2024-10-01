@@ -1,9 +1,11 @@
 package com.bbteam.budgetbuddies.domain.report.repository;
 
-import com.bbteam.budgetbuddies.domain.report.entity.Report;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.bbteam.budgetbuddies.domain.comment.entity.Comment;
+import com.bbteam.budgetbuddies.domain.report.entity.Report;
+import com.bbteam.budgetbuddies.domain.user.entity.User;
+
 public interface ReportRepository extends JpaRepository<Report, Long> {
-
-
+	boolean existsByUserAndComment(User user, Comment comment);
 }
