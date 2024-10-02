@@ -1,5 +1,6 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.service;
 
+import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import org.springframework.data.domain.Page;
@@ -21,5 +22,11 @@ public interface SupportInfoService {
     String deleteSupportInfo(Long supportInfoId);
 
     SupportResponseDto getSupportInfoById(Long supportInfoId);
+
+    Page<SupportResponseDto> getLikedSupportInfo(
+        Long userId,
+        Integer page,
+        Integer size
+    );
 
 }

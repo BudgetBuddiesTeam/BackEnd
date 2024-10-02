@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.faq.entity;
 
 import com.bbteam.budgetbuddies.common.BaseEntity;
+import com.bbteam.budgetbuddies.domain.faq.dto.FaqRequestDto;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,4 +30,8 @@ public class Faq extends BaseEntity {
 
     private String body;
 
+    public void update(FaqRequestDto.FaqModifyRequest dto) {
+        title = dto.getTitle();
+        body = dto.getBody();
+    }
 }

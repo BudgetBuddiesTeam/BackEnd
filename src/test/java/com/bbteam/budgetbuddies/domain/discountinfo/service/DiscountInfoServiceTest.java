@@ -7,6 +7,9 @@ import com.bbteam.budgetbuddies.domain.discountinfo.entity.DiscountInfo;
 import com.bbteam.budgetbuddies.domain.discountinfo.repository.DiscountInfoRepository;
 import com.bbteam.budgetbuddies.domain.discountinfolike.entity.DiscountInfoLike;
 import com.bbteam.budgetbuddies.domain.discountinfolike.repository.DiscountInfoLikeRepository;
+import com.bbteam.budgetbuddies.domain.connectedinfo.entity.ConnectedInfo;
+import com.bbteam.budgetbuddies.domain.connectedinfo.repository.ConnectedInfoRepository;
+import com.bbteam.budgetbuddies.domain.hashtag.repository.HashtagRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import com.bbteam.budgetbuddies.enums.Gender;
@@ -46,6 +49,12 @@ class DiscountInfoServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ConnectedInfoRepository connectedInfoRepository;
+
+    @Mock
+    private HashtagRepository hashtagRepository;
+
     @InjectMocks
     private DiscountInfoServiceImpl discountInfoService;
 
@@ -79,24 +88,26 @@ class DiscountInfoServiceTest {
         DiscountResponseDto dto1 = new DiscountResponseDto();
         DiscountResponseDto dto2 = new DiscountResponseDto();
 
+        when(connectedInfoRepository.findAllByDiscountInfo(discount1)).thenReturn(List.of());
+        when(connectedInfoRepository.findAllByDiscountInfo(discount2)).thenReturn(List.of());
+
         when(discountInfoRepository.findByDateRange(startDate, endDate, pageable)).thenReturn(discountPage);
-        when(discountInfoConverter.toDto(discount1)).thenReturn(dto1);
-        when(discountInfoConverter.toDto(discount2)).thenReturn(dto2);
+        when(discountInfoConverter.toDto(discount1, List.of())).thenReturn(dto1);
+        when(discountInfoConverter.toDto(discount2, List.of())).thenReturn(dto2);
 
         // when
         Page<DiscountResponseDto> result = discountInfoService.getDiscountsByYearAndMonth(2024, 7, 0, 10);
 
         // then
         // 1. 데이터가 2개인지 검증
-        // 2. 각 데이터 내용이 일치하는지 검증
         assertThat(result.getContent()).hasSize(2);
+        // 2. 각 데이터 내용이 일치하는지 검증
         assertThat(result.getContent().get(0)).isEqualTo(dto1);
         assertThat(result.getContent().get(1)).isEqualTo(dto2);
-
         // 3. 각 메소드가 1번씩만 호출되었는지 검증
         verify(discountInfoRepository, times(1)).findByDateRange(startDate, endDate, pageable);
-        verify(discountInfoConverter, times(1)).toDto(discount1);
-        verify(discountInfoConverter, times(1)).toDto(discount2);
+        verify(discountInfoConverter, times(1)).toDto(discount1, List.of());
+        verify(discountInfoConverter, times(1)).toDto(discount2, List.of());
     }
 
     @Test
@@ -110,6 +121,7 @@ class DiscountInfoServiceTest {
             .discountRate(30)
             .siteUrl("http://example.com")
             .thumbnailUrl("http://example.com2")
+            .hashtagIds(List.of())
             .build();
 
         DiscountInfo entity = DiscountInfo.builder()
@@ -131,11 +143,12 @@ class DiscountInfoServiceTest {
             .thumbnailUrl("http://example.com2")
             .likeCount(0)
             .anonymousNumber(0)
+            .hashtags(List.of())
             .build();
 
         when(discountInfoConverter.toEntity(requestDto)).thenReturn(entity);
         when(discountInfoRepository.save(entity)).thenReturn(entity);
-        when(discountInfoConverter.toDto(entity)).thenReturn(responseDto);
+        when(discountInfoConverter.toDto(entity, List.of())).thenReturn(responseDto);
 
         // when
         DiscountResponseDto result = discountInfoService.registerDiscountInfo(requestDto);
@@ -143,11 +156,10 @@ class DiscountInfoServiceTest {
         // then
         // 1. 데이터 내용이 일치하는지 검증
         assertThat(result).isEqualTo(responseDto);
-
         // 2. 각 메소드가 1번씩만 호출되었는지 검증
         verify(discountInfoConverter, times(1)).toEntity(requestDto);
         verify(discountInfoRepository, times(1)).save(entity);
-        verify(discountInfoConverter, times(1)).toDto(entity);
+        verify(discountInfoConverter, times(1)).toDto(entity, List.of());
     }
 
     @Test
@@ -195,11 +207,12 @@ class DiscountInfoServiceTest {
             .siteUrl("http://example.com")
             .build();
 
+        when(connectedInfoRepository.findAllByDiscountInfo(discountInfo)).thenReturn(List.of());
         when(discountInfoRepository.save(any(DiscountInfo.class))).thenReturn(discountInfo);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(discountInfoRepository.findById(anyLong())).thenReturn(Optional.of(discountInfo));
         when(discountInfoLikeRepository.findByUserAndDiscountInfo(user, discountInfo)).thenReturn(Optional.of(discountInfoLike));
-        when(discountInfoConverter.toDto(any(DiscountInfo.class))).thenReturn(responseDto);
+        when(discountInfoConverter.toDto(any(DiscountInfo.class), anyList())).thenReturn(responseDto);
 
         // when
         DiscountResponseDto result = discountInfoService.toggleLike(1L, 1L);
@@ -207,16 +220,11 @@ class DiscountInfoServiceTest {
         // then
         // 1. 결과 객체 비교 검증
         assertThat(result).isEqualTo(responseDto);
-
         // 2. 좋아요 개수 0 -> 1로 증가했는지 검증
         assertThat(discountInfo.getLikeCount()).isEqualTo(1);
-
         // 3. 각 메소드가 1번씩만 호출되었는지 검증
         verify(discountInfoRepository, times(1)).findById(1L);
         verify(discountInfoRepository, times(1)).save(discountInfo);
-        verify(discountInfoConverter, times(1)).toDto(discountInfo);
+        verify(discountInfoConverter, times(1)).toDto(discountInfo, List.of());
     }
-
-
-
 }

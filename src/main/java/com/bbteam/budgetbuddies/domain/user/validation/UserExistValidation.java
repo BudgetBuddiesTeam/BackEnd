@@ -1,7 +1,6 @@
 package com.bbteam.budgetbuddies.domain.user.validation;
 
 import com.bbteam.budgetbuddies.apiPayload.code.status.ErrorStatus;
-import com.bbteam.budgetbuddies.domain.comment.entity.Comment;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import jakarta.validation.ConstraintValidator;
@@ -21,7 +20,7 @@ public class UserExistValidation implements ConstraintValidator<ExistUser, Long>
 
         if(foundUser.isEmpty()) {
             constraintValidatorContext.disableDefaultConstraintViolation();
-            constraintValidatorContext.buildConstraintViolationWithTemplate(ErrorStatus.USER_NOT_FOUND.toString()).addConstraintViolation();
+            constraintValidatorContext.buildConstraintViolationWithTemplate(ErrorStatus._USER_NOT_FOUND.toString()).addConstraintViolation();
             return false;
         }
         return true;

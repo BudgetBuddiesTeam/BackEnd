@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.controller;
 
 import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
+import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
@@ -101,5 +102,23 @@ public interface SupportInfoApi {
     })
     ApiResponse<SupportResponseDto> getSupportInfo(
         @PathVariable Long supportInfoId
+    );
+
+    @Operation(summary = "[ADMIN] 특정 사용자가 좋아요를 누른 지원정보 가져오기 API", description = "특정 사용자가 좋아요를 누른 지원정보들을 가져오는 API입니다. 페이징을 포함합니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+//        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
+    })
+    @Parameters({
+        @Parameter(name = "userId", description = "특정 사용자의 id입니다."),
+        @Parameter(name = "page", description = "페이지 번호, 0번이 1 페이지 입니다. (기본값은 0입니다.)"),
+        @Parameter(name = "size", description = "한 페이지에 불러올 데이터 개수입니다. (기본값은 10개입니다.)")
+    })
+    ApiResponse<Page<SupportResponseDto>> getLikedSupportInfo(
+        @PathVariable @ExistUser Long userId,
+        @RequestParam(defaultValue = "0") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
     );
 }

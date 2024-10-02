@@ -81,4 +81,16 @@ public class DiscountInfoController implements DiscountInfoApi {
         return ApiResponse.onSuccess(discountResponseDto);
     }
 
+    @Override
+    @GetMapping("/liked-all")
+    public ApiResponse<Page<DiscountResponseDto>> getLikedDiscountInfo(
+        @RequestParam @ExistUser Long userId,
+        @RequestParam(defaultValue = "0") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+        Page<DiscountResponseDto> likedDiscountInfoPage = discountInfoService.getLikedDiscountInfo(userId, page, size);
+
+        return ApiResponse.onSuccess(likedDiscountInfoPage);
+    }
+
 }
