@@ -60,6 +60,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	private final ConsumptionGoalRepository consumptionGoalRepository;
+	private final ExpenseRepository expenseRepository;
 	private final CategoryRepository categoryRepository;
 	private final UserRepository userRepository;
 	private final GeminiService geminiService;
@@ -69,7 +70,6 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	private final LocalDate currentMonth = LocalDate.now().withDayOfMonth(1);
 	private final LocalDate startOfWeek = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 	private final LocalDate endOfWeek = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-	private final ExpenseRepository expenseRepository;
 	private int peerAgeStart;
 	private int peerAgeEnd;
 	private Gender peerGender;
@@ -808,17 +808,54 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	@Transactional(readOnly = true)
 	public String getConsumptionMention(Long userId) {
 
+		/**
+		 * 가장 큰 소비를 한 소비 목표  데이터 정보와 가장 큰 목표로 세운 소비 목표데이터를 각각 가져온다.
+		 * 위 데이터들을 가지고 프롬프트 진행
+		 * Gemini AI, Chat GPT
+		 */
+
+		checkPeerInfo(userId, 0, 0, "none");
+
+		Optional<ConsumptionGoal> maxConsumeAmount = consumptionGoalRepository.findMaxConsumeAmountByCategory(
+			peerAgeStart,
+			peerAgeEnd,
+			peerGender, currentMonth);
+
+		Optional<ConsumptionGoal> maxGoalAmount = consumptionGoalRepository.findMaxGoalAmountByCategory(
+			peerAgeStart,
+			peerAgeEnd,
+			peerGender, currentMonth);
+
+		if (!maxConsumeAmount.isPresent()) {
+			throw new IllegalArgumentException("해당 소비목표 데이터를 찾을 수 없습니다.");
+		}
+
 		String username = findUserById(userId).getName();
-		String categoryName = "패션";
-		String consumption = "20000";
+		String categoryName = maxConsumeAmount.get().getCategory().getName();
+		String consumeAmount = String.valueOf(maxConsumeAmount.get().getConsumeAmount());
 
-		String prompt =
-			username + "님 또래는  으로 시작하고 " + categoryName + "," + consumption
-				+ "을 포함해 카테고리 관련 내용(ex. 패션-밥보다 옷을 더 많이 사요, 유흥-술자리에 N만원 써요)같은 멘트나" +
-				" 카테고리 목표 금액(ex. 패션에 N만원 소비를 계획해요) 트렌드 한 멘트 사용, 인터넷상 바이럴 문구 참고하여 35자 이내 한 문장 만들어줘";
+		String firstPrompt = "00은 " + username + ", 가장 큰 소비 카테고리 이름은 " + categoryName
+			+ "," + "해당 카테고리 소비금액은" + consumeAmount + "이야";
 
-		return openAiService.chat(prompt);
-		// 	return geminiService.getContents(prompt);
+		if (!maxGoalAmount.isPresent()) {
+			throw new IllegalArgumentException("해당 소비목표 데이터를 찾을 수 없습니다.");
+		}
+
+		categoryName = maxGoalAmount.get().getCategory().getName();
+		String goalAmount = String.valueOf(maxGoalAmount.get().getGoalAmount());
+
+		String secondPrompt = "가장 큰 목표 소비 카테고리 이름은 " + categoryName
+			+ ", 해당 카테고리 목표금액은" + goalAmount + "이야";
+
+		String basePrompt = "소비 분석 관련 멘트를 2개 만들거야 이때," + username
+			+ "님 또래는  ~ 이라는 문장으로 시작하고 35자 이내 한 문장씩 만들어줘"
+			+ firstPrompt + "와" + secondPrompt + "를 사용하고 두 문장의 구분은 줄바꿈으로 해주고, "
+			+ "카테고리 관련 내용(ex. 패션-밥보다 옷을 더 많이 사요, 유흥-술자리에 N만원 써요)같은 멘트나"
+			+ "카테고리 목표 금액(ex. 패션에 N만원 소비를 계획해요)같은  트렌드 한 멘트, 인터넷상 바이럴 문구"
+			+ "참고하여 만들어줘";
+
+		return openAiService.chat(basePrompt);
+		// return geminiService.getContents(basePrompt);
 	}
 
 }
