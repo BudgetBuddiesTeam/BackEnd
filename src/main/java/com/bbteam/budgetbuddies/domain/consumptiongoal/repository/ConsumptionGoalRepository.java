@@ -156,4 +156,32 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	List<ConsumeAmountAndGoalAmountDto> findConsumeAmountAndGoalAmount(
 		@Param("user") User user,
 		@Param("currentMonth") LocalDate currentMonth);
+
+	@Query("SELECT cg " +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender " +
+		"AND cg.goalMonth >= :currentMonth " +
+		"ORDER BY cg.consumeAmount DESC LIMIT 1")
+	Optional<ConsumptionGoal> findMaxConsumeAmountByCategory(
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth);
+
+	@Query("SELECT cg " +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender " +
+		"AND cg.goalMonth >= :currentMonth " +
+		"ORDER BY cg.goalAmount DESC LIMIT 1")
+	Optional<ConsumptionGoal> findMaxGoalAmountByCategory(
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth);
 }
