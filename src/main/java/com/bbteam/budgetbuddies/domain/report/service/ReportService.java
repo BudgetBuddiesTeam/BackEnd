@@ -12,5 +12,12 @@ public interface ReportService {
 	 */
 	boolean isExistReport(Long commentId, Long userId);
 
+	/**
+	 * 댓글에 대한 신고 생성
+	 * @param request
+	 * @param commentId
+	 * @param userId
+	 * @return reportID를 포함한 신고정보
+	 */
 	ReportResponseDto reportComment(ReportRequestDto request, Long commentId, Long userId);
 }
