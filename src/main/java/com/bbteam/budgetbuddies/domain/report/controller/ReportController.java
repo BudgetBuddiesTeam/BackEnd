@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/{commentId}/report")
 @RequiredArgsConstructor
-public class ReportController {
+public class ReportController implements ReportApi{
 	private final ReportService reportService;
 
 	@GetMapping("/{userId}")
