@@ -24,10 +24,17 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	@Transactional(readOnly = true)
 	public boolean isExistReport(Long commentId, Long userId) {
+	@Override
+	@Transactional
+	public ReportResponseDto reportComment(ReportRequestDto request, Long commentId, Long userId) {
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("not found user"));
 		Comment comment = commentRepository.findById(commentId)
 			.orElseThrow(() -> new IllegalArgumentException("not found comment"));
 
 		return reportRepository.existsByUserAndComment(user, comment);
+		Report report = reportConvertor.toEntity(request, user, comment);
+		Report savedReport = reportRepository.save(report);
+
+		return reportConvertor.toReportResponse(savedReport);
 	}
 }
