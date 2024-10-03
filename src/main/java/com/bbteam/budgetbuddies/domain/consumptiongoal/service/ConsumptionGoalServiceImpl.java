@@ -680,14 +680,18 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		Map<Long, String> facialExpressionByCategoryId = updateFacialExpressionByCategoryId(consumeRatioByCategories,
 			remainDaysRatio);
 
+		// 표정 변화 로직을 통해 메인 표정 반환
 		String facialExpression = getMainFacialExpression(facialExpressionByCategoryId);
 
+		// 카테고리별 표정 변화 로직을 통해 메인 멘트 반환
 		String mainComment = getMainComment(dtoList);
 
 		return consumptionGoalConverter.toMonthReportResponseDto(facialExpression, mainComment);
 	}
 
 	private Map<Long, Long> consumptionRate(List<ConsumeAmountAndGoalAmountDto> list) {
+
+		// 가테고리별 소비 금액을 목표 금액으로 나눈 비율
 
 		Map<Long, Long> consumeRatio = new HashMap<>();
 		for (ConsumeAmountAndGoalAmountDto dto : list) {
@@ -762,6 +766,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 	private String getMainComment(List<ConsumeAmountAndGoalAmountDto> list) {
 
+		// 현재 일수
 		long minDifference = Long.MAX_VALUE;
 		long minCategoryId = -1L;
 
@@ -780,6 +785,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			}
 		}
 		Optional<Category> minCategory = categoryRepository.findById(minCategoryId);
+		
 		if (minCategory.isEmpty()) {
 			throw new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다.");
 		}
@@ -809,18 +815,21 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	public String getConsumptionMention(Long userId) {
 
 		/**
-		 * 가장 큰 소비를 한 소비 목표  데이터 정보와 가장 큰 목표로 세운 소비 목표데이터를 각각 가져온다.
+		 * 가장 큰 소비를 한 카테고리의 소비 목표 데이터 정보와 가장 큰 목표로 세운 카테고리의 소비 목표 데이터를 각각 가져온다.
 		 * 위 데이터들을 가지고 프롬프트 진행
 		 * Gemini AI, Chat GPT
 		 */
 
+		// 유저 아이디로 또래 정보 확인
 		checkPeerInfo(userId, 0, 0, "none");
 
+		// 가장 큰 소비를 한 카테고리의 소비 목표 데이터 가져오기
 		Optional<ConsumptionGoal> maxConsumeAmount = consumptionGoalRepository.findMaxConsumeAmountByCategory(
 			peerAgeStart,
 			peerAgeEnd,
 			peerGender, currentMonth);
 
+		// 가장 큰 목표로 세운 카테고리의 소비 목표 데이터 가져오기
 		Optional<ConsumptionGoal> maxGoalAmount = consumptionGoalRepository.findMaxGoalAmountByCategory(
 			peerAgeStart,
 			peerAgeEnd,
@@ -830,10 +839,12 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			throw new IllegalArgumentException("해당 소비목표 데이터를 찾을 수 없습니다.");
 		}
 
+		// 유저 이름과 소비 목표 데이터로 카테고리 이름, 소비 금액을 가져 온다.
 		String username = findUserById(userId).getName();
 		String categoryName = maxConsumeAmount.get().getCategory().getName();
 		String consumeAmount = String.valueOf(maxConsumeAmount.get().getConsumeAmount());
 
+		// 또래의 상위 소비 금액에 대한 정보로 프롬프트 작성
 		String firstPrompt = "00은 " + username + ", 가장 큰 소비 카테고리 이름은 " + categoryName
 			+ "," + "해당 카테고리 소비금액은" + consumeAmount + "이야";
 
@@ -841,12 +852,15 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			throw new IllegalArgumentException("해당 소비목표 데이터를 찾을 수 없습니다.");
 		}
 
+		// 가장 큰 목표 소비 금액에 대한 정보로 프롬프트 작성
 		categoryName = maxGoalAmount.get().getCategory().getName();
 		String goalAmount = String.valueOf(maxGoalAmount.get().getGoalAmount());
 
+		// 또래의 상위 목표 소비 금액에 대한 정보로 프롬프트 작성
 		String secondPrompt = "가장 큰 목표 소비 카테고리 이름은 " + categoryName
 			+ ", 해당 카테고리 목표금액은" + goalAmount + "이야";
 
+		// 프롬프트를 통해 소비 목표에 대한 멘트를 작성
 		String basePrompt = "소비 분석 관련 멘트를 2개 만들거야 이때," + username
 			+ "님 또래는  ~ 이라는 문장으로 시작하고 35자 이내 한 문장씩 만들어줘"
 			+ firstPrompt + "와" + secondPrompt + "를 사용하고 두 문장의 구분은 줄바꿈으로 해주고, "
