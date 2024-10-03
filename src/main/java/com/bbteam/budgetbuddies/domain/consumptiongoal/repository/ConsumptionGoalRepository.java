@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumeAmountAndGoalAmountDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
@@ -145,4 +146,42 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 		@Param("peerGender") Gender peerGender,
 		@Param("currentMonth") LocalDate currentMonth,
 		@Param("categoryId") Long categoryId);
+
+	@Query("SELECT new com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumeAmountAndGoalAmountDto("
+		+ "cg.category.id, cg.consumeAmount, cg.goalAmount) "
+		+ "FROM ConsumptionGoal cg "
+		+ "WHERE cg.category.isDefault = true "
+		+ "AND cg.user = :user "
+		+ "AND cg.goalMonth >= :currentMonth")
+	List<ConsumeAmountAndGoalAmountDto> findConsumeAmountAndGoalAmount(
+		@Param("user") User user,
+		@Param("currentMonth") LocalDate currentMonth);
+
+	@Query("SELECT cg " +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender " +
+		"AND cg.goalMonth >= :currentMonth " +
+		"ORDER BY cg.consumeAmount DESC LIMIT 1")
+	Optional<ConsumptionGoal> findMaxConsumeAmountByCategory(
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth);
+
+	@Query("SELECT cg " +
+		"FROM ConsumptionGoal cg " +
+		"WHERE cg.category.isDefault = true " +
+		"AND cg.deleted = false " +
+		"AND cg.user.age BETWEEN :peerAgeStart AND :peerAgeEnd " +
+		"AND cg.user.gender = :peerGender " +
+		"AND cg.goalMonth >= :currentMonth " +
+		"ORDER BY cg.goalAmount DESC LIMIT 1")
+	Optional<ConsumptionGoal> findMaxGoalAmountByCategory(
+		@Param("peerAgeStart") int peerAgeStart,
+		@Param("peerAgeEnd") int peerAgeEnd,
+		@Param("peerGender") Gender peerGender,
+		@Param("currentMonth") LocalDate currentMonth);
 }
