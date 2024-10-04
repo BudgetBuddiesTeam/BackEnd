@@ -1,7 +1,10 @@
-package com.bbteam.budgetbuddies.global.security;
+package com.bbteam.budgetbuddies.global.security2.dto;
 
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class AuthenticationRequest {
 

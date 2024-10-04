@@ -1,5 +1,4 @@
-package com.bbteam.budgetbuddies.global.security;
-
+package com.bbteam.budgetbuddies.global.security2.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,3 +20,4 @@ public class CertificationNumber {
 
 
 }
+
