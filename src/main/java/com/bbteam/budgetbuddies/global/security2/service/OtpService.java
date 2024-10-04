@@ -1,5 +1,4 @@
-package com.bbteam.budgetbuddies.global.security;
-
+package com.bbteam.budgetbuddies.global.security2.service;
 import org.springframework.stereotype.Service;
 
 @Service

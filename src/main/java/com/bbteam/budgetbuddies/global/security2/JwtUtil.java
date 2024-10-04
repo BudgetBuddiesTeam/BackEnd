@@ -1,4 +1,4 @@
-package com.bbteam.budgetbuddies.global.security;
+package com.bbteam.budgetbuddies.global.security2;
 
 import com.bbteam.budgetbuddies.apiPayload.code.status.ErrorStatus;
 import com.bbteam.budgetbuddies.apiPayload.exception.GeneralException;
@@ -17,10 +17,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-@RequiredArgsConstructor
 public class JwtUtil {
 
-    private final UserRepository userRepository;
 
     // JWT 토큰을 서명하는 데 사용되는 비밀 키
     @Value("${jwt.token.key}")
@@ -41,15 +39,7 @@ public class JwtUtil {
         return (String) extractAllClaims(token).get("phoneNumber");
     }
 
-    public User extractUser(String token) {
 
-        Long userId = Long.parseLong(extractAllClaims(token).getSubject());
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._USER_NOT_FOUND));
-
-        return user;
-    }
 
     // 토큰에서 특정 클레임을 추출하는 메서드
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -72,10 +62,10 @@ public class JwtUtil {
     }
 
     // 사용자 전화번호 만료 시간을 기반으로 토큰을 생성하는 메서드
-    public String generateToken(User user, long expirationTime) {
+    public String generateToken(Long userId, String phoneNumber, long expirationTime) {
         Map<String, Object> claims = new HashMap<>(); // 클레임으로 빈 맵을 사용
-        claims.put("phoneNumber", user.getPhoneNumber());
-        return createToken(claims, user.getId(), expirationTime); // 토큰 생성
+        claims.put("phoneNumber", phoneNumber);
+        return createToken(claims, userId, expirationTime); // 토큰 생성
     }
 
     // 클레임, 주체, 만료 시간을 기반으로 JWT 토큰을 생성하는 메서드
@@ -90,10 +80,11 @@ public class JwtUtil {
     }
 
     // 토큰이 유효한지 검증하는 메서드 (사용자 이름과 만료 여부 확인)
-    public Boolean validateToken(String token, Long userId, String phoneNumber) {
+    public Boolean validateToken(String token, String phoneNumber) {
         final String extractedUserId = extractUserId(token); // 토큰에서 사용자 ID 추출
         final String extractedPhoneNumber = extractPhoneNumber(token); // 토큰에서 사용자 전화번호 추출
-        return (extractedUserId.equals(userId) && extractedPhoneNumber.equals(phoneNumber) && !isTokenExpired(token)); // 사용자 이름이 일치하고 토큰이 만료되지 않았는지 확인
+        boolean matchedPhoneNumber = extractedPhoneNumber.equals(phoneNumber);
+        return matchedPhoneNumber && !isTokenExpired(token) ; // 사용자 id와 전화번호가 일치하고 토큰이 만료되지 않았는지 확인
     }
 }
 

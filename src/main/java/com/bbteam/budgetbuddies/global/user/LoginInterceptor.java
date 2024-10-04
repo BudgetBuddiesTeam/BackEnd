@@ -1,6 +1,6 @@
 package com.bbteam.budgetbuddies.global.user;
 
-import com.bbteam.budgetbuddies.global.security.JwtUtil;
+import com.bbteam.budgetbuddies.global.security2.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
