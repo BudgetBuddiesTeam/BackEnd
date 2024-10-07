@@ -1,39 +1,47 @@
 package com.bbteam.budgetbuddies.global.config;
 
-import com.bbteam.budgetbuddies.global.security.OtpService;
-import com.bbteam.budgetbuddies.global.security.PhoneNumberAuthenticationProvider;
+import com.bbteam.budgetbuddies.global.security.utils.PhoneNumberAuthenticationProvider;
+import com.bbteam.budgetbuddies.global.security.jwt.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.util.Objects;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @Slf4j
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private final PhoneNumberAuthenticationProvider phoneNumberOtpAuthenticationProvider;
 
-    @Autowired
-    private final OtpService otpService;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    private final Environment env;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
-    public SecurityConfig(Environment env) {
-        this.env = env;
+    private final PhoneNumberAuthenticationProvider phoneNumberAuthenticationProvider;
+
+    private final List<String> swaggers = List.of( // Swagger 관련 URL 목록
+        "/swagger-ui/**",
+        "/v3/api-docs/**"
+    );
+
+    private final List<String> auth = List.of( // 인증 관련 URL 목록
+        "/auth/get-otp",
+        "/auth/login"
+    );
+
+
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter, JwtExceptionFilter jwtExceptionFilter, PhoneNumberAuthenticationProvider phoneNumberAuthenticationProvider) {
+        this.jwtRequestFilter = jwtRequestFilter;
+        this.jwtExceptionFilter = jwtExceptionFilter;
+        this.phoneNumberAuthenticationProvider = phoneNumberAuthenticationProvider;
     }
 
     @Bean
@@ -42,31 +50,16 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable) // csrf 설정 비활성화
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
-                    .anyRequest().permitAll()
+                    .requestMatchers(swaggers.toArray(new String[0])).permitAll() // 스웨거 주소 허용
+                    .requestMatchers(auth.toArray(new String[0])).permitAll() // 로그인 주소 허용
+                    .anyRequest().authenticated() // 그 외 모든 요청에 대해 인증 요구
             )
-            .formLogin(withDefaults())
-            .httpBasic(withDefaults());
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .authenticationProvider(phoneNumberAuthenticationProvider)
+            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtExceptionFilter, JwtRequestFilter.class); // jwt 에러처리를 위한 필터등록
 
         return http.build();
     }
-
-    @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        String username = env.getProperty("spring.security.user.name");
-        String password = env.getProperty("spring.security.user.password");
-
-        log.info("username : {}", username);
-        log.info("password : {}", password);
-
-        UserDetails user = User.withDefaultPasswordEncoder()
-            .username(Objects.requireNonNull(username))
-            .password(Objects.requireNonNull(password))
-            .roles("ADMIN")
-            .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
-
 
 }
