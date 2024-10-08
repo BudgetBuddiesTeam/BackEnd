@@ -30,11 +30,18 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-security' // security
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'	//Swagger
+
+	implementation 'net.nurigo:sdk:4.2.7' // 문자메시지 대행 서비스
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly('io.jsonwebtoken:jjwt-jackson:0.11.5') // jackson으로 jwt 파싱
 }
 
 tasks.named('test') {

@@ -8,8 +8,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 
 @Entity
@@ -41,11 +45,6 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String mobileCarrier; // 통신사
 
-    @Column(length = 1000)
-    private String photoUrl;
-
-    private String consumptionPattern;
-
     private LocalDateTime lastLoginAt;
 
     public void changeUserDate(String email, String name) {
@@ -53,4 +52,7 @@ public class User extends BaseEntity {
         this.email = email;
     }
 
+    public List<GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
+    }
 }
