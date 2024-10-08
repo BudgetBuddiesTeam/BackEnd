@@ -45,11 +45,6 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String mobileCarrier; // 통신사
 
-    @Column(length = 1000)
-    private String photoUrl;
-
-    private String consumptionPattern;
-
     private LocalDateTime lastLoginAt;
 
     public void changeUserDate(String email, String name) {
