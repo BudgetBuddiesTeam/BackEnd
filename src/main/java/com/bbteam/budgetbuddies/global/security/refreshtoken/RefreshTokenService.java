@@ -5,6 +5,7 @@ import com.bbteam.budgetbuddies.apiPayload.exception.GeneralException;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ public class RefreshTokenService {
      * @param user 사용자 정보
      * @param newToken 새로운 리프레시 토큰
      */
+    @Transactional
     public void saveOrUpdateRefreshToken(User user, String newToken) {
         // 해당 사용자의 리프레시 토큰이 이미 존재하는지 확인
         Optional<RefreshToken> existingToken = refreshTokenRepository.findByUser(user);
@@ -65,6 +67,7 @@ public class RefreshTokenService {
      *
      * @param user 사용자 정보
      */
+    @Transactional
     public void deleteRefreshToken(User user) {
         // 사용자와 연관된 리프레시 토큰 삭제
         refreshTokenRepository.deleteByUser(user);
