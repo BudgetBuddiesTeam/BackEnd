@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 public interface UserApi {
-    @Operation(summary = "[Admin] 기본 카테고리 생성 API ", description = "기본 카테고리가 없는 사용자에게 기본 카테고리를 생성합니다.")
+    @Operation(summary = "[Admin] 기본 카테고리 생성 API ", description = "(회원 가입시 필수적으로 자동 생성되어야 합니다!)기본 카테고리가 없는 사용자에게 기본 카테고리를 생성합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
