@@ -12,6 +12,8 @@ public class UserConverter {
                 .phoneNumber(user.getPhoneNumber())
                 .lastLoginAt(user.getLastLoginAt())
                 .gender(user.getGender())
+//                .consumptionPattern(user.getConsumptionPattern())
+//                .photoUrl(user.getPhotoUrl())
                 .email(user.getEmail())
                 .age(user.getAge())
                 .build();
@@ -23,7 +25,9 @@ public class UserConverter {
                 .email(dto.getEmail())
                 .age(dto.getAge())
                 .name(dto.getName())
+//                .consumptionPattern(dto.getConsumptionPattern())
                 .gender(dto.getGender())
+//                .photoUrl(dto.getPhotoUrl())
                 .build();
     }
 }
