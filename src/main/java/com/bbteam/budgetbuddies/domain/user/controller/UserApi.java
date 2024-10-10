@@ -33,10 +33,12 @@ public interface UserApi {
             @Parameter(name = "phoneNumber", description = "휴대폰 번호. requestBody"),
             @Parameter(name = "name", description = "사용자 이름. requestBody"),
             @Parameter(name = "age", description = "사용자 나이. requestBody"),
+            @Parameter(name = "mobileCarrier", description = "통신사. requestBody"),
+            @Parameter(name = "region", description = "지역. requestBody"),
             @Parameter(name = "gender", description = "사용자 성별 / MALE, FEMALE, NONE requestBody"),
             @Parameter(name = "email", description = "메일 주소. requestBody"),
-            @Parameter(name = "photoUrl", description = "사진 Url. 아마 사용 x requestBody"),
-            @Parameter(name = "consumptionPattern", description = "소비 패턴. 아마 사용 x requestBody")
+//            @Parameter(name = "photoUrl", description = "사진 Url. 아마 사용 x requestBody"),
+//            @Parameter(name = "consumptionPattern", description = "소비 패턴. 아마 사용 x requestBody")
     })
     ApiResponse<UserDto.ResponseUserDto> registerUser(@RequestBody UserDto.RegisterUserDto dto);
     @Operation(summary = "[Admin] User 찾기 ", description = "ID를 기반으로 해당 사용자를 찾습니다.")

@@ -19,10 +19,12 @@ public class UserDto {
         private String name;
         @Min(value = 1, message = "나이는 0또는 음수가 될 수 없습니다.")
         private Integer age;
+        private String mobileCarrier;
+        private String region;
         private Gender gender;
         private String email;
-        private String photoUrl;
-        private String consumptionPattern;
+//        private String photoUrl;
+//        private String consumptionPattern;
     }
 
     @Getter
@@ -33,9 +35,11 @@ public class UserDto {
         private String name;
         private String email;
         private Integer age;
+        private String mobileCarrier;
+        private String region;
         private Gender gender;
-        private String photoUrl;
-        private String consumptionPattern;
+//        private String photoUrl;
+//        private String consumptionPattern;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
         private LocalDateTime lastLoginAt;
     }
