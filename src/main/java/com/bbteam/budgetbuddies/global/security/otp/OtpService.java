@@ -65,8 +65,8 @@ public class OtpService {
         // 생성된 OTP를 전화번호를 키로 하여 캐시에 저장
         otpCache.put(phoneNumber, otp);
 
-        // 실제 메시지 전송은 주석 처리되어 있음 (실제 배포 시 주석 해제)
-        // sendMessage(phoneNumber, otp);
+        // 실제 메시지 전송
+         sendMessage(phoneNumber, otp);
 
         return otp;
     }
