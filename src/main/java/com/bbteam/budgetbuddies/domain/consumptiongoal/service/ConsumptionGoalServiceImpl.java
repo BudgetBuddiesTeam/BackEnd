@@ -45,7 +45,6 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoa
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
-import com.bbteam.budgetbuddies.domain.gemini.service.GeminiService;
 import com.bbteam.budgetbuddies.domain.openai.service.OpenAiService;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
@@ -63,7 +62,6 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	private final ExpenseRepository expenseRepository;
 	private final CategoryRepository categoryRepository;
 	private final UserRepository userRepository;
-	private final GeminiService geminiService;
 	private final OpenAiService openAiService;
 
 	private final ConsumptionGoalConverter consumptionGoalConverter;
