@@ -120,7 +120,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ApiResponse.onSuccess(response);
 	}
 
-	@GetMapping("/cosnumption-ment")
+	@GetMapping("/consumption-ment")
 	public ApiResponse<String> getConsumptionMention(@RequestParam(name = "userId") Long userId) {
 		String response = consumptionGoalService.getConsumptionMention(userId);
 		return ApiResponse.onSuccess(response);
