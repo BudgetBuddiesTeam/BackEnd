@@ -11,6 +11,8 @@ public interface FaqService {
 
     Page<FaqResponseDto.FaqFindResponse> findAllWithPaging(Pageable pageable);
 
+    Page<FaqResponseDto.FaqFindResponse> searchFaq(Pageable pageable, String searchCondition);
+
     FaqResponseDto.FaqPostResponse postFaq(FaqRequestDto.FaqPostRequest dto, Long userId);
 
     FaqResponseDto.FaqModifyResponse modifyFaq(FaqRequestDto.FaqModifyRequest dto, Long faqId);

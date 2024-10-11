@@ -62,4 +62,9 @@ public class FaqServiceImpl implements FaqService{
     private Faq findFaq(Long faqId) {
         return faqRepository.findById(faqId).orElseThrow(() -> new GeneralException(ErrorStatus._FAQ_NOT_FOUND));
     }
+
+    @Override
+    public Page<FaqResponseDto.FaqFindResponse> searchFaq(Pageable pageable, String searchCondition) {
+        return faqRepository.searchFaq(pageable, searchCondition).map(FaqConverter::entityToFind);
+    }
 }
