@@ -7,10 +7,12 @@ import com.bbteam.budgetbuddies.domain.faq.service.FaqService;
 import com.bbteam.budgetbuddies.domain.faq.validation.ExistFaq;
 import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,8 +39,9 @@ public class FaqController implements FaqApi{
 
     @Override
     @GetMapping("/all")
-    public ApiResponse<Page<FaqResponseDto.FaqFindResponse>> findByPaging(@ParameterObject Pageable pageable) {
-        return ApiResponse.onSuccess(faqService.findAllWithPaging(pageable));
+    public ApiResponse<Page<FaqResponseDto.FaqFindResponse>> findByPaging(@ParameterObject Pageable pageable,
+                                                                          @RequestParam @Nullable String searchCondition) {
+        return ApiResponse.onSuccess(faqService.searchFaq(pageable, searchCondition));
     }
 
     @Override
