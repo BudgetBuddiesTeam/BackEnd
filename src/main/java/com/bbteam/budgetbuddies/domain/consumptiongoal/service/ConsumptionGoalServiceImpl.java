@@ -785,7 +785,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			}
 		}
 		Optional<Category> minCategory = categoryRepository.findById(minCategoryId);
-		
+
 		if (minCategory.isEmpty()) {
 			throw new IllegalArgumentException("해당 카테고리를 찾을 수 없습니다.");
 		}
@@ -794,8 +794,6 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		long todayAvailableConsumptionAmount = minDifference / remainDays;
 		long weekAvailableConsumptionAmount = todayAvailableConsumptionAmount * 7;
-
-		log.info(String.valueOf(weekAvailableConsumptionAmount));
 
 		NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);  // 한국 단위로 locale
 
@@ -817,7 +815,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		/**
 		 * 가장 큰 소비를 한 카테고리의 소비 목표 데이터 정보와 가장 큰 목표로 세운 카테고리의 소비 목표 데이터를 각각 가져온다.
 		 * 위 데이터들을 가지고 프롬프트 진행
-		 * Gemini AI, Chat GPT
+		 * Chat GPT
 		 */
 
 		// 유저 아이디로 또래 정보 확인
@@ -835,26 +833,26 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			peerAgeEnd,
 			peerGender, currentMonth);
 
-		if (!maxConsumeAmount.isPresent()) {
+		if (maxConsumeAmount.isEmpty()) {
 			throw new IllegalArgumentException("해당 소비목표 데이터를 찾을 수 없습니다.");
 		}
 
 		// 유저 이름과 소비 목표 데이터로 카테고리 이름, 소비 금액을 가져 온다.
 		String username = findUserById(userId).getName();
 		String categoryName = maxConsumeAmount.get().getCategory().getName();
-		String consumeAmount = String.valueOf(maxConsumeAmount.get().getConsumeAmount());
+		long consumeAmount = maxConsumeAmount.get().getConsumeAmount();
 
 		// 또래의 상위 소비 금액에 대한 정보로 프롬프트 작성
 		String firstPrompt = "00은 " + username + ", 가장 큰 소비 카테고리 이름은 " + categoryName
 			+ "," + "해당 카테고리 소비금액은" + consumeAmount + "이야";
 
-		if (!maxGoalAmount.isPresent()) {
+		if (maxGoalAmount.isEmpty()) {
 			throw new IllegalArgumentException("해당 소비목표 데이터를 찾을 수 없습니다.");
 		}
 
 		// 가장 큰 목표 소비 금액에 대한 정보로 프롬프트 작성
 		categoryName = maxGoalAmount.get().getCategory().getName();
-		String goalAmount = String.valueOf(maxGoalAmount.get().getGoalAmount());
+		long goalAmount = maxGoalAmount.get().getGoalAmount();
 
 		// 또래의 상위 목표 소비 금액에 대한 정보로 프롬프트 작성
 		String secondPrompt = "가장 큰 목표 소비 카테고리 이름은 " + categoryName
@@ -868,8 +866,15 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 			+ "카테고리 목표 금액(ex. 패션에 N만원 소비를 계획해요)같은  트렌드 한 멘트, 인터넷상 바이럴 문구"
 			+ "참고하여 만들어줘";
 
-		return openAiService.chat(basePrompt);
-		// return geminiService.getContents(basePrompt);
+		String response = openAiService.chat(basePrompt);
+
+		if (response == null) {
+			NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);
+			response = "총 " + nf.format(goalAmount - consumeAmount) + "원 더 쓸 수 있어요.";
+			return response;
+		}
+
+		return response;
 	}
 
 }
