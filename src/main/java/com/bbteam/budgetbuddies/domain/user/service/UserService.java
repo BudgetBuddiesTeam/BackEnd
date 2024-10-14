@@ -7,6 +7,8 @@ import java.util.List;
 public interface UserService {
     List<UserConsumptionGoalResponse> createConsumptionGoalWithDefaultGoals(Long userId);
 
+    void saveFavoriteHashtags(Long userId, List<Long> hashtagIds);
+
     UserDto.ResponseUserDto saveUser(UserDto.RegisterUserDto dto);
 
     UserDto.ResponseUserDto findUser(Long userId);
