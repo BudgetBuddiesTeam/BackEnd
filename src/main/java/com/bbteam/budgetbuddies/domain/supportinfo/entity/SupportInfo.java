@@ -60,5 +60,9 @@ public class SupportInfo extends BaseEntity {
         this.thumbnailUrl = supportRequestDto.getThumbnailUrl();
         this.isInCalendar = supportRequestDto.getIsInCalendar();
     }
-
+    public static SupportInfo withId(Long id) {
+        SupportInfo supportInfo = new SupportInfo();
+        supportInfo.setId(id);
+        return supportInfo;
+    }
 }
