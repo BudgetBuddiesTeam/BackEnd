@@ -8,6 +8,7 @@ import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class UserDto {
 
@@ -23,6 +24,7 @@ public class UserDto {
         private String region;
         private Gender gender;
         private String email;
+        private List<Long> hashtagIds; // 사용자가 선택한 해시태그 ID 목록
 //        private String photoUrl;
 //        private String consumptionPattern;
     }

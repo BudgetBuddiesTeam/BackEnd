@@ -30,13 +30,14 @@ public interface UserApi {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @Parameters({
-            @Parameter(name = "phoneNumber", description = "휴대폰 번호. requestBody"),
-            @Parameter(name = "name", description = "사용자 이름. requestBody"),
-            @Parameter(name = "age", description = "사용자 나이. requestBody"),
-            @Parameter(name = "mobileCarrier", description = "통신사. requestBody"),
-            @Parameter(name = "region", description = "지역. requestBody"),
-            @Parameter(name = "gender", description = "사용자 성별 / MALE, FEMALE, NONE requestBody"),
-            @Parameter(name = "email", description = "메일 주소. requestBody"),
+            @Parameter(name = "phoneNumber", description = "휴대폰 번호"),
+            @Parameter(name = "name", description = "사용자 이름"),
+            @Parameter(name = "age", description = "사용자 나이"),
+            @Parameter(name = "mobileCarrier", description = "통신사"),
+            @Parameter(name = "region", description = "지역"),
+            @Parameter(name = "gender", description = "사용자 성별 / MALE, FEMALE, NONE"),
+            @Parameter(name = "email", description = "메일 주소"),
+            @Parameter(name = "hashtagIds", description = "사용자가 선택한 해시태그 ID 리스트(제공되는 리스트 기반으로 Id 매칭 필요(통신사, 지역 포함))")
 //            @Parameter(name = "photoUrl", description = "사진 Url. 아마 사용 x requestBody"),
 //            @Parameter(name = "consumptionPattern", description = "소비 패턴. 아마 사용 x requestBody")
     })
