@@ -2,6 +2,8 @@ package com.bbteam.budgetbuddies.domain.consumptiongoal.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -121,8 +123,10 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 	}
 
 	@GetMapping("/consumption-ment")
-	public ApiResponse<String> getConsumptionMention(@RequestParam(name = "userId") Long userId) {
-		String response = consumptionGoalService.getConsumptionMention(userId);
-		return ApiResponse.onSuccess(response);
+	public ApiResponse<String> getConsumptionMention(@RequestParam(name = "userId") Long userId) throws
+		ExecutionException,
+		InterruptedException {
+		CompletableFuture<String> response = consumptionGoalService.getConsumptionMention(userId);
+		return ApiResponse.onSuccess(response.get());
 	}
 }

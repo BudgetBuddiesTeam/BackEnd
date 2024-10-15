@@ -17,9 +17,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -807,8 +809,9 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	}
 
 	@Override
+	@Async
 	@Transactional(readOnly = true)
-	public String getConsumptionMention(Long userId) {
+	public CompletableFuture<String> getConsumptionMention(Long userId) {
 
 		/**
 		 * 가장 큰 소비를 한 카테고리의 소비 목표 데이터 정보와 가장 큰 목표로 세운 카테고리의 소비 목표 데이터를 각각 가져온다.
@@ -869,10 +872,10 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 		if (response == null) {
 			NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);
 			response = "총 " + nf.format(goalAmount - consumeAmount) + "원 더 쓸 수 있어요.";
-			return response;
+			return CompletableFuture.completedFuture(response);
 		}
 
-		return response;
+		return CompletableFuture.completedFuture(response);
 	}
 
 }
