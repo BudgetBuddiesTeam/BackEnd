@@ -1,7 +1,6 @@
 package com.bbteam.budgetbuddies.apiPayload;
 
 
-import com.bbteam.budgetbuddies.apiPayload.code.BaseCode;
 import com.bbteam.budgetbuddies.apiPayload.code.status.SuccessStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,12 +23,6 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true, SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), result);
 
     }
-
-    public static <T> ApiResponse<T> of(BaseCode code, T result){
-        return new ApiResponse<>(true, code.getReasonHttpStatus().getCode(),
-                code.getReasonHttpStatus().getMessage(), result);
-    }
-
 
     public static <T> ApiResponse<T> onFailure(String code, String message, T data){
         return new ApiResponse<>(false, code,message, data);

@@ -65,8 +65,8 @@ public class OtpService {
         // 생성된 OTP를 전화번호를 키로 하여 캐시에 저장
         otpCache.put(phoneNumber, otp);
 
-        // 실제 메시지 전송은 주석 처리되어 있음 (실제 배포 시 주석 해제)
-        // sendMessage(phoneNumber, otp);
+        // 실제 메시지 전송
+        sendMessage(phoneNumber, otp);
 
         return otp;
     }
@@ -85,7 +85,7 @@ public class OtpService {
         message.setTo(phoneNumber); // 수신 번호 설정
 
         // 메시지 내용 설정 (한글 45자 이하일 경우 자동으로 SMS로 전송)
-        message.setText("[빈주머니즈]\n인증번호: " + otp.getOtp());
+        message.setText("[빈주머니즈]\n인증번호: " + otp.getOtp() + "\n보안을 위해 번호를 타인과 공유하지 마세요.");
 
         // 메시지 전송 요청 및 응답 로그 출력
         SingleMessageSentResponse response = this.messageService.sendOne(new SingleMessageSendingRequest(message));
