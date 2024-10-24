@@ -19,6 +19,8 @@ import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.service.ExpenseService;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -39,12 +41,11 @@ public class ExpenseController implements ExpenseApi {
 	}
 
 	@Override
-	@GetMapping("/{userId}")
-	public ResponseEntity<MonthlyExpenseResponseDto> findExpensesForMonth(
-		@PathVariable @Param("userId") Long userId,
+	@GetMapping()
+	public ResponseEntity<MonthlyExpenseResponseDto> findExpensesForMonth(@AuthUser UserDto.AuthUserDto user,
 		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 
-		return ResponseEntity.ok(expenseService.getMonthlyExpense(userId, date));
+		return ResponseEntity.ok(expenseService.getMonthlyExpense(user.getId(), date));
 	}
 
 	@Override
