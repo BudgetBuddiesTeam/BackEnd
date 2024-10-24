@@ -54,11 +54,8 @@ class ExpenseServiceImplTest {
 	}
 
 	@Test
-	@DisplayName("월별 소비 조회 소비를 DailyExpenseResponseDto로 반환")
-	void getMonthlyExpense_Success() {
+	void 월별_소비목록_조회_소비일을_기준으로_소비를_반환_성공() {
 		// given
-		given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-
 		Category userCategory = Mockito.spy(Category.builder().build());
 		given(userCategory.getId()).willReturn(-1L);
 
@@ -66,11 +63,21 @@ class ExpenseServiceImplTest {
 
 		List<Expense> expenses = generateExpenseList(requestMonth, user, userCategory);
 
-		given(expenseRepository.findAllByUserIdForPeriod(any(User.class), any(LocalDateTime.class),
+		given(expenseRepository.findAllByUserIdForPeriod(anyLong(), any(LocalDateTime.class),
 			any(LocalDateTime.class))).willReturn(expenses);
 
-		MonthlyExpenseResponseDto expected = MonthlyExpenseResponseDto.builder()
-			.expenseMonth(LocalDate.of(2024, 07, 01))
+		MonthlyExpenseResponseDto expected = getExpectedMonthlyExpense(userCategory);
+
+		// when
+		MonthlyExpenseResponseDto result = expenseService.getMonthlyExpense(user.getId(), requestMonth);
+
+		// then
+		assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+	}
+
+	private MonthlyExpenseResponseDto getExpectedMonthlyExpense(Category userCategory) {
+		return MonthlyExpenseResponseDto.builder()
+			.expenseMonth(LocalDate.of(2024, 7, 1))
 			.totalConsumptionAmount(300_000L)
 			.dailyExpenses(List.of(DailyExpenseResponseDto.builder()
 				.daysOfMonth(2)
