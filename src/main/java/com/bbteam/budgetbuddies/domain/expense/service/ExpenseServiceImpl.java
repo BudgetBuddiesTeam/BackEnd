@@ -113,12 +113,10 @@ public class ExpenseServiceImpl implements ExpenseService {
 	@Transactional(readOnly = true)
 	public MonthlyExpenseResponseDto getMonthlyExpense(Long userId, LocalDate localDate) {
 		LocalDate startOfMonth = localDate.withDayOfMonth(1);
-		LocalDate endOfMonth = localDate.withDayOfMonth(startOfMonth.lengthOfMonth());
+		LocalDate nextMonth = startOfMonth.plusMonths(1L);
 
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
-
-		List<Expense> expenseSlice = expenseRepository.findAllByUserIdForPeriod(user,
-			startOfMonth.atStartOfDay(), endOfMonth.atTime(LocalTime.MAX));
+		List<Expense> expenseSlice = expenseRepository.findAllByUserIdForPeriod(userId,
+			startOfMonth.atStartOfDay(), nextMonth.atStartOfDay());
 
 		return expenseConverter.toMonthlyExpenseResponseDto(expenseSlice, startOfMonth);
 	}
