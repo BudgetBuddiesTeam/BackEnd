@@ -1,7 +1,6 @@
 package com.bbteam.budgetbuddies.domain.expense.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -13,7 +12,7 @@ import com.bbteam.budgetbuddies.domain.category.service.CategoryService;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
 import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.DetailExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
@@ -35,7 +34,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	private final ConsumptionGoalService consumptionGoalService;
 
 	@Override
-	public ExpenseResponseDto createExpense(Long userId, ExpenseRequestDto expenseRequestDto) {
+	public DetailExpenseResponseDto createExpense(Long userId, ExpenseRequestDto expenseRequestDto) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 		Category category = categoryRepository.findById(expenseRequestDto.getCategoryId())
@@ -73,12 +72,13 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 		if (expenseDateMonth.equals(currentMonth)) {
 			// 현재 월의 소비 내역일 경우 ConsumptionGoal을 업데이트
-			consumptionGoalService.updateConsumeAmount(userId, expenseRequestDto.getCategoryId(), expenseRequestDto.getAmount());
+			consumptionGoalService.updateConsumeAmount(userId, expenseRequestDto.getCategoryId(),
+				expenseRequestDto.getAmount());
 		}
-//		else {
-//			// 과거 월의 소비 내역일 경우 해당 월의 ConsumptionGoal을 업데이트 또는 삭제 상태로 생성
-//			consumptionGoalService.updateOrCreateDeletedConsumptionGoal(userId, expenseRequestDto.getCategoryId(), expenseDateMonth, expenseRequestDto.getAmount());
-//		}
+		//		else {
+		//			// 과거 월의 소비 내역일 경우 해당 월의 ConsumptionGoal을 업데이트 또는 삭제 상태로 생성
+		//			consumptionGoalService.updateOrCreateDeletedConsumptionGoal(userId, expenseRequestDto.getCategoryId(), expenseDateMonth, expenseRequestDto.getAmount());
+		//		}
 
 		return expenseConverter.toExpenseResponseDto(expense);
         /*
@@ -91,7 +91,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	@Transactional
 	public void deleteExpense(Long expenseId) {
 		Expense expense = expenseRepository.findById(expenseId)
-				.orElseThrow(() -> new IllegalArgumentException("Not found Expense"));
+			.orElseThrow(() -> new IllegalArgumentException("Not found Expense"));
 
 		Long userId = expense.getUser().getId();
 		Long categoryId = expense.getCategory().getId();
@@ -122,28 +122,22 @@ public class ExpenseServiceImpl implements ExpenseService {
 	}
 
 	@Override
-	public ExpenseResponseDto findExpenseResponseFromUserIdAndExpenseId(Long userId, Long expenseId) {
-		Expense expense = expenseRepository.findById(expenseId)
-			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
-
-		checkUserAuthority(userId, expense);
-
-		return expenseConverter.toExpenseResponseDto(expense);
+	public DetailExpenseResponseDto findDetailExpenseResponse(Long userId, Long expenseId) {
+		return expenseConverter.toExpenseResponseDto(getExpense(expenseId));
 	}
 
-	private void checkUserAuthority(Long userId, Expense expense) {
-		if (!expense.getUser().getId().equals(userId))
-			throw new IllegalArgumentException("Unauthorized user");
+	private Expense getExpense(Long expenseId) {
+		return expenseRepository.findById(expenseId)
+			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
 	}
 
 	@Override
 	@Transactional
-	public ExpenseResponseDto updateExpense(Long userId, ExpenseUpdateRequestDto request) {
+	public DetailExpenseResponseDto updateExpense(Long userId, ExpenseUpdateRequestDto request) {
 		Expense expense = expenseRepository.findById(request.getExpenseId())
 			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
 
 		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Not found user"));
-		checkUserAuthority(userId, expense);
 
 		Category categoryToReplace = categoryService.handleCategoryChange(expense, request, user);
 
