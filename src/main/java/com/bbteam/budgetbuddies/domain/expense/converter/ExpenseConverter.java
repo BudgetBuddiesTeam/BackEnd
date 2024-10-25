@@ -13,7 +13,7 @@ import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.expense.dto.CompactExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.DailyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.DetailExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
@@ -31,10 +31,9 @@ public class ExpenseConverter {
 			.build();
 	}
 
-	public ExpenseResponseDto toExpenseResponseDto(Expense expense) {
-		return ExpenseResponseDto.builder()
+	public DetailExpenseResponseDto toExpenseResponseDto(Expense expense) {
+		return DetailExpenseResponseDto.builder()
 			.expenseId(expense.getId())
-			.userId(expense.getUser().getId())
 			.categoryId(expense.getCategory().getId())
 			.categoryName(expense.getCategory().getName())
 			.amount(expense.getAmount())
