@@ -33,10 +33,10 @@ public class ExpenseController implements ExpenseApi {
 
 	@Override
 	@PostMapping("/add/{userId}")
-	public ResponseEntity<ExpenseResponseDto> createExpense(
-			@Parameter(description = "user_id") @PathVariable Long userId,
-			@Parameter(description = "category_id, amount, description, expenseDate") @RequestBody ExpenseRequestDto expenseRequestDto) {
-		ExpenseResponseDto response = expenseService.createExpense(userId, expenseRequestDto);
+	public ResponseEntity<DetailExpenseResponseDto> createExpense(
+		@Parameter(description = "user_id") @PathVariable Long userId,
+		@Parameter(description = "category_id, amount, description, expenseDate") @RequestBody ExpenseRequestDto expenseRequestDto) {
+		DetailExpenseResponseDto response = expenseService.createExpense(userId, expenseRequestDto);
 		return ResponseEntity.ok(response);
 	}
 
@@ -49,24 +49,22 @@ public class ExpenseController implements ExpenseApi {
 	}
 
 	@Override
-	@GetMapping("/{userId}/{expenseId}")
-	public ResponseEntity<ExpenseResponseDto> findExpense(@PathVariable @Param("userId") Long userId,
+	@GetMapping("/{expenseId}")
+	public ResponseEntity<DetailExpenseResponseDto> findExpense(@AuthUser UserDto.AuthUserDto user,
 		@PathVariable @Param("expenseId") Long expenseId) {
-		return ResponseEntity.ok(expenseService.findExpenseResponseFromUserIdAndExpenseId(userId, expenseId));
+		return ResponseEntity.ok(expenseService.findDetailExpenseResponse(user.getId(), expenseId));
 	}
 
 	@Override
 	@PostMapping("/{userId}")
-	public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable @Param("userId") Long userId,
+	public ResponseEntity<DetailExpenseResponseDto> updateExpense(@PathVariable @Param("userId") Long userId,
 		@RequestBody ExpenseUpdateRequestDto request) {
-		ExpenseResponseDto response = expenseService.updateExpense(userId, request);
+		DetailExpenseResponseDto response = expenseService.updateExpense(userId, request);
 		return ResponseEntity.ok(response);
 	}
 
 	@DeleteMapping("/delete/{expenseId}")
-	public ResponseEntity<String> deleteExpense(
-		@Parameter(description = "expense_id")
-		@PathVariable Long expenseId) {
+	public ResponseEntity<String> deleteExpense(@Parameter(description = "expense_id") @PathVariable Long expenseId) {
 		expenseService.deleteExpense(expenseId);
 		return ResponseEntity.ok("Successfully deleted expense!");
 	}
