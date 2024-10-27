@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +16,8 @@ import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
+import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 
@@ -40,11 +39,11 @@ public class CategoryServiceImpl implements CategoryService {
 	@Transactional
 	public CategoryResponseDto createCategory(Long userId, CategoryRequestDto categoryRequestDto) {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+			.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
 		// 동일한 이름의 삭제된 카테고리가 존재하는지 확인
 		Optional<Category> existingCategory = categoryRepository.findByNameAndUserIdAndDeletedTrue(
-				categoryRequestDto.getName(), userId);
+			categoryRequestDto.getName(), userId);
 
 		if (existingCategory.isPresent()) {
 			// 삭제된 카테고리가 존재하면 복구 (deleted = false)
@@ -54,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 			// 해당 카테고리의 삭제된 ConsumptionGoal도 복구
 			Optional<ConsumptionGoal> existingConsumptionGoal = consumptionGoalRepository.findByUserAndCategoryAndDeletedTrue(
-					user, categoryToRestore);
+				user, categoryToRestore);
 
 			if (existingConsumptionGoal.isPresent()) {
 				ConsumptionGoal consumptionGoalToRestore = existingConsumptionGoal.get();
@@ -65,13 +64,13 @@ public class CategoryServiceImpl implements CategoryService {
 			} else {
 				// ConsumptionGoal이 존재하지 않으면 새로 생성
 				ConsumptionGoal newConsumptionGoal = ConsumptionGoal.builder()
-						.user(user)
-						.category(categoryToRestore)
-						.goalMonth(LocalDate.now().withDayOfMonth(1)) // 현재 달로 목표 설정
-						.consumeAmount(0L)
-						.goalAmount(0L)
-						.deleted(false) // 생성할 때 삭제 상태가 아니도록
-						.build();
+					.user(user)
+					.category(categoryToRestore)
+					.goalMonth(LocalDate.now().withDayOfMonth(1)) // 현재 달로 목표 설정
+					.consumeAmount(0L)
+					.goalAmount(0L)
+					.deleted(false) // 생성할 때 삭제 상태가 아니도록
+					.build();
 				consumptionGoalRepository.save(newConsumptionGoal);
 			}
 
@@ -83,13 +82,13 @@ public class CategoryServiceImpl implements CategoryService {
 
 			// 새로운 카테고리에 대한 ConsumptionGoal도 생성
 			ConsumptionGoal newConsumptionGoal = ConsumptionGoal.builder()
-					.user(user)
-					.category(newCategory)
-					.goalMonth(LocalDate.now().withDayOfMonth(1)) // 현재 달로 목표 설정
-					.consumeAmount(0L)
-					.goalAmount(0L)
-					.deleted(false) // 생성할 때 삭제 상태가 아니도록
-					.build();
+				.user(user)
+				.category(newCategory)
+				.goalMonth(LocalDate.now().withDayOfMonth(1)) // 현재 달로 목표 설정
+				.consumeAmount(0L)
+				.goalAmount(0L)
+				.deleted(false) // 생성할 때 삭제 상태가 아니도록
+				.build();
 			consumptionGoalRepository.save(newConsumptionGoal);
 
 			return categoryConverter.toCategoryResponseDto(newCategory);
@@ -100,21 +99,15 @@ public class CategoryServiceImpl implements CategoryService {
 	public List<CategoryResponseDto> getUserCategories(Long userId) {
 
 		userRepository.findById(userId)
-				.orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+			.orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
 		List<Category> categories = categoryRepository.findUserCategoryByUserId(userId);
 		return categories.stream().map(categoryConverter::toCategoryResponseDto).collect(Collectors.toList());
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public Category handleCategoryChange(Expense expense, ExpenseUpdateRequestDto request, User user) {
-		Category categoryToReplace = categoryRepository.findById(request.getCategoryId())
-				.orElseThrow(() -> new IllegalArgumentException("Not found category"));
-
-		consumptionGoalService.recalculateConsumptionAmount(expense, request, user);
-
-		return categoryToReplace;
+	public Category getCategory(Long id) {
+		return categoryRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Not found category"));
 	}
 
 	@Override
@@ -131,15 +124,15 @@ public class CategoryServiceImpl implements CategoryService {
 
 			// 현재 월에 해당하는 삭제되지 않은 Expense 조회 (deleted = false)
 			List<Expense> currentMonthExpenses = expenseRepository.findByCategoryIdAndUserIdAndExpenseDateBetweenAndDeletedFalse(
-					categoryId, userId, startOfMonth.atStartOfDay(), endOfMonth.atTime(23, 59, 59));
+				categoryId, userId, startOfMonth.atStartOfDay(), endOfMonth.atTime(23, 59, 59));
 
 			long totalAmount = currentMonthExpenses.stream()
-					.mapToLong(Expense::getAmount)
-					.sum();
+				.mapToLong(Expense::getAmount)
+				.sum();
 
 			// category_id = 10(기타 카테고리)의 소비 목표 업데이트 (custom 카테고리 삭제로 인한 소비 내역은 삭제되지 않고 기타 카테고리로..)
 			ConsumptionGoal goal = consumptionGoalRepository.findByCategoryIdAndUserId(10L, userId)
-					.orElseThrow(() -> new IllegalArgumentException("No consumption goal found for category_id 10."));
+				.orElseThrow(() -> new IllegalArgumentException("No consumption goal found for category_id 10."));
 			goal.setConsumeAmount(goal.getConsumeAmount() + totalAmount);
 			consumptionGoalRepository.save(goal);
 
