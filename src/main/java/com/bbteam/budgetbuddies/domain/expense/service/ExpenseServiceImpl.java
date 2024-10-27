@@ -9,16 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.category.service.CategoryService;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
 import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.DetailExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
+import com.bbteam.budgetbuddies.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +30,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	private final ExpenseRepository expenseRepository;
 	private final UserRepository userRepository;
+	private final UserService userService;
 	private final CategoryRepository categoryRepository;
 	private final CategoryService categoryService;
 	private final ExpenseConverter expenseConverter;
@@ -80,7 +83,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 		//			consumptionGoalService.updateOrCreateDeletedConsumptionGoal(userId, expenseRequestDto.getCategoryId(), expenseDateMonth, expenseRequestDto.getAmount());
 		//		}
 
-		return expenseConverter.toExpenseResponseDto(expense);
+		return expenseConverter.toDetailExpenseResponseDto(expense);
         /*
          Case 1 결과) 해당 유저의 user_id + immutable 필드 중 하나의 조합으로 Expense 테이블에 저장
          Case 2 결과) 내가 직접 생성한 카테고리 중 하나로 카테고리를 설정하여 Expense 테이블에 저장
@@ -123,7 +126,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	@Override
 	public DetailExpenseResponseDto findDetailExpenseResponse(Long userId, Long expenseId) {
-		return expenseConverter.toExpenseResponseDto(getExpense(expenseId));
+		return expenseConverter.toDetailExpenseResponseDto(getExpense(expenseId));
 	}
 
 	private Expense getExpense(Long expenseId) {
@@ -134,16 +137,21 @@ public class ExpenseServiceImpl implements ExpenseService {
 	@Override
 	@Transactional
 	public DetailExpenseResponseDto updateExpense(Long userId, ExpenseUpdateRequestDto request) {
-		Expense expense = expenseRepository.findById(request.getExpenseId())
-			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
-
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Not found user"));
-
-		Category categoryToReplace = categoryService.handleCategoryChange(expense, request, user);
+		User user = userService.getUser(userId);
+		Expense expense = getExpense(request.getExpenseId());
+		Category categoryToReplace = categoryService.getCategory(request.getCategoryId());
 
 		expense.updateExpenseFromRequest(request, categoryToReplace);
 
-		return expenseConverter.toExpenseResponseDto(expenseRepository.save(expense));
+		ConsumptionGoal beforeConsumptionGoal = consumptionGoalService.getUserConsumptionGoal(
+			user, expense.getCategory(), expense.getExpenseDate().toLocalDate().withDayOfMonth(1));
+		ConsumptionGoal afterConsumptionGoal = consumptionGoalService.getUserConsumptionGoal(
+			user, categoryToReplace, request.getExpenseDate().toLocalDate().withDayOfMonth(1));
+
+		consumptionGoalService.recalculateConsumptionAmount(beforeConsumptionGoal, expense.getAmount(),
+			afterConsumptionGoal, request.getAmount());
+
+		return expenseConverter.toDetailExpenseResponseDto(expenseRepository.save(expense));
 	}
 }
 
