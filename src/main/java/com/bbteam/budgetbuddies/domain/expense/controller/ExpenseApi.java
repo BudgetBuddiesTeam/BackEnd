@@ -2,16 +2,13 @@ package com.bbteam.budgetbuddies.domain.expense.controller;
 
 import java.time.LocalDate;
 
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.DetailExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
@@ -59,10 +56,7 @@ public interface ExpenseApi {
 		@io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
 		@ApiResponse(responseCode = "AUTH004", description = "access 토큰 만료", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
 		@ApiResponse(responseCode = "AUTH006", description = "access 토큰 모양이 이상함", content = @Content(schema = @Schema(implementation = ApiResponse.class)))})
-	@GetMapping("/{userId}/{expenseId}")
-	@PostMapping("/{userId}")
-	ResponseEntity<DetailExpenseResponseDto> updateExpense(@PathVariable @Param("userId") Long userId,
-		@RequestBody ExpenseUpdateRequestDto request);
+	ResponseEntity<DetailExpenseResponseDto> updateExpense(UserDto.AuthUserDto user, ExpenseUpdateRequestDto request);
 
 	@Operation(summary = "[User] 소비 내역 삭제", description = "사용자가 소비 내역을 삭제합니다.")
 	@ApiResponses({

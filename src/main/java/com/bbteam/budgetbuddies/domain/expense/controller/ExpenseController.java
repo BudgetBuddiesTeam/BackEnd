@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.DetailExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.service.ExpenseService;
@@ -56,11 +56,10 @@ public class ExpenseController implements ExpenseApi {
 	}
 
 	@Override
-	@PostMapping("/{userId}")
-	public ResponseEntity<DetailExpenseResponseDto> updateExpense(@PathVariable @Param("userId") Long userId,
+	@PostMapping()
+	public ResponseEntity<DetailExpenseResponseDto> updateExpense(@AuthUser UserDto.AuthUserDto user,
 		@RequestBody ExpenseUpdateRequestDto request) {
-		DetailExpenseResponseDto response = expenseService.updateExpense(userId, request);
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(expenseService.updateExpense(user.getId(), request));
 	}
 
 	@DeleteMapping("/delete/{expenseId}")
