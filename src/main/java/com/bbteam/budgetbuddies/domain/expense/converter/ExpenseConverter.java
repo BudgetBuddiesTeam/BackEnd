@@ -31,7 +31,7 @@ public class ExpenseConverter {
 			.build();
 	}
 
-	public DetailExpenseResponseDto toExpenseResponseDto(Expense expense) {
+	public DetailExpenseResponseDto toDetailExpenseResponseDto(Expense expense) {
 		return DetailExpenseResponseDto.builder()
 			.expenseId(expense.getId())
 			.categoryId(expense.getCategory().getId())
