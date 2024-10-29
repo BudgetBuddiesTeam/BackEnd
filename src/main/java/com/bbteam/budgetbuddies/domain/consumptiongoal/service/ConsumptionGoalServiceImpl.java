@@ -812,7 +812,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	@Override
 	@Async
 	@Transactional(readOnly = true)
-	@Cacheable(value = "openAiResponses", key = "#userId")
+	@Cacheable(value = "consumptionMent", key = "#userId")
 	public CompletableFuture<String> getConsumptionMention(Long userId) {
 
 		/**

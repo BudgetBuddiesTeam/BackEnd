@@ -16,7 +16,7 @@ public class CachingConfig {
 	public CacheManager cacheManager() {
 		ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
 		cacheManager.setAllowNullValues(false);
-		cacheManager.setCacheNames(List.of("openAiResponses"));
+		cacheManager.setCacheNames(List.of("consumptionMent"));
 		return cacheManager;
 	}
 }
