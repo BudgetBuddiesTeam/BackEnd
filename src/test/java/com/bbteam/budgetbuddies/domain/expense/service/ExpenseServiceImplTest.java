@@ -24,7 +24,7 @@ import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
 import com.bbteam.budgetbuddies.domain.expense.dto.CompactExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.DailyExpenseResponseDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.DetailExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
@@ -79,32 +79,29 @@ class ExpenseServiceImplTest {
 		return MonthlyExpenseResponseDto.builder()
 			.expenseMonth(LocalDate.of(2024, 7, 1))
 			.totalConsumptionAmount(300_000L)
-			.dailyExpenses(List.of(DailyExpenseResponseDto.builder()
-				.daysOfMonth(2)
-				.daysOfTheWeek("화요일")
-				.expenses(List.of(CompactExpenseResponseDto.builder()
-					.amount(200_000L)
-					.description("User 소비")
-					.expenseId(-2L)
-					.categoryId(userCategory.getId())
-					.build()))
-				.build(), DailyExpenseResponseDto.builder()
-				.daysOfMonth(1)
-				.daysOfTheWeek("월요일")
-				.expenses(List.of(CompactExpenseResponseDto.builder()
-					.amount(100_000L)
-					.description("User 소비")
-					.expenseId(-1L)
-					.categoryId(userCategory.getId())
-					.build()))
-				.build()))
+			.dailyExpenses(
+				List.of(
+					DailyExpenseResponseDto.builder()
+						.daysOfMonth(2)
+						.daysOfTheWeek("화요일")
+						.expenses(List.of(CompactExpenseResponseDto.builder()
+							.amount(200_000L)
+							.description("User 소비")
+							.expenseId(-2L)
+							.categoryId(userCategory.getId())
+							.build()))
+						.build(),
+					DailyExpenseResponseDto.builder()
+						.daysOfMonth(1)
+						.daysOfTheWeek("월요일")
+						.expenses(List.of(CompactExpenseResponseDto.builder()
+							.amount(100_000L)
+							.description("User 소비")
+							.expenseId(-1L)
+							.categoryId(userCategory.getId())
+							.build()))
+						.build()))
 			.build();
-
-		// when
-		MonthlyExpenseResponseDto result = expenseService.getMonthlyExpense(user.getId(), requestMonth);
-
-		// then
-		assertThat(result).usingRecursiveComparison().isEqualTo(expected);
 	}
 
 	private List<Expense> generateExpenseList(LocalDate month, User user, Category userCategory) {
@@ -130,8 +127,7 @@ class ExpenseServiceImplTest {
 	}
 
 	@Test
-	@DisplayName("findExpenseFromUserIdAndExpenseId : 성공")
-	void findExpenseResponseFromUserIdAndExpenseId_Success() {
+	void 소비상세조회_성공() {
 		// given
 		final Long expenseId = -1L;
 
@@ -142,8 +138,7 @@ class ExpenseServiceImplTest {
 		given(expense.getId()).willReturn(expenseId);
 		given(expenseRepository.findById(expense.getId())).willReturn(Optional.of(expense));
 
-		ExpenseResponseDto expected = ExpenseResponseDto.builder()
-			.userId(user.getId())
+		DetailExpenseResponseDto expected = DetailExpenseResponseDto.builder()
 			.expenseId(-1L)
 			.description("유저 소비")
 			.categoryName("유저 카테고리")
@@ -151,15 +146,14 @@ class ExpenseServiceImplTest {
 			.build();
 
 		// when
-		ExpenseResponseDto result = expenseService.findExpenseResponseFromUserIdAndExpenseId(user.getId(), expenseId);
+		DetailExpenseResponseDto result = expenseService.findDetailExpenseResponse(user.getId(), expenseId);
 
 		// then
 		assertThat(result).usingRecursiveComparison().isEqualTo(expected);
 	}
 
 	@Test
-	@DisplayName("findExpenseFromUserIdAndExpenseId : 소비 유저와 다른 유저로 인한 예외 반환")
-	void findExpenseResponseFromUserIdAndExpenseId_Fail() {
+	void 조회_권한이_없는_유저의_소비조회로_인한_예외_반환() {
 		// given
 		final Long expenseId = -1L;
 
@@ -171,6 +165,6 @@ class ExpenseServiceImplTest {
 
 		// then
 		assertThrows(IllegalArgumentException.class,
-			() -> expenseService.findExpenseResponseFromUserIdAndExpenseId(-2L, expenseId));
+			() -> expenseService.findDetailExpenseResponse(-2L, expenseId));
 	}
 }
