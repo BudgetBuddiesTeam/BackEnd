@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -811,6 +812,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	@Override
 	@Async
 	@Transactional(readOnly = true)
+	@Cacheable(value = "openAiResponses", key = "#userId")
 	public CompletableFuture<String> getConsumptionMention(Long userId) {
 
 		/**
@@ -869,6 +871,7 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 
 		String response = openAiService.chat(basePrompt);
 
+		// GPT 프롬프트 실패 시 기본 멘트 생성 반환
 		if (response == null) {
 			NumberFormat nf = NumberFormat.getInstance(Locale.KOREA);
 			response = "총 " + nf.format(goalAmount - consumeAmount) + "원 더 쓸 수 있어요.";
