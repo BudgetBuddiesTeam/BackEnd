@@ -128,7 +128,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 	}
 
 	@Override
-	@GetMapping("/facialExpressions")
+	@GetMapping("/month-report")
 	public ApiResponse<MonthReportResponseDto> getMonthReport(
 		@AuthUser UserDto.AuthUserDto user) {
 		MonthReportResponseDto response = consumptionGoalService.getMonthReport(user.getId());
