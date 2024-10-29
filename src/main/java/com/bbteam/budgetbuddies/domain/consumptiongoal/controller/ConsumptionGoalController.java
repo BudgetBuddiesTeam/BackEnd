@@ -74,7 +74,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 	}
 
 	@Override
-	@GetMapping("/{userId}")
+	@GetMapping()
 	public ApiResponse<ConsumptionGoalResponseListDto> findUserConsumptionGoal(
 		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
 		@AuthUser UserDto.AuthUserDto user) {
@@ -85,7 +85,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 	}
 
 	@Override
-	@PostMapping("/{userId}")
+	@PostMapping()
 	public ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(
 		@AuthUser UserDto.AuthUserDto user,
 		@RequestBody ConsumptionGoalListRequestDto consumptionGoalListRequestDto) {
