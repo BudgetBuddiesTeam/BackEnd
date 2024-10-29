@@ -18,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -41,8 +40,6 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopCategoryConsumptionDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
-import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
@@ -230,10 +227,10 @@ class ConsumptionGoalServiceTest {
 			.category(defaultCategory)
 			.goalMonth(thisMonth)
 			.build();
-		given(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, defaultCategory,
+		given(consumptionGoalRepository.findByUserAndCategoryAndGoalMonth(user, defaultCategory,
 			thisMonth)).willReturn(Optional.ofNullable(defaultCategoryGoal));
 
-		given(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, userCategory,
+		given(consumptionGoalRepository.findByUserAndCategoryAndGoalMonth(user, userCategory,
 			thisMonth)).willReturn(Optional.ofNullable(null));
 
 		when(consumptionGoalRepository.saveAll(any())).thenAnswer(invocation -> {
@@ -515,166 +512,82 @@ class ConsumptionGoalServiceTest {
 	}
 
 	@Test
-	@DisplayName("지난 달, 이번 달 소비 목표가 없는 카테고리에 대한 소비 업데이트를 진행하는 경우 새로운 소비 목표를 생성해 소비 금액을 갱신")
-	void recalculateConsumptionAmount_notExistPreviousMonthAndThisMonthGoal() {
+	void 이번달_사용자_소비목표_조회하기() {
 		// given
-		Category existGoalCategory = Category.builder().name("유저 카테고리").user(user).isDefault(false).build();
-		Category notExistGoalCategory = Mockito.spy(Category.builder().name("디폴트 카테고리").isDefault(true).build());
-		given(notExistGoalCategory.getId()).willReturn(-1L);
+		Category category = Mockito.spy(Category.builder().name("TEST CATEGORY").user(user).isDefault(false).build());
+		LocalDate goalMonth = LocalDate.of(2024, 7, 1);
 
-		Expense expense = Mockito.spy(
-			Expense.builder().category(existGoalCategory).expenseDate(GOAL_MONTH.atStartOfDay()).amount(1000L).build());
-		when(expense.getId()).thenReturn(-1L);
-
-		ExpenseUpdateRequestDto request = ExpenseUpdateRequestDto.builder()
-			.amount(1000L)
-			.expenseId(expense.getId())
-			.expenseDate(LocalDate.of(2024, 8, 7).atStartOfDay())
-			.categoryId(notExistGoalCategory.getId())
-			.build();
-
-		ConsumptionGoal oldGoal = ConsumptionGoal.builder().consumeAmount(1000L).category(existGoalCategory).build();
-		ConsumptionGoal expected = ConsumptionGoal.builder()
-			.goalMonth(LocalDate.of(2024, 8, 1))
-			.goalAmount(0L)
-			.consumeAmount(1000L)
-			.category(notExistGoalCategory)
+		ConsumptionGoal userConsumptionGoal = ConsumptionGoal.builder()
+			.goalAmount(1_000_000L)
+			.consumeAmount(200_000L)
 			.user(user)
+			.category(category)
+			.goalMonth(goalMonth)
 			.build();
+		given(consumptionGoalRepository.findByUserAndCategoryAndGoalMonth(user, category, goalMonth))
+			.willReturn(Optional.of(userConsumptionGoal));
+
 		// when
-		when(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, expense.getCategory(),
-			expense.getExpenseDate().toLocalDate().withDayOfMonth(1))).thenReturn(Optional.ofNullable(oldGoal));
-
-		when(categoryRepository.findById(request.getCategoryId())).thenReturn(Optional.of(notExistGoalCategory));
-		when(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, notExistGoalCategory,
-			request.getExpenseDate().toLocalDate().withDayOfMonth(1))).thenReturn(Optional.empty());
-
-		when(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, notExistGoalCategory,
-			request.getExpenseDate().minusMonths(1).toLocalDate().withDayOfMonth(1))).thenReturn(Optional.empty());
-
-		consumptionGoalService.recalculateConsumptionAmount(expense, request, user);
-
-		ArgumentCaptor<ConsumptionGoal> consumptionGoalCaptor = ArgumentCaptor.forClass(ConsumptionGoal.class);
-		verify(consumptionGoalRepository, times(2)).save(consumptionGoalCaptor.capture());
-
-		List<ConsumptionGoal> savedConsumptionGoals = consumptionGoalCaptor.getAllValues();
+		ConsumptionGoal result = consumptionGoalService.getUserConsumptionGoal(user, category, goalMonth);
 
 		// then
-		assertEquals(oldGoal.getConsumeAmount(), 0L);
-		assertThat(savedConsumptionGoals.get(1)).usingRecursiveComparison().isEqualTo(expected);
+		assertEquals(result, userConsumptionGoal);
 	}
 
 	@Test
-	@DisplayName("이번달 소비 목표가 없는 카테고리에 대한 소비 업데이트를 진행하는 경우 지난 달 소비 목표의 목표 금액을 복사한 이번 달 소비 목표를 생성해 소비 금액을 갱신")
-	void recalculateConsumptionAmount_notExistThisMonthGoal() {
+	void 이번달_소비목표가_없는경우_저번달_기준으로_소비목표_생성() {
 		// given
-		Category existGoalCategory = Category.builder().name("유저 카테고리").user(user).isDefault(false).build();
-		Category notExistThisMonthGoalCategory = Mockito.spy(
-			Category.builder().name("디폴트 카테고리").isDefault(true).build());
-		given(notExistThisMonthGoalCategory.getId()).willReturn(-1L);
+		Category category = Mockito.spy(Category.builder().name("TEST CATEGORY").user(user).isDefault(false).build());
+		LocalDate goalMonth = LocalDate.of(2024, 7, 1);
 
-		Expense expense = Mockito.spy(
-			Expense.builder().category(existGoalCategory).expenseDate(GOAL_MONTH.atStartOfDay()).amount(1000L).build());
-		when(expense.getId()).thenReturn(-1L);
-
-		ExpenseUpdateRequestDto request = ExpenseUpdateRequestDto.builder()
-			.amount(1000L)
-			.expenseId(expense.getId())
-			.expenseDate(LocalDate.of(2024, 8, 7).atStartOfDay())
-			.categoryId(notExistThisMonthGoalCategory.getId())
+		ConsumptionGoal beforeUserConsumptionGoal = ConsumptionGoal.builder()
+			.goalAmount(1_000_000L)
+			.consumeAmount(200_000L)
+			.user(user)
+			.category(category)
+			.goalMonth(LocalDate.of(2024, 6, 1))
 			.build();
+		given(consumptionGoalRepository.findByUserAndCategoryAndGoalMonth(user, category, goalMonth))
+			.willReturn(Optional.empty());
+		given(consumptionGoalRepository.findByUserAndCategoryAndGoalMonth(user, category, goalMonth.minusMonths(1)))
+			.willReturn(Optional.of(beforeUserConsumptionGoal));
 
-		ConsumptionGoal oldGoal = ConsumptionGoal.builder().consumeAmount(1000L).category(existGoalCategory).build();
-
-		ConsumptionGoal previousMonthGoal = ConsumptionGoal.builder()
+		ConsumptionGoal expected = ConsumptionGoal.builder()
+			.goalAmount(1_000_000L)
+			.consumeAmount(0L)
+			.user(user)
+			.category(category)
 			.goalMonth(LocalDate.of(2024, 7, 1))
-			.goalAmount(3000L)
-			.consumeAmount(3000L)
-			.category(notExistThisMonthGoalCategory)
-			.user(user)
 			.build();
-
-		ConsumptionGoal expected = ConsumptionGoal.builder()
-			.goalMonth(LocalDate.of(2024, 8, 1))
-			.goalAmount(3000L)
-			.consumeAmount(1000L)
-			.category(notExistThisMonthGoalCategory)
-			.user(user)
-			.build();
-
 		// when
-		when(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, expense.getCategory(),
-			expense.getExpenseDate().toLocalDate().withDayOfMonth(1))).thenReturn(Optional.ofNullable(oldGoal));
-
-		when(categoryRepository.findById(request.getCategoryId())).thenReturn(
-			Optional.of(notExistThisMonthGoalCategory));
-		when(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user,
-			notExistThisMonthGoalCategory, request.getExpenseDate().toLocalDate().withDayOfMonth(1))).thenReturn(
-			Optional.empty());
-
-		when(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user,
-			notExistThisMonthGoalCategory,
-			request.getExpenseDate().minusMonths(1).toLocalDate().withDayOfMonth(1))).thenReturn(
-			Optional.ofNullable(previousMonthGoal));
-
-		consumptionGoalService.recalculateConsumptionAmount(expense, request, user);
-
-		ArgumentCaptor<ConsumptionGoal> consumptionGoalCaptor = ArgumentCaptor.forClass(ConsumptionGoal.class);
-		verify(consumptionGoalRepository, times(2)).save(consumptionGoalCaptor.capture());
-
-		List<ConsumptionGoal> savedConsumptionGoals = consumptionGoalCaptor.getAllValues();
+		ConsumptionGoal result = consumptionGoalService.getUserConsumptionGoal(user, category, goalMonth);
 
 		// then
-		assertEquals(oldGoal.getConsumeAmount(), 0L);
-		assertThat(savedConsumptionGoals.get(1)).usingRecursiveComparison().isEqualTo(expected);
+		assertThat(result).usingRecursiveComparison().isEqualTo(expected);
 	}
 
 	@Test
-	@DisplayName("이번달 소비 목표가 있는 경우 이번 달 소비 목표의 소비 금액을 갱신")
-	void recalculateConsumptionAmount_existThisMonthGoal() {
+	void 이번달_저번달_소비목표가_없는경우_소비목표를_새로_생성() {
 		// given
-		Category existGoalCategory = Mockito.spy(
-			Category.builder().name("유저 카테고리").user(user).isDefault(false).build());
-		given(existGoalCategory.getId()).willReturn(-1L);
+		Category category = Mockito.spy(Category.builder().name("TEST CATEGORY").user(user).isDefault(false).build());
+		LocalDate goalMonth = LocalDate.of(2024, 7, 1);
 
-		Expense expense = Mockito.spy(
-			Expense.builder().category(existGoalCategory).expenseDate(GOAL_MONTH.atStartOfDay()).amount(1000L).build());
-		when(expense.getId()).thenReturn(-1L);
-
-		ExpenseUpdateRequestDto request = ExpenseUpdateRequestDto.builder()
-			.amount(2000L)
-			.expenseId(expense.getId())
-			.expenseDate(LocalDate.of(2024, 8, 7).atStartOfDay())
-			.categoryId(existGoalCategory.getId())
-			.build();
-
-		ConsumptionGoal oldGoal = ConsumptionGoal.builder()
-			.goalMonth(LocalDate.of(2024, 8, 1))
-			.goalAmount(3000L)
-			.consumeAmount(1000L)
-			.category(existGoalCategory)
-			.user(user)
-			.build();
+		given(consumptionGoalRepository.findByUserAndCategoryAndGoalMonth(user, category, goalMonth))
+			.willReturn(Optional.empty());
+		given(consumptionGoalRepository.findByUserAndCategoryAndGoalMonth(user, category, goalMonth.minusMonths(1)))
+			.willReturn(Optional.empty());
 
 		ConsumptionGoal expected = ConsumptionGoal.builder()
-			.goalMonth(LocalDate.of(2024, 8, 1))
-			.goalAmount(3000L)
-			.consumeAmount(2000L)
-			.category(existGoalCategory)
+			.goalAmount(0L)
+			.consumeAmount(0L)
 			.user(user)
+			.category(category)
+			.goalMonth(LocalDate.of(2024, 7, 1))
 			.build();
-
 		// when
-		when(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, expense.getCategory(),
-			expense.getExpenseDate().toLocalDate().withDayOfMonth(1))).thenReturn(Optional.ofNullable(oldGoal));
-
-		when(categoryRepository.findById(request.getCategoryId())).thenReturn(Optional.of(existGoalCategory));
-		when(consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, existGoalCategory,
-			request.getExpenseDate().toLocalDate().withDayOfMonth(1))).thenReturn(Optional.ofNullable(oldGoal));
-
-		consumptionGoalService.recalculateConsumptionAmount(expense, request, user);
+		ConsumptionGoal result = consumptionGoalService.getUserConsumptionGoal(user, category, goalMonth);
 
 		// then
-		assertThat(oldGoal).usingRecursiveComparison().isEqualTo(expected);
+		assertThat(result).usingRecursiveComparison().isEqualTo(expected);
 	}
 }
