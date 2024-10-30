@@ -14,6 +14,7 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalRespon
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopCategoryConsumptionDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -53,7 +54,7 @@ public interface ConsumptionGoalApi {
 
 	@Operation(summary = "[User] 소비 목표 조회", description = "date={yyyy-MM-dd} 형식의 query string을 통해서 사용자의 목표 달을 조회하는 API 입니다.")
 	@Parameters({@Parameter(name = "date", description = "yyyy-MM-dd 형식으로 목표 달의 소비를 조회")})
-	ApiResponse<ConsumptionGoalResponseListDto> findUserConsumptionGoal(LocalDate date, Long userId);
+	ApiResponse<ConsumptionGoalResponseListDto> findUserConsumptionGoal(LocalDate date, UserDto.AuthUserDto user);
 
 	@Operation(summary = "[User] 이번 달 소비 목표 수정", description = "다른 달의 소비 목표를 업데이트하는 것은 불가능하고 오직 이번 달의 소비 목표만 업데이트 하는 API 입니다.")
 	ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(Long userId,

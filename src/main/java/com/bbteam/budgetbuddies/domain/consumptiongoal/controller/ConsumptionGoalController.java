@@ -23,6 +23,8 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopCategoryConsumptionDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -67,13 +69,11 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ApiResponse.onSuccess(response);
 	}
 
-	@GetMapping("/{userId}")
+	@GetMapping()
 	public ApiResponse<ConsumptionGoalResponseListDto> findUserConsumptionGoal(
-		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @PathVariable Long userId) {
+		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @AuthUser UserDto.AuthUserDto user) {
 
-		ConsumptionGoalResponseListDto response = consumptionGoalService.findUserConsumptionGoalList(userId, date);
-
-		return ApiResponse.onSuccess(response);
+		return ApiResponse.onSuccess(consumptionGoalService.findUserConsumptionGoalList(user.getId(), date));
 	}
 
 	@Override
