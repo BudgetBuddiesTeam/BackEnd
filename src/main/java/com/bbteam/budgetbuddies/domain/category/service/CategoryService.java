@@ -17,5 +17,7 @@ public interface CategoryService {
 	void deleteCategory(Long id, Long userId);
 
 	Category getCategory(Long categoryId);
+
+	List<Category> getUserCategoryList(Long userId);
 }
 

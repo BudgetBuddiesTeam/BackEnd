@@ -154,4 +154,8 @@ public class CategoryServiceImpl implements CategoryService {
 		});
 	}
 
+	@Override
+	public List<Category> getUserCategoryList(Long userId) {
+		return categoryRepository.findUserCategoryByUserId(userId);
+	}
 }
