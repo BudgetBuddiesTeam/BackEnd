@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
+import com.bbteam.budgetbuddies.domain.category.service.CategoryService;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoalConverter;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AllConsumptionCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AvgConsumptionGoalDto;
@@ -47,6 +48,7 @@ import com.bbteam.budgetbuddies.domain.gemini.service.GeminiService;
 import com.bbteam.budgetbuddies.domain.openai.service.OpenAiService;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
+import com.bbteam.budgetbuddies.domain.user.service.UserService;
 import com.bbteam.budgetbuddies.enums.Gender;
 
 import lombok.RequiredArgsConstructor;
@@ -60,7 +62,9 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	private final ConsumptionGoalRepository consumptionGoalRepository;
 	private final ExpenseRepository expenseRepository;
 	private final CategoryRepository categoryRepository;
+	private final CategoryService categoryService;
 	private final UserRepository userRepository;
+	private final UserService userService;
 	private final GeminiService geminiService;
 	private final OpenAiService openAiService;
 
@@ -506,50 +510,18 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional
 	public ConsumptionGoalResponseListDto findUserConsumptionGoalList(Long userId, LocalDate date) {
 		LocalDate goalMonth = date.withDayOfMonth(1);
-		Map<Long, ConsumptionGoalResponseDto> goalMap = initializeGoalMap(userId);
+		User user = userService.getUser(userId);
+		List<Category> categoryList = categoryService.getUserCategoryList(userId);
 
-		updateGoalMapWithPrevious(userId, goalMonth, goalMap);
-		updateGoalMapWithCurrentMonth(userId, goalMonth, goalMap);
-
-		List<ConsumptionGoalResponseDto> consumptionGoalList = new ArrayList<>(goalMap.values());
-
-		return consumptionGoalConverter.toConsumptionGoalResponseListDto(
-			orderByRemainingBalanceDescending(consumptionGoalList), goalMonth);
-	}
-
-	private Map<Long, ConsumptionGoalResponseDto> initializeGoalMap(Long userId) {
-		return categoryRepository.findUserCategoryByUserId(userId)
+		List<ConsumptionGoal> thisMonthUserConsumptionGoal = categoryList
 			.stream()
-			.collect(Collectors.toMap(Category::getId, consumptionGoalConverter::toConsumptionGoalResponseDto));
-	}
-
-	private void updateGoalMapWithPrevious(Long userId, LocalDate goalMonth,
-		Map<Long, ConsumptionGoalResponseDto> goalMap) {
-		goalMap.keySet()
-			.stream()
-			.map(categoryId -> consumptionGoalRepository.findLatelyGoal(userId, categoryId, goalMonth.minusMonths(1)))
-			.filter(Optional::isPresent)
-			.map(Optional::get)
-			.map(consumptionGoalConverter::toConsumptionGoalResponseDtoFromPreviousGoal)
-			.forEach(goal -> goalMap.put(goal.getCategoryId(), goal));
-	}
-
-	private void updateGoalMapWithCurrentMonth(Long userId, LocalDate goalMonth,
-		Map<Long, ConsumptionGoalResponseDto> goalMap) {
-		consumptionGoalRepository.findConsumptionGoalByUserIdAndGoalMonth(userId, goalMonth)
-			.stream()
-			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
-			.forEach(goal -> goalMap.put(goal.getCategoryId(), goal));
-	}
-
-	private List<ConsumptionGoalResponseDto> orderByRemainingBalanceDescending(
-		List<ConsumptionGoalResponseDto> consumptionGoalList) {
-		return consumptionGoalList.stream()
-			.sorted(Comparator.comparingLong(ConsumptionGoalResponseDto::getRemainingBalance).reversed())
+			.map(category -> this.getUserConsumptionGoal(user, category, goalMonth))
 			.toList();
+
+		return consumptionGoalConverter.toConsumptionGoalResponseListDto(thisMonthUserConsumptionGoal, goalMonth);
 	}
 
 	@Override

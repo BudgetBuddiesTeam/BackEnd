@@ -1,11 +1,11 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.converter;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
@@ -17,15 +17,6 @@ import com.bbteam.budgetbuddies.enums.Gender;
 
 @Component
 public class ConsumptionGoalConverter {
-	public ConsumptionGoalResponseDto toConsumptionGoalResponseDto(Category category) {
-		return ConsumptionGoalResponseDto.builder()
-			.categoryName(category.getName())
-			.categoryId(category.getId())
-			.goalAmount(0L)
-			.consumeAmount(0L)
-			.build();
-	}
-
 	public ConsumptionGoalResponseDto toConsumptionGoalResponseDto(ConsumptionGoal consumptionGoal) {
 		return ConsumptionGoalResponseDto.builder()
 			.categoryName(consumptionGoal.getCategory().getName())
@@ -35,27 +26,24 @@ public class ConsumptionGoalConverter {
 			.build();
 	}
 
-	public ConsumptionGoalResponseDto toConsumptionGoalResponseDtoFromPreviousGoal(ConsumptionGoal consumptionGoal) {
-		return ConsumptionGoalResponseDto.builder()
-			.categoryName(consumptionGoal.getCategory().getName())
-			.categoryId(consumptionGoal.getCategory().getId())
-			.goalAmount(consumptionGoal.getGoalAmount())
-			.consumeAmount(0L)
-			.build();
-
-	}
-
 	public ConsumptionGoalResponseListDto toConsumptionGoalResponseListDto(
-		List<ConsumptionGoalResponseDto> consumptionGoalList, LocalDate goalMonth) {
-		Long totalGoalAmount = sumTotalGoalAmount(consumptionGoalList);
-		Long totalConsumptionAmount = sumTotalConsumptionAmount(consumptionGoalList);
+		List<ConsumptionGoal> consumptionGoalList, LocalDate goalMonth) {
+
+		List<ConsumptionGoalResponseDto> consumptionGoalResponseList = consumptionGoalList
+			.stream()
+			.map(this::toConsumptionGoalResponseDto)
+			.sorted(Comparator.comparingLong(ConsumptionGoalResponseDto::getRemainingBalance).reversed())
+			.toList();
+
+		Long totalGoalAmount = sumTotalGoalAmount(consumptionGoalResponseList);
+		Long totalConsumptionAmount = sumTotalConsumptionAmount(consumptionGoalResponseList);
 
 		return ConsumptionGoalResponseListDto.builder()
 			.goalMonth(goalMonth)
 			.totalGoalAmount(totalGoalAmount)
 			.totalConsumptionAmount(totalConsumptionAmount)
 			.totalRemainingBalance(totalGoalAmount - totalConsumptionAmount)
-			.consumptionGoalList(consumptionGoalList)
+			.consumptionGoalList(consumptionGoalResponseList)
 			.build();
 	}
 
