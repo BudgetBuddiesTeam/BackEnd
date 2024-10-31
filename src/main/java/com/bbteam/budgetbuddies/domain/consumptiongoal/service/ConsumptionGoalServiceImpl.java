@@ -34,7 +34,6 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumeAmountAndGoalA
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalRequestDto;
-import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MonthReportResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MyConsumptionGoalDto;
@@ -467,46 +466,25 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	public ConsumptionGoalResponseListDto updateConsumptionGoals(Long userId,
 		ConsumptionGoalListRequestDto consumptionGoalListRequestDto) {
 		LocalDate thisMonth = LocalDate.now().withDayOfMonth(1);
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Not found user"));
+		User user = userService.getUser(userId);
 
 		List<ConsumptionGoal> updatedConsumptionGoal = consumptionGoalListRequestDto.getConsumptionGoalList()
 			.stream()
 			.map(c -> updateConsumptionGoalWithRequestDto(user, c, thisMonth))
 			.toList();
 
-		List<ConsumptionGoalResponseDto> response = consumptionGoalRepository.saveAll(updatedConsumptionGoal)
-			.stream()
-			.map(consumptionGoalConverter::toConsumptionGoalResponseDto)
-			.toList();
-
-		return consumptionGoalConverter.toConsumptionGoalResponseListDto(response, thisMonth);
+		return consumptionGoalConverter.toConsumptionGoalResponseListDto(updatedConsumptionGoal, thisMonth);
 	}
 
 	private ConsumptionGoal updateConsumptionGoalWithRequestDto(User user,
 		ConsumptionGoalRequestDto consumptionGoalRequestDto, LocalDate goalMonth) {
 
-		Category category = categoryRepository.findById(consumptionGoalRequestDto.getCategoryId())
-			.orElseThrow(() -> new IllegalArgumentException("Not found Category"));
+		Category category = categoryService.getCategory(consumptionGoalRequestDto.getCategoryId());
 
-		ConsumptionGoal consumptionGoal = findOrElseGenerateConsumptionGoal(user, category, goalMonth);
+		ConsumptionGoal consumptionGoal = this.getUserConsumptionGoal(user, category, goalMonth);
 		consumptionGoal.updateGoalAmount(consumptionGoalRequestDto.getGoalAmount());
 
 		return consumptionGoal;
-	}
-
-	private ConsumptionGoal findOrElseGenerateConsumptionGoal(User user, Category category, LocalDate goalMonth) {
-		return consumptionGoalRepository.findConsumptionGoalByUserAndCategoryAndGoalMonth(user, category, goalMonth)
-			.orElseGet(() -> generateNewConsumptionGoal(user, category, goalMonth));
-	}
-
-	private ConsumptionGoal generateNewConsumptionGoal(User user, Category category, LocalDate goalMonth) {
-		return ConsumptionGoal.builder()
-			.goalMonth(goalMonth)
-			.user(user)
-			.category(category)
-			.consumeAmount(0L)
-			.goalAmount(0L)
-			.build();
 	}
 
 	@Override
@@ -821,12 +799,23 @@ public class ConsumptionGoalServiceImpl implements ConsumptionGoalService {
 	}
 
 	private ConsumptionGoal generateGoalByPrevious(ConsumptionGoal consumptionGoal) {
-		return ConsumptionGoal.builder()
+		return consumptionGoalRepository.save(ConsumptionGoal.builder()
 			.goalMonth(consumptionGoal.getGoalMonth().plusMonths(1))
 			.user(consumptionGoal.getUser())
 			.category(consumptionGoal.getCategory())
 			.consumeAmount(0L)
 			.goalAmount(consumptionGoal.getGoalAmount())
-			.build();
+			.build());
 	}
+
+	private ConsumptionGoal generateNewConsumptionGoal(User user, Category category, LocalDate goalMonth) {
+		return consumptionGoalRepository.save(ConsumptionGoal.builder()
+			.goalMonth(goalMonth)
+			.user(user)
+			.category(category)
+			.consumeAmount(0L)
+			.goalAmount(0L)
+			.build());
+	}
+
 }
