@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,12 +76,13 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 	}
 
 	@Override
-	@PostMapping("/{userId}")
-	public ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(@PathVariable Long userId,
+	@PostMapping()
+	public ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(
+		@AuthUser UserDto.AuthUserDto user,
 		@RequestBody ConsumptionGoalListRequestDto consumptionGoalListRequestDto) {
 
 		return ResponseEntity.ok()
-			.body(consumptionGoalService.updateConsumptionGoals(userId, consumptionGoalListRequestDto));
+			.body(consumptionGoalService.updateConsumptionGoals(user.getId(), consumptionGoalListRequestDto));
 	}
 
 	@GetMapping("/categories/top-consumptions/top-3")

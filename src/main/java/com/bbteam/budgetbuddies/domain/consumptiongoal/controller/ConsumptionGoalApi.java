@@ -57,7 +57,7 @@ public interface ConsumptionGoalApi {
 	ApiResponse<ConsumptionGoalResponseListDto> findUserConsumptionGoal(LocalDate date, UserDto.AuthUserDto user);
 
 	@Operation(summary = "[User] 이번 달 소비 목표 수정", description = "다른 달의 소비 목표를 업데이트하는 것은 불가능하고 오직 이번 달의 소비 목표만 업데이트 하는 API 입니다.")
-	ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(Long userId,
+	ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(UserDto.AuthUserDto user,
 		ConsumptionGoalListRequestDto consumptionGoalListRequestDto);
 
 	@Operation(summary = "[User] 또래들이 가장 많이한 소비 카테고리 조회 Top3", description = "특정 사용자의 또래 소비 카테고리별 소비 건 수을 조회하는 API 입니다.")
