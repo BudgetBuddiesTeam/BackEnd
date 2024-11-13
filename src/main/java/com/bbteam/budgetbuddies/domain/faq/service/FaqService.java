@@ -2,6 +2,7 @@ package com.bbteam.budgetbuddies.domain.faq.service;
 
 import com.bbteam.budgetbuddies.domain.faq.dto.FaqRequestDto;
 import com.bbteam.budgetbuddies.domain.faq.dto.FaqResponseDto;
+import com.bbteam.budgetbuddies.domain.faqkeyword.dto.FaqKeywordResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -18,4 +19,8 @@ public interface FaqService {
     FaqResponseDto.FaqModifyResponse modifyFaq(FaqRequestDto.FaqModifyRequest dto, Long faqId);
 
     String deleteFaq(Long faqId);
+
+    FaqKeywordResponseDto addKeyword(Long faqId, Long searchKeywordId);
+
+    String removeKeyword(Long faqId, Long searchKeywordId);
 }
