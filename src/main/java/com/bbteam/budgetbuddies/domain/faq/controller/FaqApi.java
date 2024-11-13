@@ -113,4 +113,9 @@ public interface FaqApi {
     }
     )
     ApiResponse<?> deleteFaq(@ExistFaq Long faqId);
+
+    ApiResponse<?> addKeyword(@ExistFaq Long faqId, Long searchKeywordId);
+
+    ApiResponse<?> deleteKeyword(@ExistFaq Long faqId, Long searchKeywordId);
+
 }

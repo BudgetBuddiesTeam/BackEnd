@@ -57,4 +57,16 @@ public class FaqController implements FaqApi{
         faqService.deleteFaq(faqId);
         return ApiResponse.onSuccess("Delete Success");
     }
+
+    @Override
+    @PostMapping("/{faqId}/keyword")
+    public ApiResponse<?> addKeyword(@PathVariable @ExistFaq Long faqId, @RequestParam Long searchKeywordId) {
+        return ApiResponse.onSuccess(faqService.addKeyword(faqId, searchKeywordId));
+    }
+
+    @Override
+    @DeleteMapping("/{faqId}/keyword")
+    public ApiResponse<?> deleteKeyword(@PathVariable @ExistFaq Long faqId, @RequestParam Long searchKeywordId) {
+        return ApiResponse.onSuccess(faqService.removeKeyword(faqId, searchKeywordId));
+    }
 }
