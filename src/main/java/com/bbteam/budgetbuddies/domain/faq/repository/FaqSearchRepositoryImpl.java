@@ -1,6 +1,7 @@
 package com.bbteam.budgetbuddies.domain.faq.repository;
 
 import com.bbteam.budgetbuddies.domain.faq.entity.Faq;
+import com.bbteam.budgetbuddies.domain.searchkeyword.domain.QSearchKeyword;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static com.bbteam.budgetbuddies.domain.faq.entity.QFaq.*;
 import static com.bbteam.budgetbuddies.domain.faqkeyword.domain.QFaqKeyword.*;
+import static com.bbteam.budgetbuddies.domain.searchkeyword.domain.QSearchKeyword.*;
 
 public class FaqSearchRepositoryImpl implements FaqSearchRepository{
 
@@ -27,11 +29,11 @@ public class FaqSearchRepositoryImpl implements FaqSearchRepository{
     public Page<Faq> searchFaq(Pageable pageable, String searchCondition) {
         List<Faq> result = queryFactory.select(faq)
                 .from(faq)
-                .where(faq.in(
+                .where(faq.id.in(
                         JPAExpressions
-                                .select(faqKeyword.faq)
+                                .select(faqKeyword.faq.id)
                                 .from(faqKeyword)
-                                .where(keywordMatch(searchCondition))
+                                .join(searchKeyword).on(keywordMatch(searchCondition))
                 ))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -39,11 +41,11 @@ public class FaqSearchRepositoryImpl implements FaqSearchRepository{
 
         Long total = queryFactory.select(faq.count())
                 .from(faq)
-                .where(faq.in(
+                .where(faq.id.in(
                         JPAExpressions
-                                .select(faqKeyword.faq)
+                                .select(faqKeyword.faq.id)
                                 .from(faqKeyword)
-                                .where(keywordMatch(searchCondition))
+                                .join(searchKeyword).on(keywordMatch(searchCondition))
                 ))
                 .fetchOne();
 
@@ -52,7 +54,7 @@ public class FaqSearchRepositoryImpl implements FaqSearchRepository{
     }
 
     private BooleanExpression keywordMatch(String searchCondition) {
-        return searchCondition != null ? faqKeyword.searchKeyword.keyword.eq(searchCondition) : null;
+        return searchCondition != null ? searchKeyword.keyword.contains(searchCondition) : null;
     }
 
 }
