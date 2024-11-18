@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -70,7 +71,7 @@ public interface FaqApi {
 
     }
     )
-    ApiResponse<?> findByPaging(Pageable pageable);
+    ApiResponse<?> findByPaging(Pageable pageable, String SearchCondition);
 
     @Operation(summary = "[User] FAQ 수정 API", description = "FAQ를 수정하는 API입니다.",
             requestBody = @RequestBody(
@@ -112,4 +113,9 @@ public interface FaqApi {
     }
     )
     ApiResponse<?> deleteFaq(@ExistFaq Long faqId);
+
+    ApiResponse<?> addKeyword(@ExistFaq Long faqId, Long searchKeywordId);
+
+    ApiResponse<?> deleteKeyword(@ExistFaq Long faqId, Long searchKeywordId);
+
 }
