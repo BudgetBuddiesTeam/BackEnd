@@ -16,9 +16,11 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ExpenseUpdateRequestDto {
 	private Long expenseId;
+
 	private Long categoryId;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime expenseDate;
+
 	private Long amount;
 }

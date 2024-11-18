@@ -1,7 +1,6 @@
 package com.bbteam.budgetbuddies.domain.expense.service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,16 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.category.repository.CategoryRepository;
 import com.bbteam.budgetbuddies.domain.category.service.CategoryService;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
 import com.bbteam.budgetbuddies.domain.expense.converter.ExpenseConverter;
+import com.bbteam.budgetbuddies.domain.expense.dto.DetailExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
 import com.bbteam.budgetbuddies.domain.expense.repository.ExpenseRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
+import com.bbteam.budgetbuddies.domain.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,13 +30,14 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 	private final ExpenseRepository expenseRepository;
 	private final UserRepository userRepository;
+	private final UserService userService;
 	private final CategoryRepository categoryRepository;
 	private final CategoryService categoryService;
 	private final ExpenseConverter expenseConverter;
 	private final ConsumptionGoalService consumptionGoalService;
 
 	@Override
-	public ExpenseResponseDto createExpense(Long userId, ExpenseRequestDto expenseRequestDto) {
+	public DetailExpenseResponseDto createExpense(Long userId, ExpenseRequestDto expenseRequestDto) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 		Category category = categoryRepository.findById(expenseRequestDto.getCategoryId())
@@ -73,14 +75,15 @@ public class ExpenseServiceImpl implements ExpenseService {
 
 		if (expenseDateMonth.equals(currentMonth)) {
 			// 현재 월의 소비 내역일 경우 ConsumptionGoal을 업데이트
-			consumptionGoalService.updateConsumeAmount(userId, expenseRequestDto.getCategoryId(), expenseRequestDto.getAmount());
+			consumptionGoalService.updateConsumeAmount(userId, expenseRequestDto.getCategoryId(),
+				expenseRequestDto.getAmount());
 		}
-//		else {
-//			// 과거 월의 소비 내역일 경우 해당 월의 ConsumptionGoal을 업데이트 또는 삭제 상태로 생성
-//			consumptionGoalService.updateOrCreateDeletedConsumptionGoal(userId, expenseRequestDto.getCategoryId(), expenseDateMonth, expenseRequestDto.getAmount());
-//		}
+		//		else {
+		//			// 과거 월의 소비 내역일 경우 해당 월의 ConsumptionGoal을 업데이트 또는 삭제 상태로 생성
+		//			consumptionGoalService.updateOrCreateDeletedConsumptionGoal(userId, expenseRequestDto.getCategoryId(), expenseDateMonth, expenseRequestDto.getAmount());
+		//		}
 
-		return expenseConverter.toExpenseResponseDto(expense);
+		return expenseConverter.toDetailExpenseResponseDto(expense);
         /*
          Case 1 결과) 해당 유저의 user_id + immutable 필드 중 하나의 조합으로 Expense 테이블에 저장
          Case 2 결과) 내가 직접 생성한 카테고리 중 하나로 카테고리를 설정하여 Expense 테이블에 저장
@@ -91,7 +94,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 	@Transactional
 	public void deleteExpense(Long expenseId) {
 		Expense expense = expenseRepository.findById(expenseId)
-				.orElseThrow(() -> new IllegalArgumentException("Not found Expense"));
+			.orElseThrow(() -> new IllegalArgumentException("Not found Expense"));
 
 		Long userId = expense.getUser().getId();
 		Long categoryId = expense.getCategory().getId();
@@ -113,45 +116,42 @@ public class ExpenseServiceImpl implements ExpenseService {
 	@Transactional(readOnly = true)
 	public MonthlyExpenseResponseDto getMonthlyExpense(Long userId, LocalDate localDate) {
 		LocalDate startOfMonth = localDate.withDayOfMonth(1);
-		LocalDate endOfMonth = localDate.withDayOfMonth(startOfMonth.lengthOfMonth());
+		LocalDate nextMonth = startOfMonth.plusMonths(1L);
 
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
-
-		List<Expense> expenseSlice = expenseRepository.findAllByUserIdForPeriod(user,
-			startOfMonth.atStartOfDay(), endOfMonth.atTime(LocalTime.MAX));
+		List<Expense> expenseSlice = expenseRepository.findAllByUserIdForPeriod(userId,
+			startOfMonth.atStartOfDay(), nextMonth.atStartOfDay());
 
 		return expenseConverter.toMonthlyExpenseResponseDto(expenseSlice, startOfMonth);
 	}
 
 	@Override
-	public ExpenseResponseDto findExpenseResponseFromUserIdAndExpenseId(Long userId, Long expenseId) {
-		Expense expense = expenseRepository.findById(expenseId)
-			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
-
-		checkUserAuthority(userId, expense);
-
-		return expenseConverter.toExpenseResponseDto(expense);
+	public DetailExpenseResponseDto findDetailExpenseResponse(Long userId, Long expenseId) {
+		return expenseConverter.toDetailExpenseResponseDto(getExpense(expenseId));
 	}
 
-	private void checkUserAuthority(Long userId, Expense expense) {
-		if (!expense.getUser().getId().equals(userId))
-			throw new IllegalArgumentException("Unauthorized user");
+	private Expense getExpense(Long expenseId) {
+		return expenseRepository.findById(expenseId)
+			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
 	}
 
 	@Override
 	@Transactional
-	public ExpenseResponseDto updateExpense(Long userId, ExpenseUpdateRequestDto request) {
-		Expense expense = expenseRepository.findById(request.getExpenseId())
-			.orElseThrow(() -> new IllegalArgumentException("Not found expense"));
-
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Not found user"));
-		checkUserAuthority(userId, expense);
-
-		Category categoryToReplace = categoryService.handleCategoryChange(expense, request, user);
+	public DetailExpenseResponseDto updateExpense(Long userId, ExpenseUpdateRequestDto request) {
+		User user = userService.getUser(userId);
+		Expense expense = getExpense(request.getExpenseId());
+		Category categoryToReplace = categoryService.getCategory(request.getCategoryId());
 
 		expense.updateExpenseFromRequest(request, categoryToReplace);
 
-		return expenseConverter.toExpenseResponseDto(expenseRepository.save(expense));
+		ConsumptionGoal beforeConsumptionGoal = consumptionGoalService.getUserConsumptionGoal(
+			user, expense.getCategory(), expense.getExpenseDate().toLocalDate().withDayOfMonth(1));
+		ConsumptionGoal afterConsumptionGoal = consumptionGoalService.getUserConsumptionGoal(
+			user, categoryToReplace, request.getExpenseDate().toLocalDate().withDayOfMonth(1));
+
+		consumptionGoalService.recalculateConsumptionAmount(beforeConsumptionGoal, expense.getAmount(),
+			afterConsumptionGoal, request.getAmount());
+
+		return expenseConverter.toDetailExpenseResponseDto(expenseRepository.save(expense));
 	}
 }
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.AllConsumptionCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalListRequestDto;
@@ -13,8 +14,7 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MonthReportResponseDt
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopCategoryConsumptionDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
-import com.bbteam.budgetbuddies.domain.expense.entity.Expense;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 
 @Service
@@ -35,7 +35,8 @@ public interface ConsumptionGoalService {
 
 	ConsumptionAnalysisResponseDto getTopCategoryAndConsumptionAmount(Long userId);
 
-	void recalculateConsumptionAmount(Expense expense, ExpenseUpdateRequestDto request, User user);
+	void recalculateConsumptionAmount(ConsumptionGoal beforeConsumptionGoal, Long beforeAmount,
+		ConsumptionGoal afterConsumptionGoal, Long afterAmount);
 
 	void updateConsumeAmount(Long userId, Long categoryId, Long amount);
 
@@ -52,4 +53,6 @@ public interface ConsumptionGoalService {
 	MonthReportResponseDto getMonthReport(Long userId);
 
 	String getConsumptionMention(Long userId);
+
+	ConsumptionGoal getUserConsumptionGoal(User user, Category category, LocalDate goalDate);
 }

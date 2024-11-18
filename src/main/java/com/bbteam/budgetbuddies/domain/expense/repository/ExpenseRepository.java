@@ -14,8 +14,8 @@ import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.enums.Gender;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
-	@Query("SELECT e FROM Expense e WHERE e.user = :user AND e.expenseDate BETWEEN :startDate AND :endDate ORDER BY e.expenseDate DESC")
-	List<Expense> findAllByUserIdForPeriod(@Param("user") User user, @Param("startDate") LocalDateTime startDate,
+	@Query("SELECT e FROM Expense e WHERE e.user.id = :userId AND e.expenseDate >= :startDate AND e.expenseDate < :endDate ORDER BY e.expenseDate DESC")
+	List<Expense> findAllByUserIdForPeriod(@Param("userId") Long userId, @Param("startDate") LocalDateTime startDate,
 		@Param("endDate") LocalDateTime endDate);
 
 	List<Expense> findByCategoryIdAndUserIdAndExpenseDateBetweenAndDeletedFalse(Long categoryId, Long userId,

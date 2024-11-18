@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +22,8 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopCategoryConsumptionDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.TopGoalCategoryResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.service.ConsumptionGoalService;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 
 import lombok.RequiredArgsConstructor;
 
@@ -67,22 +68,21 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ApiResponse.onSuccess(response);
 	}
 
-	@GetMapping("/{userId}")
+	@GetMapping()
 	public ApiResponse<ConsumptionGoalResponseListDto> findUserConsumptionGoal(
-		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @PathVariable Long userId) {
+		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @AuthUser UserDto.AuthUserDto user) {
 
-		ConsumptionGoalResponseListDto response = consumptionGoalService.findUserConsumptionGoalList(userId, date);
-
-		return ApiResponse.onSuccess(response);
+		return ApiResponse.onSuccess(consumptionGoalService.findUserConsumptionGoalList(user.getId(), date));
 	}
 
 	@Override
-	@PostMapping("/{userId}")
-	public ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(@PathVariable Long userId,
+	@PostMapping()
+	public ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(
+		@AuthUser UserDto.AuthUserDto user,
 		@RequestBody ConsumptionGoalListRequestDto consumptionGoalListRequestDto) {
 
 		return ResponseEntity.ok()
-			.body(consumptionGoalService.updateConsumptionGoals(userId, consumptionGoalListRequestDto));
+			.body(consumptionGoalService.updateConsumptionGoals(user.getId(), consumptionGoalListRequestDto));
 	}
 
 	@GetMapping("/categories/top-consumptions/top-3")
