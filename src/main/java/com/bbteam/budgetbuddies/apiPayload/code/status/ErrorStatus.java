@@ -27,7 +27,9 @@ public enum ErrorStatus implements BaseErrorCode {
 
     _OTP_NOT_VALID(HttpStatus.BAD_REQUEST, "OTP4001", "인증번호가 유효하지 않습니다."),
     _PHONE_NUMBER_NOT_VALID(HttpStatus.BAD_REQUEST, "AUTH4001", "전화번호 형식이 유효하지 않습니다. (예: 01012341234)"),
-    _FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ4004", "해당 FAQ가 존재하지 않습니다.");
+    _FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ4004", "해당 FAQ가 존재하지 않습니다."),
+    _SEARCH_KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "SEARCH_KEYWORD4004", "해당 SearchKeyword가 존재하지 않습니다."),
+    _FAQ_KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ_KEYWORD4004", "해당 FaqKeyword가 존재하지 않습니다.");
 
 
     private HttpStatus httpStatus;

@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutionException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,15 +74,11 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 		return ApiResponse.onSuccess(response);
 	}
 
-	@Override
 	@GetMapping()
 	public ApiResponse<ConsumptionGoalResponseListDto> findUserConsumptionGoal(
-		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-		@AuthUser UserDto.AuthUserDto user) {
-		ConsumptionGoalResponseListDto response = consumptionGoalService.findUserConsumptionGoalList(user.getId(),
-			date);
+		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date, @AuthUser UserDto.AuthUserDto user) {
 
-		return ApiResponse.onSuccess(response);
+		return ApiResponse.onSuccess(consumptionGoalService.findUserConsumptionGoalList(user.getId(), date));
 	}
 
 	@Override
@@ -89,6 +86,7 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 	public ResponseEntity<ConsumptionGoalResponseListDto> updateOrElseGenerateConsumptionGoal(
 		@AuthUser UserDto.AuthUserDto user,
 		@RequestBody ConsumptionGoalListRequestDto consumptionGoalListRequestDto) {
+
 		return ResponseEntity.ok()
 			.body(consumptionGoalService.updateConsumptionGoals(user.getId(), consumptionGoalListRequestDto));
 	}

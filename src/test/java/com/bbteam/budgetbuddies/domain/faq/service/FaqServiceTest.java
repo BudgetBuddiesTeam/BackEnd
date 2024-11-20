@@ -4,6 +4,10 @@ import com.bbteam.budgetbuddies.domain.faq.dto.FaqRequestDto;
 import com.bbteam.budgetbuddies.domain.faq.dto.FaqResponseDto;
 import com.bbteam.budgetbuddies.domain.faq.entity.Faq;
 import com.bbteam.budgetbuddies.domain.faq.repository.FaqRepository;
+import com.bbteam.budgetbuddies.domain.faqkeyword.dto.FaqKeywordResponseDto;
+import com.bbteam.budgetbuddies.domain.faqkeyword.repository.FaqKeywordRepository;
+import com.bbteam.budgetbuddies.domain.searchkeyword.domain.SearchKeyword;
+import com.bbteam.budgetbuddies.domain.searchkeyword.repository.SearchKeywordRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -14,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -31,6 +36,10 @@ class FaqServiceTest {
     FaqRepository faqRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    FaqKeywordRepository faqKeywordRepository;
+    @Autowired
+    SearchKeywordRepository searchKeywordRepository;
 
     static Long userId;
     static Long faqId;
@@ -148,5 +157,36 @@ class FaqServiceTest {
         Optional<Faq> faq = faqRepository.findById(faqId);
 
         assertThat(faq.isEmpty()).isTrue();
+    }
+
+    @Test
+    void addKeywordAndRemoveKeyword() {
+        User user = userRepository.findById(userId).get();
+
+        Faq faq1 = Faq.builder()
+                .title("test1")
+                .body("test1")
+                .user(user)
+                .build();
+        faqRepository.save(faq1);
+
+        SearchKeyword searchKeyword = SearchKeyword.builder()
+                .keyword("testKeyword")
+                .build();
+        searchKeywordRepository.save(searchKeyword);
+        faqService.addKeyword(faq1.getId(), searchKeyword.getId());
+        PageRequest pageRequest = PageRequest.of(0, 1);
+
+        Page<FaqResponseDto.FaqFindResponse> result1 = faqService.searchFaq(pageRequest, "test");
+        Assertions.assertThat(result1.getNumberOfElements()).isEqualTo(1);
+
+        Page<FaqResponseDto.FaqFindResponse> result2 = faqService.searchFaq(pageRequest, "no");
+        Assertions.assertThat(result2.getNumberOfElements()).isEqualTo(0);
+
+        faqService.removeKeyword(faq1.getId(), searchKeyword.getId());
+        Page<FaqResponseDto.FaqFindResponse> result3 = faqService.searchFaq(pageRequest, "test");
+        Assertions.assertThat(result3.getNumberOfElements()).isEqualTo(0);
+
+
     }
 }

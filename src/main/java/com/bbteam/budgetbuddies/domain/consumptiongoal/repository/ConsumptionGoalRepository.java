@@ -25,8 +25,7 @@ public interface ConsumptionGoalRepository extends JpaRepository<ConsumptionGoal
 	@Query(value = "SELECT cg FROM ConsumptionGoal AS cg WHERE cg.user.id = :userId AND cg.goalMonth = :goalMonth")
 	List<ConsumptionGoal> findConsumptionGoalByUserIdAndGoalMonth(Long userId, LocalDate goalMonth);
 
-	Optional<ConsumptionGoal> findConsumptionGoalByUserAndCategoryAndGoalMonth(User user, Category category,
-		LocalDate goalMonth);
+	Optional<ConsumptionGoal> findByUserAndCategoryAndGoalMonth(User user, Category category, LocalDate goalMonth);
 
 	@Query("SELECT AVG(cg.consumeAmount) FROM ConsumptionGoal cg " +
 		"JOIN cg.category c " +

@@ -7,6 +7,11 @@ import com.bbteam.budgetbuddies.domain.faq.dto.FaqRequestDto;
 import com.bbteam.budgetbuddies.domain.faq.dto.FaqResponseDto;
 import com.bbteam.budgetbuddies.domain.faq.entity.Faq;
 import com.bbteam.budgetbuddies.domain.faq.repository.FaqRepository;
+import com.bbteam.budgetbuddies.domain.faqkeyword.domain.FaqKeyword;
+import com.bbteam.budgetbuddies.domain.faqkeyword.dto.FaqKeywordResponseDto;
+import com.bbteam.budgetbuddies.domain.faqkeyword.repository.FaqKeywordRepository;
+import com.bbteam.budgetbuddies.domain.searchkeyword.domain.SearchKeyword;
+import com.bbteam.budgetbuddies.domain.searchkeyword.repository.SearchKeywordRepository;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +27,8 @@ public class FaqServiceImpl implements FaqService{
 
     private final FaqRepository faqRepository;
     private final UserRepository userRepository;
+    private final FaqKeywordRepository faqKeywordRepository;
+    private final SearchKeywordRepository searchKeywordRepository;
 
     @Override
     public FaqResponseDto.FaqFindResponse findOneFaq(Long faqId) {
@@ -61,5 +68,37 @@ public class FaqServiceImpl implements FaqService{
 
     private Faq findFaq(Long faqId) {
         return faqRepository.findById(faqId).orElseThrow(() -> new GeneralException(ErrorStatus._FAQ_NOT_FOUND));
+    }
+
+    @Override
+    public Page<FaqResponseDto.FaqFindResponse> searchFaq(Pageable pageable, String searchCondition) {
+        return faqRepository.searchFaq(pageable, searchCondition).map(FaqConverter::entityToFind);
+    }
+
+    @Override
+    @Transactional
+    public FaqKeywordResponseDto addKeyword(Long faqId, Long searchKeywordId) {
+        Faq faq = findFaq(faqId);
+        SearchKeyword searchKeyword = searchKeywordRepository.findById(searchKeywordId).orElseThrow(() -> new GeneralException(ErrorStatus._SEARCH_KEYWORD_NOT_FOUND));
+
+        FaqKeyword faqKeyword = FaqKeyword.builder()
+                .searchKeyword(searchKeyword)
+                .faq(faq)
+                .build();
+
+        faqKeywordRepository.save(faqKeyword);
+        return FaqKeywordResponseDto.toDto(faqKeyword);
+    }
+
+    @Override
+    @Transactional
+    public String removeKeyword(Long faqId, Long searchKeywordId) {
+        Faq faq = findFaq(faqId);
+        SearchKeyword searchKeyword = searchKeywordRepository.findById(searchKeywordId).orElseThrow(() -> new GeneralException(ErrorStatus._SEARCH_KEYWORD_NOT_FOUND));
+
+        FaqKeyword faqKeyword = faqKeywordRepository.findByFaqAndSearchKeyword(faq, searchKeyword).orElseThrow(() -> new GeneralException(ErrorStatus._FAQ_KEYWORD_NOT_FOUND));
+        faqKeywordRepository.delete(faqKeyword);
+
+        return "ok";
     }
 }
