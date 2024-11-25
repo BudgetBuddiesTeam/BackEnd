@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,6 +62,7 @@ class ConsumptionGoalRepositoryTest {
 				.name("Peer User 1")
 				.gender(Gender.MALE)
 				.phoneNumber("010-1111-1111")
+				.mobileCarrier("SK Telecom")
 				.build());
 
 		peerUser2 = userRepository.save(
@@ -70,6 +72,7 @@ class ConsumptionGoalRepositoryTest {
 				.name("Peer User 2")
 				.gender(Gender.MALE)
 				.phoneNumber("010-2222-2222")
+				.mobileCarrier("KT")
 				.build());
 
 		currentMonth = LocalDate.now();
@@ -345,7 +348,8 @@ class ConsumptionGoalRepositoryTest {
 		LocalDate searchDate = LocalDate.of(2024, 9, 1);
 
 		// when
-		ConsumptionGoal result = consumptionGoalRepository.findLatelyGoal(user.getId(), category.getId(), searchDate).get();
+		ConsumptionGoal result = consumptionGoalRepository.findLatelyGoal(user.getId(), category.getId(), searchDate)
+			.get();
 
 		// then
 		assertEquals(result.getGoalMonth(), targetMonth);
@@ -379,9 +383,44 @@ class ConsumptionGoalRepositoryTest {
 			.build());
 
 		// when
-		ConsumptionGoal result = consumptionGoalRepository.findLatelyGoal(user.getId(), category.getId(), targetMonth).get();
+		ConsumptionGoal result = consumptionGoalRepository.findLatelyGoal(user.getId(), category.getId(), targetMonth)
+			.get();
 
 		// then
 		assertEquals(result.getGoalMonth(), targetMonth);
+	}
+
+	@Test
+	@DisplayName("또래 나이, 성별, 카테고리로 최대 소비 금액 조회 성공")
+	void findMaxConsumeAmountByCategory_Success() {
+		// when
+		int peerAgeStart = 23;
+		int peerAgeEnd = 25;
+		Gender peerGender = Gender.MALE;
+
+		Optional<ConsumptionGoal> result = consumptionGoalRepository.findMaxConsumeAmountByCategory(
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
+
+		// then
+		assertThat(result).isPresent();
+		assertThat(result.get().getConsumeAmount()).isEqualTo(150L);
+		assertThat(result.get().getCategory().getId()).isEqualTo(defaultCategory2.getId());
+	}
+
+	@Test
+	@DisplayName("또래 나이, 성별, 카테고리로 최대 목표 금액 조회 성공")
+	void findMaxGoalAmountByCategory_Success() {
+		// when
+		int peerAgeStart = 23;
+		int peerAgeEnd = 25;
+		Gender peerGender = Gender.MALE;
+
+		Optional<ConsumptionGoal> result = consumptionGoalRepository.findMaxGoalAmountByCategory(
+			peerAgeStart, peerAgeEnd, peerGender, currentMonth);
+
+		// then
+		assertThat(result).isPresent();
+		assertThat(result.get().getGoalAmount()).isEqualTo(200L);
+		assertThat(result.get().getCategory().getId()).isEqualTo(defaultCategory2.getId());
 	}
 }

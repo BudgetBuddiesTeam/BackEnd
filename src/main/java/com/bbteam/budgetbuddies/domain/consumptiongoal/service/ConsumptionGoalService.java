@@ -2,6 +2,7 @@ package com.bbteam.budgetbuddies.domain.consumptiongoal.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Service;
 
@@ -52,7 +53,7 @@ public interface ConsumptionGoalService {
 
 	MonthReportResponseDto getMonthReport(Long userId);
 
-	String getConsumptionMention(Long userId);
+	CompletableFuture<String> getConsumptionMention(Long userId);
 
 	ConsumptionGoal getUserConsumptionGoal(User user, Category category, LocalDate goalDate);
 }

@@ -2,10 +2,13 @@ package com.bbteam.budgetbuddies.domain.consumptiongoal.controller;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,34 +40,37 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 	@Override
 	@GetMapping("/categories/top-goals/top-4")
 	public ApiResponse<List<TopGoalCategoryResponseDto>> getTopConsumptionGoalCategories(
-		@RequestParam(name = "userId") Long userId,
+		@AuthUser UserDto.AuthUserDto user,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
 		List<TopGoalCategoryResponseDto> response = consumptionGoalService.getTopConsumptionGoalCategories(
-			userId, peerAgeStart, peerAgeEnd, peerGender);
+			user.getId(), peerAgeStart, peerAgeEnd, peerGender);
 		return ApiResponse.onSuccess(response);
 	}
 
+	@Override
 	@GetMapping("/categories/top-goals")
 	public ApiResponse<List<AllConsumptionCategoryResponseDto>> getAllConsumptionGoalCategories(
-		@RequestParam(name = "userId") Long userId,
+		@AuthUser UserDto.AuthUserDto user,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
 		List<AllConsumptionCategoryResponseDto> response = consumptionGoalService.getAllConsumptionGoalCategories(
-			userId,
+			user.getId(),
 			peerAgeStart, peerAgeEnd, peerGender);
 		return ApiResponse.onSuccess(response);
 	}
 
 	@Override
 	@GetMapping("/peer-info")
-	public ApiResponse<PeerInfoResponseDto> getPeerInfo(@RequestParam(name = "userId") Long userId,
+	public ApiResponse<PeerInfoResponseDto> getPeerInfo(
+		@AuthUser UserDto.AuthUserDto user,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
-		PeerInfoResponseDto response = consumptionGoalService.getPeerInfo(userId, peerAgeStart, peerAgeEnd, peerGender);
+		PeerInfoResponseDto response = consumptionGoalService.getPeerInfo(user.getId(), peerAgeStart, peerAgeEnd,
+			peerGender);
 		return ApiResponse.onSuccess(response);
 	}
 
@@ -85,44 +91,53 @@ public class ConsumptionGoalController implements ConsumptionGoalApi {
 			.body(consumptionGoalService.updateConsumptionGoals(user.getId(), consumptionGoalListRequestDto));
 	}
 
+	@Override
 	@GetMapping("/categories/top-consumptions/top-3")
 	public ApiResponse<List<TopCategoryConsumptionDto>> getTopConsumptionCategories(
-		@RequestParam(name = "userId") Long userId,
+		@AuthUser UserDto.AuthUserDto user,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
-		List<TopCategoryConsumptionDto> response = consumptionGoalService.getTopConsumptionCategories(userId,
+		List<TopCategoryConsumptionDto> response = consumptionGoalService.getTopConsumptionCategories(user.getId(),
 			peerAgeStart, peerAgeEnd, peerGender);
 		return ApiResponse.onSuccess(response);
 	}
 
+	@Override
 	@GetMapping("/categories/top-consumptions")
 	public ApiResponse<List<AllConsumptionCategoryResponseDto>> getAllConsumptionCategories(
-		@RequestParam(name = "userId") Long userId,
+		@AuthUser UserDto.AuthUserDto user,
 		@RequestParam(name = "peerAgeStart", defaultValue = "0") int peerAgeStart,
 		@RequestParam(name = "peerAgeEnd", defaultValue = "0") int peerAgeEnd,
 		@RequestParam(name = "peerGender", defaultValue = "none") String peerGender) {
-		List<AllConsumptionCategoryResponseDto> response = consumptionGoalService.getAllConsumptionCategories(userId,
+		List<AllConsumptionCategoryResponseDto> response = consumptionGoalService.getAllConsumptionCategories(
+			user.getId(),
 			peerAgeStart, peerAgeEnd, peerGender);
 		return ApiResponse.onSuccess(response);
 	}
 
+	@Override
 	@GetMapping("/category/top-goals")
 	public ApiResponse<ConsumptionAnalysisResponseDto> getTopCategoryAndConsumptionAmount(
-		@RequestParam(name = "userId") Long userId) {
-		ConsumptionAnalysisResponseDto response = consumptionGoalService.getTopCategoryAndConsumptionAmount(userId);
+		@AuthUser UserDto.AuthUserDto user) {
+		ConsumptionAnalysisResponseDto response = consumptionGoalService.getTopCategoryAndConsumptionAmount(
+			user.getId());
 		return ApiResponse.onSuccess(response);
 	}
 
-	@GetMapping("/facialExpressions")
-	public ApiResponse<MonthReportResponseDto> getMonthReport(@RequestParam(name = "userId") Long userId) {
-		MonthReportResponseDto response = consumptionGoalService.getMonthReport(userId);
+	@Override
+	@GetMapping("/month-report")
+	public ApiResponse<MonthReportResponseDto> getMonthReport(
+		@AuthUser UserDto.AuthUserDto user) {
+		MonthReportResponseDto response = consumptionGoalService.getMonthReport(user.getId());
 		return ApiResponse.onSuccess(response);
 	}
 
-	@GetMapping("/cosnumption-ment")
-	public ApiResponse<String> getConsumptionMention(@RequestParam(name = "userId") Long userId) {
-		String response = consumptionGoalService.getConsumptionMention(userId);
-		return ApiResponse.onSuccess(response);
+	@Override
+	@GetMapping("/consumption-ment")
+	public ApiResponse<String> getConsumptionMention(
+		@AuthUser UserDto.AuthUserDto user) throws ExecutionException, InterruptedException {
+		CompletableFuture<String> response = consumptionGoalService.getConsumptionMention(user.getId());
+		return ApiResponse.onSuccess(response.get());
 	}
 }
