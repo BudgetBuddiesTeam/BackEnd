@@ -5,7 +5,9 @@ import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
 import com.bbteam.budgetbuddies.domain.supportinfo.service.SupportInfoService;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
 import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -43,10 +45,10 @@ public class SupportInfoController implements SupportInfoApi {
     @Override
     @PostMapping("/likes/{supportInfoId}")
     public ApiResponse<SupportResponseDto> likeSupportInfo(
-        @RequestParam @ExistUser Long userId,
+        @AuthUser UserDto.AuthUserDto user,
         @PathVariable Long supportInfoId
     ) {
-        SupportResponseDto supportResponseDto = supportInfoService.toggleLike(userId, supportInfoId);
+        SupportResponseDto supportResponseDto = supportInfoService.toggleLike(user.getId(), supportInfoId);
 
         return ApiResponse.onSuccess(supportResponseDto);
     }
@@ -84,11 +86,11 @@ public class SupportInfoController implements SupportInfoApi {
     @Override
     @GetMapping("/liked-all")
     public ApiResponse<Page<SupportResponseDto>> getLikedSupportInfo(
-        @RequestParam @ExistUser Long userId,
+        @AuthUser UserDto.AuthUserDto user,
         @RequestParam(defaultValue = "0") Integer page,
         @RequestParam(defaultValue = "10") Integer size
     ) {
-        Page<SupportResponseDto> likedSupportInfoPage = supportInfoService.getLikedSupportInfo(userId, page, size);
+        Page<SupportResponseDto> likedSupportInfoPage = supportInfoService.getLikedSupportInfo(user.getId(), page, size);
 
         return ApiResponse.onSuccess(likedSupportInfoPage);
     }
