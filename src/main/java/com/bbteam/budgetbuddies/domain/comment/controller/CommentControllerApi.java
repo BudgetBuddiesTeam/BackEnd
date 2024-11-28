@@ -5,7 +5,8 @@ import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.comment.dto.CommentRequestDto;
 import com.bbteam.budgetbuddies.domain.comment.dto.CommentResponseDto;
 import com.bbteam.budgetbuddies.domain.comment.validation.ExistComment;
-import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -24,12 +25,11 @@ public interface CommentControllerApi {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @Parameters({
-            @Parameter(name = "userId", description = "현재 댓글을 다는 유저 id입니다. parameter"),
             @Parameter(name = "discountInfoId", description = "댓글을 다는 할인 정보 게시글 id입니다. requestBody"),
             @Parameter(name = "content", description = "댓글 내용입니다. requestBody"),
     })
     ApiResponse<CommentResponseDto.DiscountInfoCommentResponseDto> saveDiscountInfoComment(
-            @ExistUser Long userId,
+            @AuthUser UserDto.AuthUserDto userDto,
             CommentRequestDto.DiscountInfoCommentRequestDto discountInfoCommentRequestDto);
 
 
@@ -51,12 +51,11 @@ public interface CommentControllerApi {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
     @Parameters({
-            @Parameter(name = "userId", description = "현재 댓글을 다는 유저 id입니다. parameter"),
             @Parameter(name = "supportInfoId", description = "댓글을 다는 지원 정보 게시글 id입니다. requestBody"),
             @Parameter(name = "content", description = "댓글 내용입니다. requestBody"),
     })
     ApiResponse<CommentResponseDto.SupportInfoCommentResponseDto> saveSupportInfoComment(
-            @ExistUser Long userId,
+            @AuthUser UserDto.AuthUserDto userDto,
             CommentRequestDto.SupportInfoCommentRequestDto supportInfoCommentRequestDto);
 
     @Operation(summary = "[User] 특정 지원 정보 게시글의 댓글 조회하기", description = "특정 지원 정보 게시글의 댓글을 가져오는 API입니다.")
