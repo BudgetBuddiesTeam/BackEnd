@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorStatus implements BaseErrorCode {
 
 
-    _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON5000", "서버에러"),
+    _INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON5000", "서버 에러. 관리자에게 문의하세요."),
     _BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON4000", "잘못된 요청"),
     _USER_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4001", "사용자가 없습니다."),
     _COMMENT_NOT_FOUND(HttpStatus.BAD_REQUEST, "COMMENT4001", "해당 댓글이 없습니다.") ,
@@ -27,7 +27,9 @@ public enum ErrorStatus implements BaseErrorCode {
 
     _OTP_NOT_VALID(HttpStatus.BAD_REQUEST, "OTP4001", "인증번호가 유효하지 않습니다."),
     _PHONE_NUMBER_NOT_VALID(HttpStatus.BAD_REQUEST, "AUTH4001", "전화번호 형식이 유효하지 않습니다. (예: 01012341234)"),
-    _FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ4004", "해당 FAQ가 존재하지 않습니다.");
+    _FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ4004", "해당 FAQ가 존재하지 않습니다."),
+    _SEARCH_KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "SEARCH_KEYWORD4004", "해당 SearchKeyword가 존재하지 않습니다."),
+    _FAQ_KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ_KEYWORD4004", "해당 FaqKeyword가 존재하지 않습니다.");
 
 
     private HttpStatus httpStatus;

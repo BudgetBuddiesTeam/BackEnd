@@ -108,4 +108,9 @@ public class UserServiceImpl implements UserService {
                 .map(UserConverter::toDto)
                 .toList();
     }
+
+    @Override
+    public User getUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Not found user"));
+    }
 }

@@ -52,4 +52,10 @@ public class UserDto {
         private String email;
         private String name;
     }
+
+    @Getter
+    @Builder
+    public static class AuthUserDto {
+        private Long id;
+    }
 }
