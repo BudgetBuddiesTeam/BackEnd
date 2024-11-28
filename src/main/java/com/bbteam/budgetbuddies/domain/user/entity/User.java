@@ -42,10 +42,14 @@ public class User extends BaseEntity {
 	@Column(nullable = false, length = 50, unique = true)
 	private String email;
 
-	@Column(nullable = false)
-	private String mobileCarrier; // 통신사
+  @Column(nullable = true)
+  private String mobileCarrier; // 통신사
 
-	private LocalDateTime lastLoginAt;
+  @Column(nullable = true)
+  private String region; // 거주지
+
+  private LocalDateTime lastLoginAt;
+
 
 	public void changeUserDate(String email, String name) {
 		this.name = name;

@@ -173,8 +173,6 @@ class DiscountInfoServiceTest {
             .age(30)
             .gender(Gender.MALE)
             .email("john.doe@example.com")
-            .photoUrl("http://example.com/photo.jpg")
-            .consumptionPattern("Regular")
             .lastLoginAt(LocalDateTime.now())
             .build();
 
