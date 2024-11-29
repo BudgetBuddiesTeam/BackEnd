@@ -13,9 +13,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExpenseResponseDto {
+public class DetailExpenseResponseDto {
 	private Long expenseId;
-	private Long userId;
 	private Long categoryId;
 	private String categoryName;
 	private Long amount;

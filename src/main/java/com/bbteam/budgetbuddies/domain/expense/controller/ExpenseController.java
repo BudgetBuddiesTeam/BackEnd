@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseRequestDto;
-import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseResponseDto;
+import com.bbteam.budgetbuddies.domain.expense.dto.DetailExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.ExpenseUpdateRequestDto;
 import com.bbteam.budgetbuddies.domain.expense.dto.MonthlyExpenseResponseDto;
 import com.bbteam.budgetbuddies.domain.expense.service.ExpenseService;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -31,41 +33,37 @@ public class ExpenseController implements ExpenseApi {
 
 	@Override
 	@PostMapping("/add/{userId}")
-	public ResponseEntity<ExpenseResponseDto> createExpense(
-			@Parameter(description = "user_id") @PathVariable Long userId,
-			@Parameter(description = "category_id, amount, description, expenseDate") @RequestBody ExpenseRequestDto expenseRequestDto) {
-		ExpenseResponseDto response = expenseService.createExpense(userId, expenseRequestDto);
+	public ResponseEntity<DetailExpenseResponseDto> createExpense(
+		@Parameter(description = "user_id") @PathVariable Long userId,
+		@Parameter(description = "category_id, amount, description, expenseDate") @RequestBody ExpenseRequestDto expenseRequestDto) {
+		DetailExpenseResponseDto response = expenseService.createExpense(userId, expenseRequestDto);
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
-	@GetMapping("/{userId}")
-	public ResponseEntity<MonthlyExpenseResponseDto> findExpensesForMonth(
-		@PathVariable @Param("userId") Long userId,
+	@GetMapping()
+	public ResponseEntity<MonthlyExpenseResponseDto> findExpensesForMonth(@AuthUser UserDto.AuthUserDto user,
 		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 
-		return ResponseEntity.ok(expenseService.getMonthlyExpense(userId, date));
+		return ResponseEntity.ok(expenseService.getMonthlyExpense(user.getId(), date));
 	}
 
 	@Override
-	@GetMapping("/{userId}/{expenseId}")
-	public ResponseEntity<ExpenseResponseDto> findExpense(@PathVariable @Param("userId") Long userId,
+	@GetMapping("/{expenseId}")
+	public ResponseEntity<DetailExpenseResponseDto> findExpense(@AuthUser UserDto.AuthUserDto user,
 		@PathVariable @Param("expenseId") Long expenseId) {
-		return ResponseEntity.ok(expenseService.findExpenseResponseFromUserIdAndExpenseId(userId, expenseId));
+		return ResponseEntity.ok(expenseService.findDetailExpenseResponse(user.getId(), expenseId));
 	}
 
 	@Override
-	@PostMapping("/{userId}")
-	public ResponseEntity<ExpenseResponseDto> updateExpense(@PathVariable @Param("userId") Long userId,
+	@PostMapping()
+	public ResponseEntity<DetailExpenseResponseDto> updateExpense(@AuthUser UserDto.AuthUserDto user,
 		@RequestBody ExpenseUpdateRequestDto request) {
-		ExpenseResponseDto response = expenseService.updateExpense(userId, request);
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(expenseService.updateExpense(user.getId(), request));
 	}
 
 	@DeleteMapping("/delete/{expenseId}")
-	public ResponseEntity<String> deleteExpense(
-		@Parameter(description = "expense_id")
-		@PathVariable Long expenseId) {
+	public ResponseEntity<String> deleteExpense(@Parameter(description = "expense_id") @PathVariable Long expenseId) {
 		expenseService.deleteExpense(expenseId);
 		return ResponseEntity.ok("Successfully deleted expense!");
 	}

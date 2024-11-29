@@ -15,6 +15,8 @@ import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Getter
@@ -37,14 +39,16 @@ public class ConsumptionGoal extends BaseEntity {
 	private LocalDate goalMonth;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "user_id")
 	private User user;
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@NotFound(action = NotFoundAction.IGNORE)
 	@JoinColumn(name = "category_id")
 	private Category category;
 
-	public void updateConsumeAmount(Long amount) {
+	public void addConsumeAmount(Long amount) {
 		this.consumeAmount += amount;
 	}
 

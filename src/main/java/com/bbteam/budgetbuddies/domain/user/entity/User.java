@@ -3,15 +3,17 @@ package com.bbteam.budgetbuddies.domain.user.entity;
 import com.bbteam.budgetbuddies.common.BaseEntity;
 import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
 import com.bbteam.budgetbuddies.enums.Gender;
+import com.bbteam.budgetbuddies.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 
 @Entity
@@ -21,32 +23,40 @@ import java.time.LocalDateTime;
 @SuperBuilder
 public class User extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
-    private String phoneNumber;
+	@Builder.Default
+	private Role role = Role.USER; // 기본값 User 권한
 
-    @Column(nullable = false, length = 20)
-    private String name;
+	@Column(nullable = false, unique = true)
+	private String phoneNumber;
 
-    @Min(value = 1, message = "나이는 0또는 음수가 될 수 없습니다.")
-    private Integer age;
+	@Column(nullable = false, length = 20)
+	private String name;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
-    private Gender gender;
+	@Min(value = 1, message = "나이는 0또는 음수가 될 수 없습니다.")
+	private Integer age;
 
-    @Column(nullable = false, length = 50, unique = true)
-    private String email;
+	@Enumerated(EnumType.STRING)
+	@Column(columnDefinition = "varchar(20)")
+	private Gender gender;
 
-    @Column(length = 1000)
-    private String photoUrl;
+	@Column(nullable = false, length = 50, unique = true)
+	private String email;
 
-    private String consumptionPattern;
+  @Column(nullable = true)
+  private String mobileCarrier; // 통신사
 
-    private LocalDateTime lastLoginAt;
+  @Column(nullable = true)
+  private String region; // 거주지
 
-    public void changeUserDate(String email, String name) {
-        this.name = name;
-        this.email = email;
-    }
+  private LocalDateTime lastLoginAt;
 
+
+	public void changeUserDate(String email, String name) {
+		this.name = name;
+		this.email = email;
+	}
+
+	public List<GrantedAuthority> getAuthorities() {
+		return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
+	}
 }

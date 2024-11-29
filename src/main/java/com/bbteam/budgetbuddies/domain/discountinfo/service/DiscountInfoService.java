@@ -22,4 +22,10 @@ public interface DiscountInfoService {
 
     DiscountResponseDto getDiscountInfoById(Long discountInfoId);
 
+    Page<DiscountResponseDto> getLikedDiscountInfo(
+        Long userId,
+        Integer page,
+        Integer size
+    );
+
 }

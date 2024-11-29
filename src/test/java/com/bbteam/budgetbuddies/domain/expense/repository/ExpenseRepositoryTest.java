@@ -3,7 +3,6 @@ package com.bbteam.budgetbuddies.domain.expense.repository;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -30,59 +29,63 @@ class ExpenseRepositoryTest {
 	private CategoryRepository categoryRepository;
 
 	@Test
-	@DisplayName("findAllByUserIdFOrPeriod 성공")
-	void findAllByUserIdForPeriod_Success() {
+	void 월별_소비조회_월초_월말_조회_성공() {
 		// given
-		User user = userRepository.save(
-			User.builder().email("email").age(24).name("name").phoneNumber("010-1234-5678").build());
+		User user = userRepository.save(User.builder()
+			.email("email")
+			.age(24)
+			.name("test user")
+			.phoneNumber("010-1234-5678")
+			.mobileCarrier("TEST")
+			.build());
 
 		Category userCategory = categoryRepository.save(
 			Category.builder().name("유저 카테고리").user(user).isDefault(false).build());
 
-		LocalDate startDate = LocalDate.of(2024, 7, 1);
-		LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+		LocalDate startMonth = LocalDate.of(2024, 7, 1);
+		LocalDate nextMonth = startMonth.plusMonths(1L);
 
-		List<Expense> expected = setExpense(user, userCategory, startDate);
+		List<Expense> expected = getExpectedExpense(user, userCategory);
+		setUnExpectedExpense(user, userCategory, nextMonth);
 
 		// when
-		List<Expense> result = expenseRepository.findAllByUserIdForPeriod(user,
-			startDate.atStartOfDay(), endDate.atStartOfDay());
+		List<Expense> result = expenseRepository.findAllByUserIdForPeriod(user.getId(), startMonth.atStartOfDay(),
+			nextMonth.atStartOfDay());
 
 		assertThat(result).usingRecursiveComparison().isEqualTo(expected);
 	}
 
-	private List<Expense> setExpense(User user, Category userCategory, LocalDate startDate) {
-		setUnexpectedExpense(user, userCategory, startDate);
+	private List<Expense> getExpectedExpense(User user, Category userCategory) {
+		Expense monthOfStartExpense = Expense.builder()
+			.user(user)
+			.category(userCategory)
+			.amount(100000L)
+			.expenseDate(LocalDate.of(2024, 7, 1).atStartOfDay())
+			.build();
 
-		return setExpectedExpenseOrderByDateDesc(user, userCategory, startDate);
+		Expense monthOfLastExpense = Expense.builder()
+			.user(user)
+			.category(userCategory)
+			.amount(100000L)
+			.expenseDate(LocalDate.of(2024, 7, 31).atTime(23, 59))
+			.build();
+
+		return List.of(expenseRepository.save(monthOfLastExpense), expenseRepository.save(monthOfStartExpense));
 	}
 
-	private List<Expense> setExpectedExpenseOrderByDateDesc(User user, Category userCategory, LocalDate startDate) {
-		List<Expense> expenses = new ArrayList<>();
+	private void setUnExpectedExpense(User user, Category userCategory, LocalDate nextMonth) {
+		expenseRepository.save(Expense.builder()
+			.user(user)
+			.category(userCategory)
+			.amount(100000L)
+			.expenseDate(LocalDate.of(2024, 8, 1).atStartOfDay())
+			.build());
 
-		for (int i = startDate.lengthOfMonth(); i > startDate.lengthOfMonth() - 5; i--) {
-			Expense expense = Expense.builder()
-				.user(user)
-				.category(userCategory)
-				.amount(100000L * i)
-				.expenseDate(startDate.withDayOfMonth(i).atStartOfDay())
-				.build();
-
-			expenses.add(expenseRepository.save(expense));
-		}
-		return expenses;
-	}
-
-	private void setUnexpectedExpense(User user, Category userCategory, LocalDate startDate) {
-		for (int i = 1; i <= 5; i++) {
-			Expense expense = Expense.builder()
-				.user(user)
-				.category(userCategory)
-				.amount(100000L * i)
-				.expenseDate(startDate.withMonth(8).atStartOfDay())
-				.build();
-
-			expenseRepository.save(expense);
-		}
+		expenseRepository.save(Expense.builder()
+			.user(user)
+			.category(userCategory)
+			.amount(100000L)
+			.expenseDate(LocalDate.of(2024, 6, 30).atTime(23, 59))
+			.build());
 	}
 }

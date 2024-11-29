@@ -1,14 +1,15 @@
 package com.bbteam.budgetbuddies.domain.consumptiongoal.converter;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.bbteam.budgetbuddies.domain.category.entity.Category;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionAnalysisResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.ConsumptionGoalResponseListDto;
+import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.MonthReportResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.PeerInfoResponseDto;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.UserConsumptionGoalResponse;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
@@ -16,15 +17,6 @@ import com.bbteam.budgetbuddies.enums.Gender;
 
 @Component
 public class ConsumptionGoalConverter {
-	public ConsumptionGoalResponseDto toConsumptionGoalResponseDto(Category category) {
-		return ConsumptionGoalResponseDto.builder()
-			.categoryName(category.getName())
-			.categoryId(category.getId())
-			.goalAmount(0L)
-			.consumeAmount(0L)
-			.build();
-	}
-
 	public ConsumptionGoalResponseDto toConsumptionGoalResponseDto(ConsumptionGoal consumptionGoal) {
 		return ConsumptionGoalResponseDto.builder()
 			.categoryName(consumptionGoal.getCategory().getName())
@@ -35,16 +27,23 @@ public class ConsumptionGoalConverter {
 	}
 
 	public ConsumptionGoalResponseListDto toConsumptionGoalResponseListDto(
-		List<ConsumptionGoalResponseDto> consumptionGoalList, LocalDate goalMonth) {
-		Long totalGoalAmount = sumTotalGoalAmount(consumptionGoalList);
-		Long totalConsumptionAmount = sumTotalConsumptionAmount(consumptionGoalList);
+		List<ConsumptionGoal> consumptionGoalList, LocalDate goalMonth) {
+
+		List<ConsumptionGoalResponseDto> consumptionGoalResponseList = consumptionGoalList
+			.stream()
+			.map(this::toConsumptionGoalResponseDto)
+			.sorted(Comparator.comparingLong(ConsumptionGoalResponseDto::getRemainingBalance).reversed())
+			.toList();
+
+		Long totalGoalAmount = sumTotalGoalAmount(consumptionGoalResponseList);
+		Long totalConsumptionAmount = sumTotalConsumptionAmount(consumptionGoalResponseList);
 
 		return ConsumptionGoalResponseListDto.builder()
 			.goalMonth(goalMonth)
 			.totalGoalAmount(totalGoalAmount)
 			.totalConsumptionAmount(totalConsumptionAmount)
 			.totalRemainingBalance(totalGoalAmount - totalConsumptionAmount)
-			.consumptionGoalList(consumptionGoalList)
+			.consumptionGoalList(consumptionGoalResponseList)
 			.build();
 	}
 
@@ -80,6 +79,14 @@ public class ConsumptionGoalConverter {
 			.peerAgeStart(peerAgeStart)
 			.peerAgeEnd(peerAgeEnd)
 			.peerGender(peerGender.name())
+			.build();
+	}
+
+	public MonthReportResponseDto toMonthReportResponseDto(String facialExpression, String comment) {
+
+		return MonthReportResponseDto.builder()
+			.facialExpression(facialExpression)
+			.comment(comment)
 			.build();
 	}
 }

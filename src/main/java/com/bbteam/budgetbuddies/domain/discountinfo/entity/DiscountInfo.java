@@ -64,4 +64,10 @@ public class DiscountInfo extends BaseEntity {
         this.isInCalendar = discountRequestDto.getIsInCalendar();
     }
 
+    public static DiscountInfo withId(Long id) {
+        DiscountInfo discountInfo = new DiscountInfo();
+        discountInfo.setId(id);
+        return discountInfo;
+    }
+
 }

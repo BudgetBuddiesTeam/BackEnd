@@ -6,6 +6,10 @@ import com.bbteam.budgetbuddies.domain.consumptiongoal.converter.ConsumptionGoal
 import com.bbteam.budgetbuddies.domain.consumptiongoal.dto.UserConsumptionGoalResponse;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.entity.ConsumptionGoal;
 import com.bbteam.budgetbuddies.domain.consumptiongoal.repository.ConsumptionGoalRepository;
+import com.bbteam.budgetbuddies.domain.favoritehashtag.entity.FavoriteHashtag;
+import com.bbteam.budgetbuddies.domain.favoritehashtag.repository.FavoriteHashtagRepository;
+import com.bbteam.budgetbuddies.domain.hashtag.entity.Hashtag;
+import com.bbteam.budgetbuddies.domain.hashtag.repository.HashtagRepository;
 import com.bbteam.budgetbuddies.domain.user.converter.UserConverter;
 import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
@@ -28,6 +32,8 @@ public class UserServiceImpl implements UserService {
     private final CategoryRepository categoryRepository;
     private final ConsumptionGoalRepository consumptionGoalRepository;
     private final ConsumptionGoalConverter consumptionGoalConverter;
+    private final HashtagRepository hashtagRepository;
+    private final FavoriteHashtagRepository favoriteHashtagRepository;
 
     @Override
     @Transactional
@@ -51,6 +57,26 @@ public class UserServiceImpl implements UserService {
         return savedConsumptionGoals.stream()
                 .map(consumptionGoalConverter::toUserConsumptionGoalResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void saveFavoriteHashtags(Long userId, List<Long> hashtagIds) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        List<FavoriteHashtag> favoriteHashtags = hashtagIds.stream()
+                .map(hashtagId -> {
+                    Hashtag hashtag = hashtagRepository.findById(hashtagId)
+                            .orElseThrow(() -> new NoSuchElementException("Hashtag not found"));
+                    return FavoriteHashtag.builder()
+                            .user(user)
+                            .hashtag(hashtag)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        favoriteHashtagRepository.saveAll(favoriteHashtags);
     }
 
     @Override
@@ -81,5 +107,10 @@ public class UserServiceImpl implements UserService {
         return users.stream()
                 .map(UserConverter::toDto)
                 .toList();
+    }
+
+    @Override
+    public User getUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Not found user"));
     }
 }

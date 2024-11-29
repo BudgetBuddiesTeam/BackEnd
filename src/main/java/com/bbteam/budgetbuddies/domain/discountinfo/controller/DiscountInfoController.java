@@ -4,7 +4,8 @@ import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountRequest;
 import com.bbteam.budgetbuddies.domain.discountinfo.dto.DiscountResponseDto;
 import com.bbteam.budgetbuddies.domain.discountinfo.service.DiscountInfoService;
-import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -42,10 +43,10 @@ public class DiscountInfoController implements DiscountInfoApi {
     @Override
     @PostMapping("/likes/{discountInfoId}")
     public ApiResponse<DiscountResponseDto> likeDiscountInfo(
-        @RequestParam @ExistUser Long userId,
+        @AuthUser UserDto.AuthUserDto user,
         @PathVariable Long discountInfoId
     ) {
-        DiscountResponseDto discountResponseDto = discountInfoService.toggleLike(userId, discountInfoId);
+        DiscountResponseDto discountResponseDto = discountInfoService.toggleLike(user.getId(), discountInfoId);
 
         return ApiResponse.onSuccess(discountResponseDto);
     }
@@ -79,6 +80,18 @@ public class DiscountInfoController implements DiscountInfoApi {
         DiscountResponseDto discountResponseDto = discountInfoService.getDiscountInfoById(discountInfoId);
 
         return ApiResponse.onSuccess(discountResponseDto);
+    }
+
+    @Override
+    @GetMapping("/liked-all")
+    public ApiResponse<Page<DiscountResponseDto>> getLikedDiscountInfo(
+        @AuthUser UserDto.AuthUserDto user,
+        @RequestParam(defaultValue = "0") Integer page,
+        @RequestParam(defaultValue = "10") Integer size
+    ) {
+        Page<DiscountResponseDto> likedDiscountInfoPage = discountInfoService.getLikedDiscountInfo(user.getId(), page, size);
+
+        return ApiResponse.onSuccess(likedDiscountInfoPage);
     }
 
 }

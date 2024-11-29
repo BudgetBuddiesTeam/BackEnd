@@ -4,6 +4,8 @@ import com.bbteam.budgetbuddies.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Getter
@@ -24,10 +26,11 @@ public class Category {
     private Boolean isDefault;
 
     @Column(nullable = false)
-    @ColumnDefault("false")
+    @Builder.Default
     private Boolean deleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @NotFound(action = NotFoundAction.IGNORE)
     @JoinColumn(name = "user_id")
     private User user;
 }

@@ -1,5 +1,7 @@
 package com.bbteam.budgetbuddies.domain.supportinfo.service;
 
+import com.bbteam.budgetbuddies.domain.connectedinfo.repository.ConnectedInfoRepository;
+import com.bbteam.budgetbuddies.domain.hashtag.repository.HashtagRepository;
 import com.bbteam.budgetbuddies.domain.supportinfo.converter.SupportInfoConverter;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportRequest;
 import com.bbteam.budgetbuddies.domain.supportinfo.dto.SupportResponseDto;
@@ -48,6 +50,12 @@ class SupportInfoServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ConnectedInfoRepository connectedInfoRepository;
+
+    @Mock
+    private HashtagRepository hashtagRepository;
+
     @InjectMocks
     private SupportInfoServiceImpl supportInfoService;
 
@@ -79,9 +87,12 @@ class SupportInfoServiceTest {
         SupportResponseDto dto1 = new SupportResponseDto();
         SupportResponseDto dto2 = new SupportResponseDto();
 
+        when(connectedInfoRepository.findAllBySupportInfo(support1)).thenReturn(List.of());
+        when(connectedInfoRepository.findAllBySupportInfo(support2)).thenReturn(List.of());
+
         when(supportInfoRepository.findByDateRange(startDate, endDate, pageable)).thenReturn(supportPage);
-        when(supportInfoConverter.toDto(support1)).thenReturn(dto1);
-        when(supportInfoConverter.toDto(support2)).thenReturn(dto2);
+        when(supportInfoConverter.toDto(support1, List.of())).thenReturn(dto1);
+        when(supportInfoConverter.toDto(support2, List.of())).thenReturn(dto2);
 
         // when
         Page<SupportResponseDto> result = supportInfoService.getSupportsByYearAndMonth(2024, 7, 0, 10);
@@ -95,8 +106,8 @@ class SupportInfoServiceTest {
 
         // 3. 각 메소드가 1번씩만 호출되었는지 검증
         verify(supportInfoRepository, times(1)).findByDateRange(startDate, endDate, pageable);
-        verify(supportInfoConverter, times(1)).toDto(support1);
-        verify(supportInfoConverter, times(1)).toDto(support2);
+        verify(supportInfoConverter, times(1)).toDto(support1, List.of());
+        verify(supportInfoConverter, times(1)).toDto(support2, List.of());
     }
 
     @Test
@@ -129,7 +140,7 @@ class SupportInfoServiceTest {
 
         when(supportInfoConverter.toEntity(requestDto)).thenReturn(entity);
         when(supportInfoRepository.save(entity)).thenReturn(entity);
-        when(supportInfoConverter.toDto(entity)).thenReturn(responseDto);
+        when(supportInfoConverter.toDto(entity, List.of())).thenReturn(responseDto);
 
         // when
         SupportResponseDto result = supportInfoService.registerSupportInfo(requestDto);
@@ -141,7 +152,7 @@ class SupportInfoServiceTest {
         // 2. 각 메소드가 1번씩만 호출되었는지 검증
         verify(supportInfoConverter, times(1)).toEntity(requestDto);
         verify(supportInfoRepository, times(1)).save(entity);
-        verify(supportInfoConverter, times(1)).toDto(entity);
+        verify(supportInfoConverter, times(1)).toDto(entity, List.of());
     }
 
     @Test
@@ -155,8 +166,8 @@ class SupportInfoServiceTest {
             .age(30)
             .gender(Gender.MALE)
             .email("john.doe@example.com")
-            .photoUrl("http://example.com/photo.jpg")
-            .consumptionPattern("Regular")
+//            .photoUrl("http://example.com/photo.jpg")
+//            .consumptionPattern("Regular")
             .lastLoginAt(LocalDateTime.now())
             .build();
 
@@ -187,11 +198,12 @@ class SupportInfoServiceTest {
             .siteUrl("http://example.com")
             .build();
 
+        when(connectedInfoRepository.findAllBySupportInfo(supportInfo)).thenReturn(List.of());
         when(supportInfoRepository.save(any(SupportInfo.class))).thenReturn(supportInfo);
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(supportInfoRepository.findById(anyLong())).thenReturn(Optional.of(supportInfo));
         when(supportInfoLikeRepository.findByUserAndSupportInfo(user, supportInfo)).thenReturn(Optional.of(supportInfoLike));
-        when(supportInfoConverter.toDto(any(SupportInfo.class))).thenReturn(responseDto);
+        when(supportInfoConverter.toDto(any(SupportInfo.class), anyList())).thenReturn(responseDto);
 
         // when
         SupportResponseDto result = supportInfoService.toggleLike(1L, 1L);
@@ -206,7 +218,7 @@ class SupportInfoServiceTest {
         // 3. 각 메소드가 1번씩만 호출되었는지 검증
         verify(supportInfoRepository, times(1)).findById(1L);
         verify(supportInfoRepository, times(1)).save(supportInfo);
-        verify(supportInfoConverter, times(1)).toDto(supportInfo);
+        verify(supportInfoConverter, times(1)).toDto(supportInfo, List.of());
     }
 
 }

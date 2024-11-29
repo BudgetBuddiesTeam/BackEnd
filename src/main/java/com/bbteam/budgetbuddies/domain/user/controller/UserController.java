@@ -28,6 +28,12 @@ public class UserController implements UserApi{
 
     @PostMapping("/register")
     public ApiResponse<UserDto.ResponseUserDto> registerUser(@RequestBody UserDto.RegisterUserDto dto) {
+        // 유저 정보 저장
+        UserDto.ResponseUserDto savedUser = userService.saveUser(dto);
+
+        // 유저가 선택한 해시태그를 저장
+        userService.saveFavoriteHashtags(savedUser.getId(), dto.getHashtagIds());
+
         return ApiResponse.onSuccess(userService.saveUser(dto));
     }
 

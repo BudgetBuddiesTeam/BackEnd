@@ -12,8 +12,10 @@ public class UserConverter {
                 .phoneNumber(user.getPhoneNumber())
                 .lastLoginAt(user.getLastLoginAt())
                 .gender(user.getGender())
-                .consumptionPattern(user.getConsumptionPattern())
-                .photoUrl(user.getPhotoUrl())
+                .region(user.getRegion())
+                .mobileCarrier(user.getMobileCarrier())
+//                .consumptionPattern(user.getConsumptionPattern())
+//                .photoUrl(user.getPhotoUrl())
                 .email(user.getEmail())
                 .age(user.getAge())
                 .build();
@@ -25,9 +27,11 @@ public class UserConverter {
                 .email(dto.getEmail())
                 .age(dto.getAge())
                 .name(dto.getName())
-                .consumptionPattern(dto.getConsumptionPattern())
+                .region(dto.getRegion())
+                .mobileCarrier(dto.getMobileCarrier())
                 .gender(dto.getGender())
-                .photoUrl(dto.getPhotoUrl())
+//                .consumptionPattern(dto.getConsumptionPattern())
+//                .photoUrl(dto.getPhotoUrl())
                 .build();
     }
 }
