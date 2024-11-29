@@ -5,9 +5,9 @@ import com.bbteam.budgetbuddies.domain.faq.dto.FaqRequestDto;
 import com.bbteam.budgetbuddies.domain.faq.dto.FaqResponseDto;
 import com.bbteam.budgetbuddies.domain.faq.service.FaqService;
 import com.bbteam.budgetbuddies.domain.faq.validation.ExistFaq;
-import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -26,9 +26,9 @@ public class FaqController implements FaqApi{
 
     @Override
     @PostMapping("")
-    public ApiResponse<FaqResponseDto.FaqPostResponse> postFaq(@ExistUser @RequestParam Long userId,
+    public ApiResponse<FaqResponseDto.FaqPostResponse> postFaq(@AuthUser UserDto.AuthUserDto userDto,
                                                                @Valid @RequestBody FaqRequestDto.FaqPostRequest dto) {
-        return ApiResponse.onSuccess(faqService.postFaq(dto, userId));
+        return ApiResponse.onSuccess(faqService.postFaq(dto, userDto.getId()));
     }
 
     @Override

@@ -4,7 +4,8 @@ package com.bbteam.budgetbuddies.domain.faq.controller;
 import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.faq.dto.FaqRequestDto;
 import com.bbteam.budgetbuddies.domain.faq.validation.ExistFaq;
-import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -44,11 +45,7 @@ public interface FaqApi {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @Parameters({
-            @Parameter(name = "userId", description = "FAQ를 사용하는 userId입니다.. pathVariable", in = ParameterIn.QUERY),
-    }
-    )
-    ApiResponse<?> postFaq(@ExistUser @RequestParam Long userId,
+    ApiResponse<?> postFaq(@AuthUser UserDto.AuthUserDto userDto,
                            @Valid @org.springframework.web.bind.annotation.RequestBody FaqRequestDto.FaqPostRequest dto);
     @Operation(summary = "[Admin] FAQ 조회 API", description = "FAQ를 조회하는 API입니다."
     )

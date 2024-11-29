@@ -5,7 +5,8 @@ import com.bbteam.budgetbuddies.domain.comment.dto.CommentRequestDto;
 import com.bbteam.budgetbuddies.domain.comment.dto.CommentResponseDto;
 import com.bbteam.budgetbuddies.domain.comment.service.CommentService;
 import com.bbteam.budgetbuddies.domain.comment.validation.ExistComment;
-import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -36,9 +37,9 @@ public class CommentController implements CommentControllerApi {
 
     @PostMapping("/discounts/comments")
     public ApiResponse<CommentResponseDto.DiscountInfoCommentResponseDto> saveDiscountInfoComment(
-            @RequestParam("userId") @ExistUser Long userId,
+            @AuthUser UserDto.AuthUserDto userDto,
             @RequestBody CommentRequestDto.DiscountInfoCommentRequestDto discountInfoCommentRequestDto){
-        CommentResponseDto.DiscountInfoCommentResponseDto dto = discountCommentService.saveComment(userId, discountInfoCommentRequestDto);
+        CommentResponseDto.DiscountInfoCommentResponseDto dto = discountCommentService.saveComment(userDto.getId(), discountInfoCommentRequestDto);
         return ApiResponse.onSuccess(dto);
     }
 
@@ -54,9 +55,9 @@ public class CommentController implements CommentControllerApi {
 
     @PostMapping("/supports/comments")
     public ApiResponse<CommentResponseDto.SupportInfoCommentResponseDto> saveSupportInfoComment(
-            @RequestParam("userId") @ExistUser Long userId,
+            @AuthUser UserDto.AuthUserDto userDto,
             @RequestBody CommentRequestDto.SupportInfoCommentRequestDto supportInfoCommentRequestDto){
-        CommentResponseDto.SupportInfoCommentResponseDto dto = supportCommentService.saveComment(userId, supportInfoCommentRequestDto);
+        CommentResponseDto.SupportInfoCommentResponseDto dto = supportCommentService.saveComment(userDto.getId(), supportInfoCommentRequestDto);
         return ApiResponse.onSuccess(dto);
     }
 

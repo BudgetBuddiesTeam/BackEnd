@@ -2,13 +2,10 @@ package com.bbteam.budgetbuddies.domain.mainpage.controller;
 
 import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
 import com.bbteam.budgetbuddies.domain.mainpage.dto.MainPageResponseDto;
-import com.bbteam.budgetbuddies.domain.user.validation.ExistUser;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 
 public interface MainPageApi {
 
@@ -16,8 +13,5 @@ public interface MainPageApi {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
     })
-    @Parameters({
-            @Parameter(name = "userId", description = "현재 데이터를 요청하는 사용자입니다. parameter"),
-    })
-    ApiResponse<MainPageResponseDto> getMainPage(@RequestParam("userId") @ExistUser Long userId);
+    ApiResponse<MainPageResponseDto> getMainPage(@AuthUser UserDto.AuthUserDto userDto);
 }
