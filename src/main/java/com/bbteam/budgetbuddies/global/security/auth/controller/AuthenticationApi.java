@@ -1,8 +1,11 @@
 package com.bbteam.budgetbuddies.global.security.auth.controller;
 
 import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
+import com.bbteam.budgetbuddies.apiPayload.code.ErrorReasonDto;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
 import com.bbteam.budgetbuddies.global.security.auth.dto.AuthenticationRequest;
 import com.bbteam.budgetbuddies.global.security.auth.dto.AuthenticationResponse;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,4 +44,35 @@ public interface AuthenticationApi {
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4005", description = "토큰 헤더가 유효하지 않습니다.", content = @Content(schema = @Schema(implementation = ApiResponse.class)))
     })
     ApiResponse<AuthenticationResponse.SendAccessToken> reIssueAccessToken();
+
+    @Operation(summary = "[User] User 기본정보 입력 API", description = "첫 로그인 시 사용자의 기본정보를 등록하는 API입니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4001", description = "토큰이 유효하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4002", description = "토큰이 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4003", description = "토큰이 만료되었습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4004", description = "토큰의 페이로드 혹은 시그니처가 유효하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4005", description = "토큰 헤더가 유효하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON5000", description = "서버 에러. 관리자에게 문의하세요.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class)))
+    })
+    ApiResponse<AuthenticationResponse.StandardInfo> saveStandardInfo(
+        @AuthUser UserDto.AuthUserDto user,
+        @RequestBody AuthenticationRequest.StandardInfo dto
+    );
+
+
+    @Operation(summary = "[User] User 추가정보 입력 API", description = "첫 로그인 시 사용자의 추가정보를 등록하는 API입니다.")
+    @ApiResponses({
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4001", description = "토큰이 유효하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4002", description = "토큰이 존재하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4003", description = "토큰이 만료되었습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4004", description = "토큰의 페이로드 혹은 시그니처가 유효하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4005", description = "토큰 헤더가 유효하지 않습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON5000", description = "서버 에러. 관리자에게 문의하세요.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class)))
+    })
+    ApiResponse<AuthenticationResponse.AdditionalInfo> saveAdditionalInfo(
+        @AuthUser UserDto.AuthUserDto user,
+        @RequestBody AuthenticationRequest.AdditionalInfo dto
+    );
 }
