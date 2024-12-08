@@ -29,7 +29,7 @@ public class User extends BaseEntity {
 	@Column(nullable = false, unique = true)
 	private String phoneNumber;
 
-	@Column(nullable = false, length = 20)
+	@Column(nullable = true, length = 20)
 	private String name;
 
 	@Min(value = 1, message = "나이는 0또는 음수가 될 수 없습니다.")
@@ -39,16 +39,16 @@ public class User extends BaseEntity {
 	@Column(columnDefinition = "varchar(20)")
 	private Gender gender;
 
-	@Column(nullable = false, length = 50, unique = true)
+	@Column(nullable = true, length = 50, unique = true)
 	private String email;
 
-  @Column(nullable = true)
-  private String mobileCarrier; // 통신사
+	@Column(nullable = true)
+	private String mobileCarrier; // 통신사
 
-  @Column(nullable = true)
-  private String region; // 거주지
+	@Column(nullable = true)
+	private String region; // 거주지
 
-  private LocalDateTime lastLoginAt;
+	private LocalDateTime lastLoginAt;
 
 
 	public void changeUserDate(String email, String name) {
@@ -58,5 +58,16 @@ public class User extends BaseEntity {
 
 	public List<GrantedAuthority> getAuthorities() {
 		return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
+	}
+
+	public void setStandardInfo(String name, Gender gender, Integer age) {
+		this.name = name;
+		this.gender = gender;
+		this.age = age;
+	}
+
+	public void setAdditionalInfo(String mobileCarrier, String region) {
+		this.mobileCarrier = mobileCarrier;
+		this.region = region;
 	}
 }
