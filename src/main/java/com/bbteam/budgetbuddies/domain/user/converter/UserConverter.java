@@ -34,4 +34,18 @@ public class UserConverter {
 //                .photoUrl(dto.getPhotoUrl())
                 .build();
     }
+
+    public static String ageToAgeGroup(Integer age) {
+        if (age < 20) {
+            return "20세미만";
+        } else if (age < 23) {
+            return "20-22세";
+        } else if (age < 26) {
+            return "23-25세";
+        } else if (age < 29) {
+            return "26-28세";
+        } else {
+            return "29세 이상";
+        }
+    }
 }
