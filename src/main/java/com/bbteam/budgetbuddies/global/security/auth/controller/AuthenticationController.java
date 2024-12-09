@@ -1,11 +1,14 @@
 package com.bbteam.budgetbuddies.global.security.auth.controller;
 
 import com.bbteam.budgetbuddies.apiPayload.ApiResponse;
+import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
+import com.bbteam.budgetbuddies.domain.user.service.UserService;
 import com.bbteam.budgetbuddies.global.security.auth.dto.AuthenticationRequest;
 import com.bbteam.budgetbuddies.global.security.auth.dto.AuthenticationResponse;
 import com.bbteam.budgetbuddies.global.security.auth.service.AuthenticationService;
 import com.bbteam.budgetbuddies.global.security.otp.OtpNumber;
+import com.bbteam.budgetbuddies.global.security.utils.AuthUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController implements AuthenticationApi {
 
 	private final AuthenticationService authenticationService; // 인증 관련 서비스
+
+	private final UserService userService;
 
 	/**
 	 * OTP를 요청하는 엔드포인트.
@@ -80,5 +85,33 @@ public class AuthenticationController implements AuthenticationApi {
 		AuthenticationResponse.SendAccessToken response = authenticationService.reIssueAccessToken(user);
 		return ApiResponse.onSuccess(response); // 성공 응답 반환
 	}
+
+	@Override
+	@PostMapping("/standardInfo")
+	public ApiResponse<AuthenticationResponse.StandardInfo> saveStandardInfo(
+		@AuthUser UserDto.AuthUserDto user,
+		@RequestBody AuthenticationRequest.StandardInfo dto
+	) {
+		// 유저 정보 저장
+		AuthenticationResponse.StandardInfo savedUser = userService.saveStandardInfo(user, dto);
+
+		return ApiResponse.onSuccess(savedUser);
+	}
+
+	@Override
+	@PostMapping("/additionalInfo")
+	public ApiResponse<AuthenticationResponse.AdditionalInfo> saveAdditionalInfo(
+		@AuthUser UserDto.AuthUserDto user,
+		@RequestBody AuthenticationRequest.AdditionalInfo dto
+	) {
+		// 유저 정보 저장
+		AuthenticationResponse.AdditionalInfo savedUser = userService.saveAdditionalInfo(user, dto);
+
+		// 유저가 선택한 해시태그를 저장
+		userService.saveFavoriteHashtags(savedUser.getId(), dto.getHashtagIds());
+
+		return ApiResponse.onSuccess(savedUser);
+	}
+
 }
 
