@@ -39,6 +39,9 @@ public class AuthenticationResponse {
         @Schema(description = "전화번호", example = "01012341234")
         private String phoneNumber; // 전화번호
 
+        @Schema(description = "기존에 회원가입했던 사용자: true / 첫 로그인하는 사용자: false")
+        private Boolean existingUser; // 기존에 회원가입했던 사용자: true / 첫 로그인하는 사용자: false
+
         @Schema(description = "액세스 토큰")
         private String accessToken; // 액세스 토큰
 
