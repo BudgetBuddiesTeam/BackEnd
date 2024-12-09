@@ -11,6 +11,8 @@ import com.bbteam.budgetbuddies.global.security.otp.OtpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -44,12 +46,12 @@ public class AuthenticationService {
 		}
 
 		// 전화번호로 사용자를 로드, 존재하지 않으면 새 사용자 생성
-		final User user = userRepository.findFirstByPhoneNumber(phoneNumber)
-			.orElseGet(() -> userRepository.save(User.builder() // 사용자 정보가 없으면 새로 생성
+		final Optional<User> existingUser = userRepository.findFirstByPhoneNumber(phoneNumber);
+		final User user = existingUser.orElseGet(() ->
+			userRepository.save(User.builder() // 사용자 정보가 없으면 새로 생성
 				.phoneNumber(phoneNumber)
-				.build()
-			));
-
+				.build())
+		);
 		// JWT 액세스 토큰 발급
 		final String accessToken = jwtUtil.generateAccessToken(user);
 		// JWT 리프레시 토큰 발급
@@ -59,6 +61,7 @@ public class AuthenticationService {
 		return AuthenticationResponse.SendTokens.builder()
 			.userId(user.getId()) // 사용자 ID
 			.phoneNumber(user.getPhoneNumber()) // 전화번호
+			.existingUser(existingUser.isPresent()) // 기존에 회원가입을 했던 사용자인지 여부
 			.accessToken(accessToken) // 액세스 토큰
 			.refreshToken(refreshToken) // 리프레시 토큰
 			.build();
