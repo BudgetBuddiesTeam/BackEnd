@@ -1,11 +1,14 @@
 package com.bbteam.budgetbuddies.global.security.auth.dto;
 
 
+import com.bbteam.budgetbuddies.enums.Gender;
 import com.bbteam.budgetbuddies.global.security.auth.validation.ValidPhoneNumber;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 public class AuthenticationRequest {
 
@@ -30,5 +33,20 @@ public class AuthenticationRequest {
         private String otpNumber;
     }
 
+    @Getter
+    @Builder
+    public static class StandardInfo {
+        private String name;
+        private Gender gender;
+        private Integer age;
+    }
 
+
+    @Getter
+    @Builder
+    public static class AdditionalInfo {
+        private String mobileCarrier;
+        private String region;
+        private List<Long> hashtagIds; // 사용자가 선택한 해시태그 ID 목록
+    }
 }

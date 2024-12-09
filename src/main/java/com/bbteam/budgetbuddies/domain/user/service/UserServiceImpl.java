@@ -14,18 +14,24 @@ import com.bbteam.budgetbuddies.domain.user.converter.UserConverter;
 import com.bbteam.budgetbuddies.domain.user.dto.UserDto;
 import com.bbteam.budgetbuddies.domain.user.entity.User;
 import com.bbteam.budgetbuddies.domain.user.repository.UserRepository;
+import com.bbteam.budgetbuddies.global.security.auth.dto.AuthenticationRequest;
+import com.bbteam.budgetbuddies.global.security.auth.dto.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -112,5 +118,68 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Not found user"));
+    }
+
+    @Override
+    @Transactional
+    public AuthenticationResponse.StandardInfo saveStandardInfo(UserDto.AuthUserDto user, AuthenticationRequest.StandardInfo dto) {
+        log.info("dto.name: {}", dto.getName());
+        log.info("dto.gender: {}", dto.getGender());
+        log.info("dto.age: {}", dto.getAge());
+
+        User foundUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("Not found user"));
+
+        foundUser.setStandardInfo(dto.getName(), dto.getGender(), dto.getAge());
+
+        foundUser = userRepository.save(foundUser);
+
+//        log.info("user id: {}", foundUser.getId());
+//        log.info("user name: {}", foundUser.getName());
+//        log.info("user phoneNumber: {}", foundUser.getPhoneNumber());
+//        log.info("user age: {}", foundUser.getAge());
+//        log.info("user gender: {}", foundUser.getGender());
+//        log.info("user mobileCarrier: {}", foundUser.getMobileCarrier());
+//        log.info("user region: {}", foundUser.getRegion());
+
+        return AuthenticationResponse.StandardInfo.builder()
+            .id(user.getId())
+            .name(foundUser.getName())
+            .gender(foundUser.getGender())
+            .ageGroup(UserConverter.ageToAgeGroup(foundUser.getAge()))
+            .build();
+
+    }
+
+    @Override
+    @Transactional
+    public AuthenticationResponse.AdditionalInfo saveAdditionalInfo(UserDto.AuthUserDto user, AuthenticationRequest.AdditionalInfo dto) {
+        // null 확인 및 초기화
+        List<Long> hashtagIds = Optional.ofNullable(dto.getHashtagIds()).orElse(Collections.emptyList());
+
+        dto.getHashtagIds().stream().map(it -> {
+            log.info("hashtagId: {}", it);
+            return null;
+        });
+
+        User foundUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("Not found user"));
+
+//        log.info("user id: {}", foundUser.getId());
+//        log.info("user name: {}", foundUser.getName());
+//        log.info("user phoneNumber: {}", foundUser.getPhoneNumber());
+//        log.info("user age: {}", foundUser.getAge());
+//        log.info("user gender: {}", foundUser.getGender());
+//        log.info("user mobileCarrier: {}", foundUser.getMobileCarrier());
+//        log.info("user region: {}", foundUser.getRegion());
+
+        foundUser.setAdditionalInfo(dto.getMobileCarrier(), dto.getRegion());
+
+        foundUser = userRepository.save(foundUser);
+
+        return AuthenticationResponse.AdditionalInfo.builder()
+            .id(foundUser.getId())
+            .mobileCarrier(foundUser.getMobileCarrier())
+            .region(foundUser.getRegion())
+            .hashtagIds(dto.getHashtagIds())
+            .build();
     }
 }

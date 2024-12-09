@@ -1,11 +1,14 @@
 package com.bbteam.budgetbuddies.global.security.auth.dto;
 
+import com.bbteam.budgetbuddies.enums.Gender;
 import com.bbteam.budgetbuddies.global.security.otp.OtpNumber;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 public class AuthenticationResponse {
 
@@ -58,5 +61,24 @@ public class AuthenticationResponse {
 
         @Schema(description = "액세스 토큰")
         private String accessToken; // 액세스 토큰
+    }
+
+
+    @Getter
+    @Builder
+    public static class StandardInfo {
+        private Long id;
+        private String name;
+        private Gender gender;
+        private String ageGroup;
+    }
+
+    @Getter
+    @Builder
+    public static class AdditionalInfo {
+        private Long id;
+        private String mobileCarrier;
+        private String region;
+        private List<Long> hashtagIds; // 사용자가 선택한 해시태그 ID 목록
     }
 }

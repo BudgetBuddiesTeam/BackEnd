@@ -131,7 +131,7 @@ public interface SupportInfoApi {
         @PathVariable Long supportInfoId
     );
 
-    @Operation(summary = "[ADMIN] 특정 사용자가 좋아요를 누른 지원정보 가져오기 API", description = "특정 사용자가 좋아요를 누른 지원정보들을 가져오는 API입니다. 페이징을 포함합니다.")
+    @Operation(summary = "[USER] 특정 사용자가 좋아요를 누른 지원정보 가져오기 API", description = "특정 사용자가 좋아요를 누른 지원정보들을 가져오는 API입니다. 페이징을 포함합니다.")
     @ApiResponses({
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공", content = @Content(schema = @Schema(implementation = ApiResponse.class))),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "PAGE4001", description = "요청된 페이지가 0보다 작습니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDto.class))),
