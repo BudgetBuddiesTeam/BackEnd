@@ -156,22 +156,15 @@ public class UserServiceImpl implements UserService {
         // null 확인 및 초기화
         List<Long> hashtagIds = Optional.ofNullable(dto.getHashtagIds()).orElse(Collections.emptyList());
 
-        dto.getHashtagIds().stream().map(it -> {
-            log.info("hashtagId: {}", it);
-            return null;
-        });
+        User foundUser = userRepository.findById(user.getId())
+            .orElseThrow(() -> new IllegalArgumentException("Not found user"));
 
-        User foundUser = userRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("Not found user"));
+        // MobileCarrier와 Region 값 설정
+        String mobileCarrier = dto.getMobileCarrier() != null ? dto.getMobileCarrier() : null;
+        String region = dto.getRegion() != null ? dto.getRegion() : null;
 
-//        log.info("user id: {}", foundUser.getId());
-//        log.info("user name: {}", foundUser.getName());
-//        log.info("user phoneNumber: {}", foundUser.getPhoneNumber());
-//        log.info("user age: {}", foundUser.getAge());
-//        log.info("user gender: {}", foundUser.getGender());
-//        log.info("user mobileCarrier: {}", foundUser.getMobileCarrier());
-//        log.info("user region: {}", foundUser.getRegion());
-
-        foundUser.setAdditionalInfo(dto.getMobileCarrier(), dto.getRegion());
+        // 추가 정보 설정
+        foundUser.setAdditionalInfo(mobileCarrier, region);
 
         foundUser = userRepository.save(foundUser);
 
