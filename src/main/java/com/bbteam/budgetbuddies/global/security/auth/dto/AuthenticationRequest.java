@@ -35,6 +35,8 @@ public class AuthenticationRequest {
 
     @Getter
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class StandardInfo {
         private String name;
         private Gender gender;
@@ -44,6 +46,8 @@ public class AuthenticationRequest {
 
     @Getter
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class AdditionalInfo {
         private String mobileCarrier;
         private String region;
