@@ -107,9 +107,10 @@ public class AuthenticationController implements AuthenticationApi {
 		// 유저 정보 저장
 		AuthenticationResponse.AdditionalInfo savedUser = userService.saveAdditionalInfo(user, dto);
 
-		// 유저가 선택한 해시태그를 저장
-		userService.saveFavoriteHashtags(savedUser.getId(), dto.getHashtagIds());
-
+		// 유저가 선택한 해시태그가 존재하는 경우에만 저장
+		if (dto.getHashtagIds() != null) {
+			userService.saveFavoriteHashtags(savedUser.getId(), dto.getHashtagIds());
+		}
 		return ApiResponse.onSuccess(savedUser);
 	}
 
